@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="130mm" height="150mm" viewBox="-20 -16 130 150"
+     role="img" aria-labelledby="title description">
+  <title id="title">Recommended momentary rocker switch front panel</title>
+  <desc id="description">An 88 by 118 millimetre front plate. RGB LED, speed and acceleration potentiometers and the stop pushbutton are in the left column. Three momentary on-off-on rocker switches and the option pushbutton are in the right column.</desc>
+
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#e8edf2"/>
+    </linearGradient>
+    <linearGradient id="rockerLeft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#525c69"/>
+      <stop offset="1" stop-color="#202833"/>
+    </linearGradient>
+    <linearGradient id="rockerRight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#202833"/>
+      <stop offset="1" stop-color="#525c69"/>
+    </linearGradient>
+    <radialGradient id="rgbLed" cx="36%" cy="30%" r="72%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.20" stop-color="#5ee7ff"/>
+      <stop offset="0.47" stop-color="#57d96b"/>
+      <stop offset="0.73" stop-color="#ffd34f"/>
+      <stop offset="1" stop-color="#f04464"/>
+    </radialGradient>
+    <radialGradient id="stopCap" cx="35%" cy="28%" r="75%">
+      <stop offset="0" stop-color="#ffb0b9"/>
+      <stop offset="0.32" stop-color="#ef476f"/>
+      <stop offset="1" stop-color="#a30d35"/>
+    </radialGradient>
+    <radialGradient id="optionCap" cx="35%" cy="28%" r="75%">
+      <stop offset="0" stop-color="#ffe9b0"/>
+      <stop offset="0.32" stop-color="#ffd166"/>
+      <stop offset="1" stop-color="#b97d05"/>
+    </radialGradient>
+    <marker id="arrowStart" markerWidth="5" markerHeight="5" refX="4.2" refY="2.5" orient="auto">
+      <path d="M 5 0 L 0 2.5 L 5 5 z" fill="#344054"/>
+    </marker>
+    <marker id="arrowEnd" markerWidth="5" markerHeight="5" refX="0.8" refY="2.5" orient="auto">
+      <path d="M 0 0 L 5 2.5 L 0 5 z" fill="#344054"/>
+    </marker>
+
+    <!-- Visible flange 23 x 17 mm; dashed line is the 19 x 13 mm panel cutout. -->
+    <g id="rocker">
+      <rect x="-11.5" y="-8.5" width="23" height="17" rx="2.1"
+            fill="#121820" stroke="#030712" stroke-width="0.65"/>
+      <rect x="-9.5" y="-6.5" width="19" height="13" rx="1.1"
+            fill="none" stroke="#dc2626" stroke-width="0.35" stroke-dasharray="1.3 0.8"/>
+      <path d="M -9 -5.9 H 0 V 5.9 H -9 Q -9.5 5.9 -9.5 5.4 V -5.4 Q -9.5 -5.9 -9 -5.9"
+            fill="url(#rockerLeft)"/>
+      <path d="M 0 -5.9 H 9 Q 9.5 -5.9 9.5 -5.4 V 5.4 Q 9.5 5.9 9 5.9 H 0 Z"
+            fill="url(#rockerRight)"/>
+      <path d="M 0 -5.9 V 5.9" stroke="#77818e" stroke-width="0.4"/>
+      <path d="M -5.9 0 H -2.8 M -5.9 0 L -4.5 -1.4 M -5.9 0 L -4.5 1.4"
+            fill="none" stroke="#f9fafb" stroke-width="0.65" stroke-linecap="round"/>
+      <path d="M 5.9 0 H 2.8 M 5.9 0 L 4.5 -1.4 M 5.9 0 L 4.5 1.4"
+            fill="none" stroke="#f9fafb" stroke-width="0.65" stroke-linecap="round"/>
+      <circle cx="-3.3" cy="-2.3" r="0.8" fill="#ffffff" opacity="0.16"/>
+      <circle cx="3.3" cy="-2.3" r="0.8" fill="#ffffff" opacity="0.12"/>
+    </g>
+
+    <g id="pot">
+      <circle cx="0" cy="0" r="6" fill="#d9e0e7" stroke="#1f2937" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="4.65" fill="#667085" stroke="#344054" stroke-width="0.35"/>
+      <path d="M 0 0 L 0 -3.7" stroke="#ffffff" stroke-width="0.7" stroke-linecap="round"/>
+      <circle cx="-1.45" cy="-1.45" r="0.9" fill="#ffffff" opacity="0.25"/>
+    </g>
+  </defs>
+
+  <!-- Auto-fit plate: all visible component bodies have at least 12 mm clearance. -->
+  <rect x="0" y="0" width="88" height="118" rx="2.5"
+        fill="url(#plate)" stroke="#111827" stroke-width="1.1"/>
+  <path d="M 44 10 V 108" stroke="#b8c2cc" stroke-width="0.3" stroke-dasharray="1.4 1.4"/>
+
+  <!-- Left column: rows aligned with the rocker rows -->
+  <circle cx="24" cy="22" r="2.5" fill="url(#rgbLed)" stroke="#344054" stroke-width="0.45"/>
+  <circle cx="23.3" cy="21.3" r="0.65" fill="#ffffff" opacity="0.85"/>
+  <use href="#pot" x="24" y="48"/>
+  <use href="#pot" x="24" y="74"/>
+
+  <!-- Round 12 mm STOP pushbutton -->
+  <circle cx="24" cy="100" r="6" fill="#fbd5da" stroke="#881337" stroke-width="0.75"/>
+  <circle cx="24" cy="100" r="4.75" fill="url(#stopCap)" stroke="#9f1239" stroke-width="0.4"/>
+  <circle cx="22.5" cy="98.5" r="0.95" fill="#ffffff" opacity="0.48"/>
+
+  <g fill="#111827" font-family="Arial, Helvetica, sans-serif"
+     font-weight="700" text-anchor="middle">
+    <text x="24" y="28" font-size="2.7">RGB LED</text>
+    <text x="24" y="58.5" font-size="3.1">SPEED</text>
+    <text x="24" y="84.5" font-size="3.1">ACCEL</text>
+    <text x="24" y="110.5" font-size="3.2" fill="#9f1239">STOP</text>
+  </g>
+
+  <!-- Right column: three momentary rocker switches -->
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle"
+     fill="#111827" font-weight="700">
+    <use href="#rocker" x="64" y="22"/>
+    <text x="59" y="34.5" font-size="3.4">&lt;</text>
+    <text x="69" y="34.5" font-size="3.4">&gt;</text>
+
+    <use href="#rocker" x="64" y="48"/>
+    <text x="59" y="60.5" font-size="3.4">&lt;&lt;</text>
+    <text x="69" y="60.5" font-size="3.4">&gt;&gt;</text>
+
+    <use href="#rocker" x="64" y="74"/>
+    <text x="59" y="86.5" font-size="3.4">A</text>
+    <text x="69" y="86.5" font-size="3.4">B</text>
+  </g>
+
+  <!-- Round 12 mm OPTION pushbutton -->
+  <circle cx="64" cy="100" r="6" fill="#fff4d6" stroke="#8a5a00" stroke-width="0.75"/>
+  <circle cx="64" cy="100" r="4.75" fill="url(#optionCap)" stroke="#a66b00" stroke-width="0.4"/>
+  <circle cx="62.5" cy="98.5" r="0.95" fill="#ffffff" opacity="0.55"/>
+  <text x="64" y="110.5" fill="#8a5a00" font-family="Arial, Helvetica, sans-serif"
+        font-size="3" font-weight="700" text-anchor="middle">OPTION</text>
+
+  <!-- Overall plate dimensions -->
+  <g fill="none" stroke="#344054" stroke-width="0.35">
+    <path d="M 0 122 L 0 128 M 88 122 L 88 128"/>
+    <path d="M 1 126 L 87 126" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+    <path d="M -4 0 L -10 0 M -4 118 L -10 118"/>
+    <path d="M -8 1 L -8 117" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+  </g>
+  <g fill="#344054" font-family="Arial, Helvetica, sans-serif" font-size="3" text-anchor="middle">
+    <text x="44" y="131">88 mm</text>
+    <text x="-13" y="59" transform="rotate(-90 -13 59)">118 mm</text>
+  </g>
+
+  <!-- Component-size key -->
+  <g fill="#344054" font-family="Arial, Helvetica, sans-serif" font-size="2.5">
+    <text x="1" y="-10">CUTOUTS: rocker 19 x 13 mm | pots &#216;12 mm | LED &#216;5 mm | STOP, OPTION &#216;12 mm</text>
+    <text x="1" y="-5.8">Rocker coding: momentary (ON) - OFF - (ON)</text>
+  </g>
+</svg>

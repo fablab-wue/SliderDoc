@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="180mm" height="110mm" viewBox="0 0 360 220"
+     role="img" aria-labelledby="title description">
+  <title id="title">Common-anode RGB LED pinout and wiring</title>
+  <desc id="description">Front-view clear 5 mm common-anode RGB LED with pins and Pico wiring from 3V3 through LEDs and 330, 100, and 56 ohm resistors to GP2, GP3, and GP4.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+
+    <g id="resistor">
+      <path d="M 0 0 H 4 L 6 -4 L 10 4 L 14 -4 L 18 4 L 20 0 H 24"
+            fill="none" stroke="#1f2937" stroke-width="1.4" stroke-linejoin="round"/>
+    </g>
+
+
+    <g id="ledDiode">
+      <path d="M 0 0 H 6" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+      <path d="M 6 -7 L 6 7 L 16 0 Z" fill="none" stroke="#1f2937" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M 16 -7 V 7" fill="none" stroke="#1f2937" stroke-width="1.6"/>
+      <path d="M 16 0 H 22" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+    </g>
+
+  </defs>
+  <rect x="0" y="0" width="360" height="220" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+
+  <text x="70" y="22" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">Package pinout (front)</text>
+  <text x="70" y="34" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">flat side at bottom</text>
+
+  <!-- Clear 5 mm LED package (front, flat at bottom) -->
+  <defs>
+    <linearGradient id="epoxy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4fbff"/>
+      <stop offset="0.45" stop-color="#d7eef6"/>
+      <stop offset="1" stop-color="#b8d4e0"/>
+    </linearGradient>
+    <radialGradient id="dome" cx="38%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#e8f4f8" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#9eb8c6" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+  <!-- shoulder / body -->
+  <path d="M 52 58 Q 52 50 60 50 H 80 Q 88 50 88 58 V 86 H 52 Z"
+        fill="url(#epoxy)" stroke="#64748b" stroke-width="1.1"/>
+  <!-- dome -->
+  <ellipse cx="70" cy="52" rx="18" ry="16" fill="url(#dome)" stroke="#64748b" stroke-width="1.1"/>
+  <ellipse cx="64" cy="46" rx="5" ry="3.2" fill="#ffffff" opacity="0.7"/>
+  <!-- flat indicator -->
+  <path d="M 54 86 H 86" fill="none" stroke="#94a3b8" stroke-width="1.4"/>
+  <!-- legs: 1 Red, 2 GND longest, 3 Green, 4 Blue -->
+  <path d="M 58 86 V 118" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 66 86 V 132" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 74 86 V 118" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 82 86 V 118" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <text x="46" y="148" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" font-weight="600" fill="#b91c1c">1 Red</text>
+  <text x="66" y="152" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" font-weight="600" fill="#334155">2 GND</text>
+  <text x="66" y="162" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">longest</text>
+  <text x="86" y="148" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" font-weight="600" fill="#15803d">3 Green</text>
+  <text x="104" y="148" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" font-weight="600" fill="#1d4ed8">4 Blue</text>
+
+  <path d="M 130 20 V 180" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <text x="245" y="22" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">Wiring (LED_ACTIVE_HIGH = False)</text>
+
+  <text x="145" y="94" font-family="Consolas, Menlo, monospace" font-size="10" font-weight="600" fill="#b45309">3V3</text>
+  <path d="M 175 90 H 190" fill="none" stroke="#1f2937" stroke-width="1.4"/>
+  <path d="M 190 54 V 134" fill="none" stroke="#1f2937" stroke-width="1.4" stroke-linejoin="round"/>
+
+  <path d="M 190 54 H 204" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#ledDiode" x="204" y="54"/>
+  <path d="M 226 54 H 240" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#resistor" x="240" y="54"/>
+  <text x="252" y="44" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#334155">330 ohm</text>
+  <path d="M 264 54 H 280" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="284" y="58" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b91c1c">GP2 (LED_R)</text>
+
+  <path d="M 190 94 H 204" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#ledDiode" x="204" y="94"/>
+  <path d="M 226 94 H 240" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#resistor" x="240" y="94"/>
+  <text x="252" y="84" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#334155">100 ohm</text>
+  <path d="M 264 94 H 280" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="284" y="98" font-family="Consolas, Menlo, monospace" font-size="9" fill="#15803d">GP3 (LED_G)</text>
+
+  <path d="M 190 134 H 204" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#ledDiode" x="204" y="134"/>
+  <path d="M 226 134 H 240" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#resistor" x="240" y="134"/>
+  <text x="252" y="124" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#334155">56 ohm</text>
+  <path d="M 264 134 H 280" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="284" y="138" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP4 (LED_B)</text>
+
+  <text x="180" y="200" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">common anode to 3V3 - GPIO sinks through same resistor values</text>
+</svg>

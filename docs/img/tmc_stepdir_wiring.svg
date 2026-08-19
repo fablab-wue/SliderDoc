@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="190mm" height="130mm" viewBox="0 0 380 260"
+     role="img" aria-labelledby="title description">
+  <title id="title">TMC STEP DIR EN wiring</title>
+  <desc id="description">TMC2208 or TMC2209 style driver with Pico 3V3 to VIO, GP18 STEP, GP19 DIR, GP20 ENN active-low, shared GND, external motor VM, and MS1 MS2 strapped to GND for 8 microsteps.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="380" height="260" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="190" y="20" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">TMC2208 / TMC2209 STEP/DIR (8 microsteps)</text>
+
+  <!-- Module box. Pin rows at y = 70, 90, 110, 130, 150, 170 -->
+  <rect x="150" y="40" width="110" height="150" rx="5" fill="#111827" stroke="#030712" stroke-width="1.2"/>
+  <text x="205" y="56" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#e2e8f0">TMC driver</text>
+
+  <!-- Left pin pads + labels (inside module) -->
+  <circle cx="150" cy="70" r="2.5" fill="#e2e8f0"/>
+  <circle cx="150" cy="90" r="2.5" fill="#e2e8f0"/>
+  <circle cx="150" cy="110" r="2.5" fill="#e2e8f0"/>
+  <circle cx="150" cy="130" r="2.5" fill="#e2e8f0"/>
+  <circle cx="150" cy="150" r="2.5" fill="#e2e8f0"/>
+  <circle cx="150" cy="170" r="2.5" fill="#e2e8f0"/>
+  <text x="160" y="74" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">VM</text>
+  <text x="160" y="94" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">GND</text>
+  <text x="160" y="114" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">VIO</text>
+  <text x="160" y="134" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">ENN</text>
+  <text x="160" y="154" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">STEP</text>
+  <text x="160" y="174" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">DIR</text>
+
+  <!-- Right pin pads + labels -->
+  <circle cx="260" cy="110" r="2.5" fill="#e2e8f0"/>
+  <circle cx="260" cy="130" r="2.5" fill="#e2e8f0"/>
+  <circle cx="260" cy="150" r="2.5" fill="#e2e8f0"/>
+  <circle cx="260" cy="170" r="2.5" fill="#e2e8f0"/>
+  <text x="230" y="114" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">MS1</text>
+  <text x="230" y="134" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">MS2</text>
+  <text x="230" y="154" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">1A/1B</text>
+  <text x="230" y="174" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#94a3b8">2A/2B</text>
+
+  <!-- Left-side nets: labels and wires share the same y as pads -->
+  <text x="12" y="66" font-family="Consolas, Menlo, monospace" font-size="8" fill="#b45309">VM 12-24 V</text>
+  <text x="12" y="78" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7" fill="#64748b">motor PSU +</text>
+  <path d="M 100 70 H 150" fill="none" stroke="#b45309" stroke-width="1.5"/>
+
+  <text x="12" y="94" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">GND</text>
+  <path d="M 50 90 H 150" fill="none" stroke="#1f2937" stroke-width="1.4"/>
+  <path d="M 50 90 V 210" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="3 2" stroke-linejoin="round"/>
+  <path d="M 50 210 H 285" fill="none" stroke="#1f2937" stroke-width="1.2" stroke-dasharray="3 2"/>
+  <text x="56" y="206" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7" fill="#64748b">share with PSU GND</text>
+
+  <text x="12" y="114" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3</text>
+  <path d="M 50 110 H 150" fill="none" stroke="#b45309" stroke-width="1.4"/>
+
+  <text x="12" y="134" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP20 ENN</text>
+  <path d="M 95 130 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+
+  <text x="12" y="154" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP18 STEP</text>
+  <path d="M 100 150 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+
+  <text x="12" y="174" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP19 DIR</text>
+  <path d="M 100 170 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+
+  <!-- Right-side nets aligned to MS1/MS2/coil pads -->
+  <path d="M 260 110 H 285" fill="none" stroke="#334155" stroke-width="1.3"/>
+  <path d="M 260 130 H 285" fill="none" stroke="#334155" stroke-width="1.3"/>
+  <path d="M 285 110 V 210" fill="none" stroke="#334155" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="292" y="124" font-family="Consolas, Menlo, monospace" font-size="8" fill="#334155">MS1/MS2 -&gt; GND</text>
+  <text x="292" y="136" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7.5" fill="#64748b">= 8 microsteps</text>
+
+  <path d="M 260 150 H 310" fill="none" stroke="#15803d" stroke-width="1.3"/>
+  <path d="M 260 170 H 310" fill="none" stroke="#15803d" stroke-width="1.3"/>
+  <text x="314" y="162" font-family="Consolas, Menlo, monospace" font-size="8" fill="#15803d">motor coils</text>
+
+  <text x="190" y="240" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">Never feed VM from Pico - on SliderMC these nets are on the motion Pico</text>
+</svg>

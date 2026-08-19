@@ -1,0 +1,42 @@
+Waveshare RP2040-Zero — SliderMC pinout (USB at top)
+Defaults in include/pins.h (BOARD_RP2040_ZERO)
+
+  function       pad                    pad    function
+                        +---- USB ----+
+  5V             5V     |o           o| GP0    EXT_0
+  GND            GND    |o           o| GP1    EXT_1
+  3V3            3V3    |o           o| GP2    EXT_2
+  DRV_ERROR      GP29   |o           o| GP3    EXT_3
+  DRV_EN         GP28   |o           o| GP4    EXT_4
+  DRV_DIR        GP27   |o           o| GP5    EXT_5
+  DRV_STEP       GP26   |o           o| GP6    EXT_6
+  free           GP15   |o           o| GP7    EXT_7
+  LED            GP14   |o           o| GP8    EXT_8
+                        +-------------+
+                         13 12 11 10 9
+
+                      Bottom edge (left→right):
+                        GP13   UART_RX
+                        GP12   UART_TX
+                        GP11   SW_LIMIT_R*
+                        GP10   SW_LIMIT_L*
+                        GP9    SW_HOME*
+
+Bottom-side SMD pads (top→bottom):
+  GND    GND
+  GP25   DBG_UNDERRUN
+  GP24   DBG_IRQ
+  GP23   DBG_CMD
+  GP22   DBG_MOV_CONST
+  GP21   DBG_MOV
+  GP20   DBG_FIFO
+  GP19   free
+  GP18   free
+  GP17   EXT_9
+
+Legend: EXT_0…8 on GP0–8, EXT_9 on GP17 (X0…X9); UART 1 Mbaud GP12/13;
+motor DRV on GP26–29 (GP29 DRV_ERROR always polled).
+SW_HOME* / SW_LIMIT_* off until CS …_use=1.
+GP20–25 DBG_* (DEBUG_HW only, brown); GP14 status LED; GP15/18/19 free.
+GP16 = onboard RGB LED, unused by firmware.
+Pin names match P / IX (Pinout) commands.

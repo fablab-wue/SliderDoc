@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="260" viewBox="0 0 620 260" role="img" aria-labelledby="title desc">
+  <title id="title">Half-sine velocity ramp</title>
+  <desc id="desc">A smooth half-sine velocity profile from zero up to peak and back down, with labels for accel, peak, and decel.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .axis { stroke: #334155; stroke-width: 2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .curve { fill: none; stroke: #2563eb; stroke-width: 3; }
+      .label { font: 16px sans-serif; fill: #0f172a; }
+      .small { font: 13px sans-serif; fill: #475569; }
+      .peak { fill: #0f172a; }
+    </style>
+  </defs>
+  <rect class="bg" width="620" height="260"/>
+
+  <!-- grid -->
+  <line class="grid" x1="70" y1="30" x2="570" y2="30"/>
+  <line class="grid" x1="70" y1="90" x2="570" y2="90"/>
+  <line class="grid" x1="70" y1="150" x2="570" y2="150"/>
+  <line class="grid" x1="70" y1="210" x2="570" y2="210"/>
+
+  <!-- axes -->
+  <line class="axis" x1="70" y1="30" x2="70" y2="210"/>
+  <line class="axis" x1="70" y1="210" x2="570" y2="210"/>
+
+  <!-- curve -->
+  <path class="curve" d="M 70 210 C 120 210, 150 100, 220 50 C 290 0, 330 0, 390 50 C 460 100, 500 210, 570 210"/>
+
+  <!-- key markers -->
+  <circle class="peak" cx="320" cy="50" r="4"/>
+  <line x1="320" y1="50" x2="320" y2="210" stroke="#0f172a" stroke-dasharray="5 5"/>
+
+  <!-- labels -->
+  <text class="label" x="140" y="40">accel</text>
+  <text class="label" x="440" y="40">decel</text>
+  <text class="label" x="330" y="35">peak</text>
+  <text class="small" x="18" y="115" transform="rotate(-90 18 115)">velocity</text>
+  <text class="small" x="300" y="246">time</text>
+
+  <!-- start/end markers -->
+  <text class="small" x="64" y="226">0</text>
+  <text class="small" x="550" y="226">T</text>
+</svg>

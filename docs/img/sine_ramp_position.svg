@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="260" viewBox="0 0 620 260" role="img" aria-labelledby="title desc">
+  <title id="title">Velocity over position with cruise</title>
+  <desc id="desc">A smooth sine ramp over position with a flat constant-speed section in the middle.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .axis { stroke: #334155; stroke-width: 2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .curve { fill: none; stroke: #2563eb; stroke-width: 3; }
+      .label { font: 16px sans-serif; fill: #0f172a; }
+      .small { font: 13px sans-serif; fill: #475569; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="620" height="260"/>
+
+  <line class="grid" x1="70" y1="30" x2="570" y2="30"/>
+  <line class="grid" x1="70" y1="90" x2="570" y2="90"/>
+  <line class="grid" x1="70" y1="150" x2="570" y2="150"/>
+  <line class="grid" x1="70" y1="210" x2="570" y2="210"/>
+
+  <line class="axis" x1="70" y1="30" x2="70" y2="210"/>
+  <line class="axis" x1="70" y1="210" x2="570" y2="210"/>
+
+  <path class="curve" d="M 70 210
+    C 120 210, 150 177, 182 142
+    C 210 111, 235 81, 250 64
+    C 259 55, 266 56, 274 56
+    L 326 56
+    C 334 56, 341 56, 349 64
+    C 365 80, 388 111, 418 143
+    C 452 179, 492 197, 570 210"/>
+
+  <line x1="274" y1="56" x2="326" y2="56" stroke="#2563eb" stroke-width="3"/>
+  <line x1="274" y1="56" x2="274" y2="210" stroke="#2563eb" stroke-width="1.2" opacity="0.2"/>
+  <line x1="326" y1="56" x2="326" y2="210" stroke="#2563eb" stroke-width="1.2" opacity="0.2"/>
+
+  <text class="label" x="140" y="44">accel</text>
+  <text class="label" x="430" y="44">decel</text>
+  <text class="label" x="278" y="38">cruise</text>
+  <text class="small" x="18" y="115" transform="rotate(-90 18 115)">velocity</text>
+  <text class="small" x="300" y="246">position</text>
+
+  <text class="small" x="62" y="226">0</text>
+  <text class="small" x="552" y="226">x</text>
+</svg>

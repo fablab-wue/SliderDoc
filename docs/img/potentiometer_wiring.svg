@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="170mm" height="135mm" viewBox="0 0 340 270"
+     role="img" aria-labelledby="title description">
+  <title id="title">Potentiometer wiring for SPEED ACCEL and JOYSTICK</title>
+  <desc id="description">Three 10 kilohm linear potentiometers with outer legs to 3V3 and AGND and wipers to Pico GP26 SPEED, GP27 ACCEL, and optional GP28 JOYSTICK.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+    <g id="pot">
+      <rect x="0" y="-4" width="70" height="8" rx="2" fill="#dbe3eb" stroke="#1f2937" stroke-width="1"/>
+      <path d="M 4 0 H 66" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <path d="M 35 4 V 16" fill="none" stroke="#1f2937" stroke-width="1.4"/>
+      <circle cx="35" cy="4" r="3.5" fill="#667085" stroke="#1f2937" stroke-width="0.8"/>
+    </g>
+  </defs>
+  <rect x="0" y="0" width="340" height="270" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="170" y="22" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">Linear potentiometers (typically 10 kohm)</text>
+
+  <text x="20" y="48" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#111827">POT_SPEED</text>
+  <text x="20" y="68" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3</text>
+  <path d="M 50 64 H 70" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#pot" x="70" y="64"/>
+  <path d="M 140 64 H 160" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="164" y="68" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">AGND</text>
+  <path d="M 105 80 V 88" fill="none" stroke="#1f2937" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M 105 88 H 210" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="214" y="92" font-family="Consolas, Menlo, monospace" font-size="9" fill="#2563eb">GP26  (ADC0)</text>
+
+  <text x="20" y="120" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#111827">POT_ACCEL</text>
+  <text x="20" y="140" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3</text>
+  <path d="M 50 136 H 70" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#pot" x="70" y="136"/>
+  <path d="M 140 136 H 160" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="164" y="140" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">AGND</text>
+  <path d="M 105 152 V 160" fill="none" stroke="#1f2937" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M 105 160 H 210" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="214" y="164" font-family="Consolas, Menlo, monospace" font-size="9" fill="#2563eb">GP27  (ADC1)</text>
+
+  <text x="20" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="9" font-weight="600" fill="#111827">POT_JOYSTICK</text>
+  <text x="120" y="192" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#64748b">(optional)</text>
+  <text x="20" y="212" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3</text>
+  <path d="M 50 208 H 70" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#pot" x="70" y="208"/>
+  <path d="M 140 208 H 160" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="164" y="212" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">AGND</text>
+  <path d="M 105 224 V 232" fill="none" stroke="#1f2937" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M 105 232 H 210" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="214" y="236" font-family="Consolas, Menlo, monospace" font-size="9" fill="#2563eb">GP28  (ADC2)</text>
+
+  <text x="170" y="258" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">Use AGND next to GP28 - PIN_POT_JOYSTICK = None to omit</text>
+</svg>

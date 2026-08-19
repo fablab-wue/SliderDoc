@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="160mm" height="90mm" viewBox="0 0 320 180"
+     role="img" aria-labelledby="title description">
+  <title id="title">OLED I2C module wiring</title>
+  <desc id="description">Generic 128 by 64 I2C OLED module with VCC, GND, SDA to Pico GP0, and SCL to Pico GP1 at address 0x3C on I2C0.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="320" height="180" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="160" y="22" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">OLED 128x64 I2C (SSD1306 / SH1106 / SSD1309)</text>
+
+  <rect x="36" y="40" width="100" height="90" rx="4" fill="#334155" stroke="#1e293b" stroke-width="1.2"/>
+  <rect x="46" y="50" width="80" height="48" rx="2" fill="url(#panel)" stroke="#0ea5e9" stroke-width="0.8"/>
+  <text x="86" y="78" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="9" fill="#67e8f9">128x64</text>
+  <text x="86" y="118" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#cbd5e1">I2C module</text>
+
+  <!-- pads on right edge, labels outside to the left of pad row -->
+  <circle cx="144" cy="56" r="3.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <circle cx="144" cy="74" r="3.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <circle cx="144" cy="92" r="3.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <circle cx="144" cy="110" r="3.2" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
+  <text x="128" y="60" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#e2e8f0">VCC</text>
+  <text x="128" y="78" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#e2e8f0">GND</text>
+  <text x="128" y="96" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#e2e8f0">SDA</text>
+  <text x="128" y="114" text-anchor="end" font-family="Consolas, Menlo, monospace" font-size="8" fill="#e2e8f0">SCL</text>
+
+  <path d="M 147 56 H 175" fill="none" stroke="#b45309" stroke-width="1.5"/>
+  <path d="M 147 74 H 175" fill="none" stroke="#334155" stroke-width="1.5"/>
+  <path d="M 147 92 H 175" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+  <path d="M 147 110 H 175" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+
+  <text x="182" y="60" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3-5 V *</text>
+  <text x="182" y="78" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">GND</text>
+  <text x="182" y="96" font-family="Consolas, Menlo, monospace" font-size="9" fill="#2563eb">GP0  DSP_I2C_SDA</text>
+  <text x="182" y="114" font-family="Consolas, Menlo, monospace" font-size="9" fill="#7c3aed">GP1  DSP_I2C_SCL</text>
+  <text x="182" y="134" font-family="Consolas, Menlo, monospace" font-size="8" fill="#64748b">I2C0 - addr 0x3C</text>
+
+  <text x="160" y="162" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">* Module VCC often 3.3-5 V - Pico I2C logic is 3.3 V</text>
+</svg>

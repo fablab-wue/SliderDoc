@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="280mm" height="160mm" viewBox="0 0 840 480"
+     role="img" aria-labelledby="title description">
+  <title id="title">JKSlider architecture overview</title>
+  <desc id="description">Three-column overview: panel I/O into UIC Pico, UART to SliderMC Pico, motion field devices on MC; WLAN on UIC; optional USB debug to both Picos.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="840" height="480" fill="#ffffff"/>
+
+  <!-- Column titles -->
+  <text x="130" y="28" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="700" fill="#0f172a">Panel / I/O</text>
+  <text x="420" y="28" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="700" fill="#0f172a">Controllers</text>
+  <text x="700" y="28" text-anchor="middle"
+        font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="700" fill="#0f172a">Motion / field</text>
+
+  <!-- Dashed column separators -->
+  <line x1="260" y1="40" x2="260" y2="455" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <line x1="580" y1="40" x2="580" y2="455" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="6 4"/>
+
+  <!-- ===== Column 1: Panel / I/O (one box each) ===== -->
+  <!-- Boxes: x=40, w=150 -->
+  <rect x="40" y="55" width="150" height="36" rx="3" fill="#0d9488"/>
+  <text x="115" y="78" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Buttons</text>
+
+  <rect x="40" y="105" width="150" height="36" rx="3" fill="#14b8a6"/>
+  <text x="115" y="128" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">KeyPads</text>
+
+  <rect x="40" y="155" width="150" height="36" rx="3" fill="#0d9488"/>
+  <text x="115" y="178" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">OLED</text>
+
+  <rect x="40" y="205" width="150" height="36" rx="3" fill="#14b8a6"/>
+  <text x="115" y="228" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">RGB_LEDs</text>
+
+  <rect x="40" y="255" width="150" height="36" rx="3" fill="#0d9488"/>
+  <text x="115" y="278" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Potentiometers</text>
+
+  <rect x="40" y="305" width="150" height="36" rx="3" fill="#14b8a6"/>
+  <text x="115" y="328" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">JoySticks</text>
+
+  <rect x="40" y="355" width="150" height="36" rx="3" fill="#0f766e"/>
+  <text x="115" y="378" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Camera</text>
+
+  <!-- ===== Column 2: Controllers ===== -->
+  <!-- WLAN -->
+  <rect x="300" y="55" width="160" height="40" rx="3" fill="#2563eb"/>
+  <text x="380" y="80" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">WLAN / network</text>
+
+  <!-- UIC Pico -->
+  <rect x="300" y="160" width="160" height="70" rx="3" fill="#0f766e"/>
+  <text x="380" y="188" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#ffffff">UIC Pico</text>
+  <text x="380" y="210" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" fill="#ccfbf1">SliderCtrl</text>
+
+  <!-- MC Pico -->
+  <rect x="300" y="280" width="160" height="70" rx="3" fill="#a16207"/>
+  <text x="380" y="308" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" font-weight="700" fill="#ffffff">MC Pico</text>
+  <text x="380" y="330" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" fill="#fef3c7">SliderMC</text>
+
+  <!-- Host / USB debug -->
+  <rect x="300" y="410" width="160" height="40" rx="3" fill="#64748b"/>
+  <text x="380" y="435" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Host / USB debug</text>
+
+  <!-- ===== Column 3: Motion / field ===== -->
+  <rect x="630" y="120" width="160" height="40" rx="3" fill="#1e3a8a"/>
+  <text x="710" y="145" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Motor</text>
+
+  <rect x="630" y="200" width="160" height="40" rx="3" fill="#4338ca"/>
+  <text x="710" y="225" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Home switch</text>
+
+  <rect x="630" y="280" width="160" height="40" rx="3" fill="#6d28d9"/>
+  <text x="710" y="305" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Hard limit switch</text>
+
+  <rect x="630" y="360" width="160" height="40" rx="3" fill="#7c3aed"/>
+  <text x="710" y="385" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="13" font-weight="600" fill="#ffffff">Ext</text>
+
+  <!-- ===== Connectors: Panel -> UIC ===== -->
+  <!-- Buttons -->
+  <path d="M 190 73 H 240 V 185 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- KeyPads -->
+  <path d="M 190 123 H 230 V 190 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- OLED -->
+  <path d="M 190 173 H 220 V 195 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- RGB -->
+  <path d="M 190 223 H 220 V 200 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- Pots -->
+  <path d="M 190 273 H 230 V 205 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- Joy -->
+  <path d="M 190 323 H 240 V 210 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <!-- Camera -->
+  <path d="M 190 373 H 250 V 215 H 300" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <text x="248" y="365" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#64748b">CTRL_CAMERA</text>
+
+  <!-- WLAN dashed <-> UIC -->
+  <path d="M 380 95 V 160" fill="none" stroke="#2563eb" stroke-width="1.5"
+        stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <text x="390" y="130" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="10" fill="#2563eb">WLAN</text>
+
+  <!-- UIC <-> MC UART (bidirectional) -->
+  <path d="M 380 230 V 280" fill="none" stroke="#334155" stroke-width="2"
+        marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="392" y="258" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#0f172a">UART 1 Mbaud</text>
+
+  <!-- MC -> field devices -->
+  <path d="M 460 300 H 520 V 140 H 630" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <text x="530" y="132" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#64748b">STEP/DIR/EN</text>
+
+  <path d="M 460 310 H 540 V 220 H 630" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <text x="545" y="212" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#64748b">SW_HOME</text>
+
+  <path d="M 460 320 H 560 V 300 H 630" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <text x="565" y="292" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#64748b">SW_LIMIT</text>
+
+  <path d="M 460 330 H 520 V 380 H 630" fill="none" stroke="#334155" stroke-width="1.4"
+        marker-end="url(#arrow)"/>
+  <text x="530" y="372" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" fill="#64748b">EXT</text>
+
+  <!-- USB debug dashed to both Picos -->
+  <path d="M 340 410 V 360 H 300" fill="none" stroke="#64748b" stroke-width="1.4"
+        stroke-dasharray="5 4" marker-end="url(#arrowMuted)"/>
+  <path d="M 420 410 V 350 H 460" fill="none" stroke="#64748b" stroke-width="1.4"
+        stroke-dasharray="5 4" marker-end="url(#arrowMuted)"/>
+  <text x="250" y="400" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="10" fill="#64748b">USB debug (optional)</text>
+</svg>

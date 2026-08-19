@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="180mm" height="110mm" viewBox="0 0 360 220"
+     role="img" aria-labelledby="title description">
+  <title id="title">CTRL_CAMERA optocoupler wiring</title>
+  <desc id="description">Pico GP22 drives a PC817-style optocoupler LED through 390 ohm with LED cathode to GND. Isolated camera side uses collector to shutter tip and emitter to camera ground sleeve.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+    <g id="resistor">
+      <path d="M 0 0 H 4 L 6 -4 L 10 4 L 14 -4 L 18 4 L 20 0 H 24"
+            fill="none" stroke="#1f2937" stroke-width="1.4" stroke-linejoin="round"/>
+    </g>
+  </defs>
+  <rect x="0" y="0" width="360" height="220" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="180" y="22" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">CTRL_CAMERA optocoupler (e.g. PC817)</text>
+
+  <text x="16" y="60" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP22</text>
+  <text x="16" y="72" font-family="Consolas, Menlo, monospace" font-size="7" fill="#64748b">CTRL_CAMERA</text>
+  <path d="M 78 56 H 100" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <use href="#resistor" x="100" y="56"/>
+  <text x="108" y="46" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#334155">390 ohm</text>
+  <path d="M 124 56 H 150" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+
+  <rect x="150" y="40" width="100" height="100" rx="4" fill="#111827" stroke="#030712" stroke-width="1.2"/>
+  <text x="200" y="56" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#e2e8f0">PC817</text>
+  <text x="158" y="74" font-family="Consolas, Menlo, monospace" font-size="7" fill="#94a3b8">LED+</text>
+  <text x="158" y="98" font-family="Consolas, Menlo, monospace" font-size="7" fill="#94a3b8">LED-</text>
+  <text x="228" y="74" font-family="Consolas, Menlo, monospace" font-size="7" fill="#94a3b8">C</text>
+  <text x="228" y="98" font-family="Consolas, Menlo, monospace" font-size="7" fill="#94a3b8">E</text>
+
+  <!-- outline LED inside package -->
+  <path d="M 172 78 H 182" fill="none" stroke="#fbbf24" stroke-width="1.3"/>
+  <path d="M 182 72 L 182 90 L 196 81 Z" fill="none" stroke="#fbbf24" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M 196 72 V 90" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+  <path d="M 196 81 H 210" fill="none" stroke="#fbbf24" stroke-width="1.3"/>
+  <circle cx="222" cy="70" r="4" fill="none" stroke="#94a3b8" stroke-width="1"/>
+  <circle cx="222" cy="96" r="4" fill="none" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M 218 70 H 226 M 218 96 H 226" fill="none" stroke="#94a3b8" stroke-width="1"/>
+  <path d="M 222 74 V 92" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="2 2"/>
+
+  <path d="M 160 94 H 140" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <path d="M 140 94 V 130" fill="none" stroke="#1f2937" stroke-width="1.3" stroke-linejoin="round"/>
+  <path d="M 128 130 H 152" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <path d="M 134 136 H 146 M 138 142 H 142" fill="none" stroke="#1f2937" stroke-width="1.2"/>
+  <text x="96" y="134" font-family="Consolas, Menlo, monospace" font-size="9" font-weight="600" fill="#334155">GND</text>
+
+  <path d="M 250 70 H 275" fill="none" stroke="#15803d" stroke-width="1.4"/>
+  <path d="M 250 96 H 275" fill="none" stroke="#15803d" stroke-width="1.4"/>
+  <text x="280" y="58" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="8" fill="#15803d">camera side</text>
+  <text x="280" y="74" font-family="Consolas, Menlo, monospace" font-size="8" fill="#15803d">collector</text>
+  <text x="280" y="86" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7.5" fill="#64748b">shutter (-) / tip</text>
+  <text x="280" y="100" font-family="Consolas, Menlo, monospace" font-size="8" fill="#15803d">emitter</text>
+  <text x="280" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7.5" fill="#64748b">camera GND / sleeve</text>
+
+  <text x="180" y="200" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" fill="#64748b">~5 mA into opto LED - galvanically isolated from Pico</text>
+</svg>

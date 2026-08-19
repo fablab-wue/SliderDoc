@@ -1,0 +1,32 @@
+Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
+BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
+
+        function         pin              pin        function
+                         +--- USB ---+
+  DSP_I2C_SDA      GP0      1 |o         o| 40 VBUS     VBUS
+  DSP_I2C_SCL      GP1      2 |o         o| 39 VSYS     VSYS
+  GND              GND      3 |o         o| 38 GND      GND
+  LED_R            GP2      4 |o         o| 37 3V3_EN   3V3_EN
+  LED_G            GP3      5 |o         o| 36 3V3      3V3 OUT
+  LED_B            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
+  BTN_STOP         GP5      7 |o         o| 34 GP28     POT_JOYSTICK
+  GND              GND      8 |o         o| 33 AGND     ADC GND
+  BTN_MOVE_L       GP6      9 |o         o| 32 GP27     POT_ACCEL
+  BTN_MOVE_R       GP7     10 |o         o| 31 GP26     POT_SPEED
+  BTN_FAST_L       GP8     11 |o         o| 30 RUN      RUN
+  BTN_FAST_R       GP9     12 |o         o| 29 GP22     CTRL_CAMERA
+  GND              GND     13 |o         o| 28 GND      GND
+  BTN_A            GP10    14 |o         o| 27 GP21     free
+  BTN_B            GP11    15 |o         o| 26 GP20     free
+  BTN_C            GP12    16 |o         o| 25 GP19     free
+  BTN_OPTION       GP13    17 |o         o| 24 GP18     free
+  GND              GND     18 |o         o| 23 GND      GND
+  BTN_DELAY        GP14    19 |o         o| 22 GP17     UART_RX
+  BTN_TIMELAPSE    GP15    20 |o         o| 21 GP16     UART_TX
+                         +-----------+
+
+Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud.
+Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.
+Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = "button".
+GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL.
+Naming: BTN_* = electronics/pinout; User Manual uses plain names (STOP, MOVE_L, …). Key silk: short labels (` > `, ` * `, …).

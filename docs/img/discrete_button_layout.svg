@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="132mm" height="140mm" viewBox="-18 -16 132 140"
+     role="img" aria-labelledby="title description">
+  <title id="title">Recommended discrete button layout</title>
+  <desc id="description">A 96 by 108 millimetre front plate laid out on a 12 millimetre grid with two potentiometers, one RGB LED, twelve buttons, labels, and dimensions.</desc>
+
+  <defs>
+    <pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M 12 0 L 0 0 0 12" fill="none" stroke="#b8c2cc" stroke-width="0.22"/>
+    </pattern>
+    <radialGradient id="rgbLed" cx="38%" cy="32%" r="70%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.22" stop-color="#61dafb"/>
+      <stop offset="0.52" stop-color="#46d369"/>
+      <stop offset="0.78" stop-color="#ffcf40"/>
+      <stop offset="1" stop-color="#ef476f"/>
+    </radialGradient>
+    <marker id="arrowStart" markerWidth="5" markerHeight="5" refX="4.2" refY="2.5" orient="auto">
+      <path d="M 5 0 L 0 2.5 L 5 5 z" fill="#344054"/>
+    </marker>
+    <marker id="arrowEnd" markerWidth="5" markerHeight="5" refX="0.8" refY="2.5" orient="auto">
+      <path d="M 0 0 L 5 2.5 L 0 5 z" fill="#344054"/>
+    </marker>
+    <g id="button">
+      <rect x="-6" y="-6" width="12" height="12" rx="1.25"
+            fill="#f8fafc" stroke="#1f2937" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="4.65" fill="#e8edf2" stroke="#697586" stroke-width="0.35"/>
+      <circle cx="-1.35" cy="-1.35" r="1.05" fill="#ffffff" opacity="0.72"/>
+    </g>
+    <g id="optionButton">
+      <rect x="-6" y="-6" width="12" height="12" rx="1.25"
+            fill="#fff8e6" stroke="#8a5a00" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="4.65" fill="#ffd166" stroke="#a66b00" stroke-width="0.35"/>
+      <circle cx="-1.35" cy="-1.35" r="1.05" fill="#ffffff" opacity="0.72"/>
+    </g>
+    <g id="stopButton">
+      <rect x="-6" y="-6" width="12" height="12" rx="1.25"
+            fill="#fff0f1" stroke="#9f1239" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="4.65" fill="#ef476f" stroke="#9f1239" stroke-width="0.4"/>
+      <circle cx="-1.35" cy="-1.35" r="1.05" fill="#ffffff" opacity="0.66"/>
+    </g>
+    <g id="tButton">
+      <rect x="-6" y="-6" width="12" height="12" rx="1.25"
+            fill="#ecfeff" stroke="#0e7490" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="4.65" fill="#67e8f9" stroke="#0e7490" stroke-width="0.35"/>
+      <circle cx="-1.35" cy="-1.35" r="1.05" fill="#ffffff" opacity="0.72"/>
+    </g>
+    <g id="pot">
+      <circle cx="0" cy="0" r="6" fill="#dde3e9" stroke="#1f2937" stroke-width="0.7"/>
+      <circle cx="0" cy="0" r="4.65" fill="#667085" stroke="#344054" stroke-width="0.35"/>
+      <path d="M 0 0 L 0 -3.7" stroke="#ffffff" stroke-width="0.7" stroke-linecap="round"/>
+      <circle cx="-1.45" cy="-1.45" r="0.9" fill="#ffffff" opacity="0.25"/>
+    </g>
+  </defs>
+
+  <!-- Exact 8U x 9U front plate -->
+  <rect x="0" y="0" width="96" height="108" rx="2"
+        fill="#f7f9fb" stroke="#111827" stroke-width="1.1"/>
+  <rect x="0" y="0" width="96" height="108" rx="2" fill="url(#grid)"/>
+
+  <!-- Row 1: centers align with the OPTION buttons and plate center -->
+  <use href="#pot" x="24" y="18"/>
+  <circle cx="48" cy="18" r="2.5" fill="url(#rgbLed)" stroke="#344054" stroke-width="0.45"/>
+  <circle cx="47.3" cy="17.3" r="0.65" fill="#ffffff" opacity="0.85"/>
+  <use href="#pot" x="72" y="18"/>
+
+  <!-- Row 2 -->
+  <use href="#button" x="18" y="42"/>
+  <use href="#button" x="30" y="42"/>
+  <use href="#stopButton" x="48" y="42"/>
+  <use href="#button" x="66" y="42"/>
+  <use href="#button" x="78" y="42"/>
+
+  <!-- Row 3 -->
+  <use href="#optionButton" x="24" y="66"/>
+  <use href="#optionButton" x="72" y="66"/>
+
+  <!-- Row 4 -->
+  <use href="#button" x="18" y="90"/>
+  <use href="#button" x="30" y="90"/>
+  <use href="#button" x="42" y="90"/>
+  <use href="#tButton" x="60" y="90"/>
+  <use href="#button" x="78" y="90"/>
+
+  <!-- Labels below controls -->
+  <g fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="3.1"
+     font-weight="700" text-anchor="middle">
+    <text x="24" y="28.5">SPEED</text>
+    <text x="48" y="25.8" font-size="2.35" font-weight="600">RGB LED</text>
+    <text x="72" y="28.5">ACCEL</text>
+
+    <text x="18" y="53.8">&lt;&lt;</text>
+    <text x="30" y="53.8">&lt;</text>
+    <text x="48" y="53.8" font-size="2.75">STOP</text>
+    <text x="66" y="53.8">&gt;</text>
+    <text x="78" y="53.8">&gt;&gt;</text>
+
+    <text x="24" y="77.8" font-size="2.65">OPTION</text>
+    <text x="72" y="77.8" font-size="2.65">OPTION</text>
+
+    <text x="18" y="101.8">A</text>
+    <text x="30" y="101.8">B</text>
+    <text x="42" y="101.8">C</text>
+    <text x="60" y="101.8">T</text>
+    <text x="78" y="101.8">D</text>
+  </g>
+
+  <!-- Plate and grid dimensions -->
+  <g fill="none" stroke="#344054" stroke-width="0.35">
+    <path d="M 0 112 L 0 118 M 96 112 L 96 118"/>
+    <path d="M 1 116 L 95 116" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+    <path d="M -4 0 L -10 0 M -4 108 L -10 108"/>
+    <path d="M -8 1 L -8 107" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+    <path d="M 0 -4 L 0 -10 M 12 -4 L 12 -10"/>
+    <path d="M 1 -8 L 11 -8" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+  </g>
+  <g fill="#344054" font-family="Arial, Helvetica, sans-serif" font-size="3"
+     text-anchor="middle">
+    <text x="48" y="121">8U = 96 mm</text>
+    <text x="6" y="-11">1U = 12 mm</text>
+    <text x="-13" y="54" transform="rotate(-90 -13 54)">9U = 108 mm</text>
+  </g>
+</svg>
