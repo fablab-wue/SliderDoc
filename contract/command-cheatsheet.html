@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SliderMC Command Cheat Sheet</title>
+<style>
+@page { size: A4; margin: 7mm; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 7.2pt;
+  color: #111;
+  background: #fff;
+}
+.sheet {
+  width: 196mm;
+  margin: 0 auto;
+  padding: 0;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1.2pt solid #222;
+  padding-bottom: 1.2mm;
+  margin-bottom: 2mm;
+}
+header h1 {
+  margin: 0;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+header .meta {
+  font-size: 7pt;
+  color: #444;
+  text-align: right;
+  line-height: 1.25;
+}
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 4mm;
+  align-content: start;
+}
+.group {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 1.4mm;
+}
+.group h2 {
+  margin: 0 0 0.4mm 0;
+  font-size: 7pt;
+  font-weight: 700;
+  color: #fff;
+  background: #333;
+  padding: 0.4mm 1.2mm;
+  letter-spacing: 0.02em;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+th, td {
+  padding: 0.35mm 0.6mm;
+  vertical-align: top;
+  border-bottom: 0.25pt solid #ddd;
+  line-height: 1.22;
+}
+th {
+  text-align: left;
+  font-size: 6.2pt;
+  color: #555;
+  font-weight: 600;
+  border-bottom: 0.5pt solid #999;
+}
+col.sh { width: 8mm; }
+col.ln { width: 22mm; }
+col.ds { width: auto; }
+td.sh {
+  font-family: Consolas, "Courier New", monospace;
+  font-weight: 700;
+  font-size: 7pt;
+  white-space: nowrap;
+}
+td.ln {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 6.8pt;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+td.ds { font-size: 7pt; }
+footer {
+  margin-top: 1.8mm;
+  padding-top: 1.4mm;
+  border-top: 1pt solid #222;
+  font-size: 6.6pt;
+  line-height: 1.28;
+  color: #222;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+footer strong { font-weight: 700; }
+footer .row { margin: 0.25mm 0; }
+code {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 6.5pt;
+  background: #f0f0f0;
+  padding: 0 1pt;
+}
+@media screen {
+  body { background: #e8e8e8; padding: 8mm; }
+  .sheet {
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    padding: 7mm;
+  }
+}
+@media print {
+  body { background: #fff; }
+  .sheet { box-shadow: none; padding: 0; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+<header>
+<h1>SliderMC Command Cheat Sheet</h1>
+<div class="meta">Firmware V1.0<br>DIN A4 · ASCII protocol</div>
+</header>
+<div class="columns">
+<div class="col">
+<section class="group">
+<h2>S — Set (session)</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">SS</td><td class="ln">SetSpeed</td><td class="ds">Set cruise speed mm/s (≤ max_speed); bare reloads init_speed; applies live to the next fill.</td></tr>
+<tr><td class="sh">SA</td><td class="ln">SetAccel</td><td class="ds">Set accel mm/s² (≤ max_accel); bare reloads init_accel; applies live to the next fill.</td></tr>
+<tr><td class="sh">SE</td><td class="ln">SetEnable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off stops hard.</td></tr>
+<tr><td class="sh">ST</td><td class="ln">SetTerminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART command sniff to USB.</td></tr>
+<tr><td class="sh">SV</td><td class="ln">SetVerbose</td><td class="ds">Verbose status push 0|1; bare toggles; ~3 Hz #M/#I lines when on.</td></tr>
+<tr><td class="sh">SD</td><td class="ln">SetDebug</td><td class="ds">USB-only debug level 0..5; bare restores default; never sent on UIC UART.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>G — Get (session)</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">GS</td><td class="ln">GetSpeed</td><td class="ds">Reply GS:&lt;mm/s&gt; — current session cruise speed.</td></tr>
+<tr><td class="sh">GA</td><td class="ln">GetAccel</td><td class="ds">Reply GA:&lt;mm/s2&gt; — current session acceleration.</td></tr>
+<tr><td class="sh">GE</td><td class="ln">GetEnable</td><td class="ds">Reply GE:0|1 — driver enable state.</td></tr>
+<tr><td class="sh">GT</td><td class="ln">GetTerminal</td><td class="ds">Reply GT:0|1 — Terminal Mode state.</td></tr>
+<tr><td class="sh">GV</td><td class="ln">GetVerbose</td><td class="ds">Reply GV:0|1 — verbose push state.</td></tr>
+<tr><td class="sh">GD</td><td class="ln">GetDebug</td><td class="ds">Reply GD:&lt;0..5&gt; — USB debug level.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>I — Is / status</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">IM</td><td class="ln">IsMoving</td><td class="ds">Reply IM:0|1 — axis currently moving (or settling).</td></tr>
+<tr><td class="sh">IH</td><td class="ln">IsHoming</td><td class="ds">Reply IH:0|1 — homing cycle active.</td></tr>
+<tr><td class="sh">IL</td><td class="ln">IsLimit</td><td class="ds">Reply IL:0|1 — at soft-limit position.</td></tr>
+<tr><td class="sh">IE</td><td class="ln">IsError</td><td class="ds">Reply IE:0|1 — PIN_DRV_ERROR / EMO latched.</td></tr>
+<tr><td class="sh">IP</td><td class="ln">IsPosition</td><td class="ds">Reply IP:&lt;mm&gt; — current planner position.</td></tr>
+<tr><td class="sh">IT</td><td class="ln">IsTarget</td><td class="ds">Reply IT:&lt;mm&gt;|- — seek target, or - if none.</td></tr>
+<tr><td class="sh">IR</td><td class="ln">IsReady</td><td class="ds">Reply IR:1 only if idle, not homing, enabled, and not waiting.</td></tr>
+<tr><td class="sh">IW</td><td class="ln">IsWaiting</td><td class="ds">Reply IW:1 if any W / WM / WH wait is active.</td></tr>
+<tr><td class="sh">ID</td><td class="ln">IsDiag</td><td class="ds">Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level.</td></tr>
+<tr><td class="sh">IZ</td><td class="ln">IsReset</td><td class="ds">Reply last chip reset cause (power|wdt|run|soft|debug|brownout|…).</td></tr>
+<tr><td class="sh">IX</td><td class="ln">Pinout</td><td class="ds">ASCII table: GP number, pin name, brief description (≤80 cols).</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>M — Movement</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">MT</td><td class="ln">MoveTo</td><td class="ds">Move to absolute mm; needs enable; live-retargets an active move.</td></tr>
+<tr><td class="sh">M</td><td class="ln">Move</td><td class="ds">Relative move by mm (alias MoveBy); needs enable; live-retargets.</td></tr>
+<tr><td class="sh">ML</td><td class="ln">MoveLeft</td><td class="ds">Continuous jog negative; soft-stop with MS or !.</td></tr>
+<tr><td class="sh">MR</td><td class="ln">MoveRight</td><td class="ds">Continuous jog positive; soft-stop with MS or !.</td></tr>
+<tr><td class="sh">MH</td><td class="ln">MoveHome</td><td class="ds">Homing cycle (home_mode); no-op if 0; needs SE 1; cancel with MS/H.</td></tr>
+<tr><td class="sh">MS</td><td class="ln">MoveStop</td><td class="ds">Soft decelerate to stop; keeps enable; does not cancel waits.</td></tr>
+</tbody></table></section>
+</div>
+<div class="col">
+<section class="group">
+<h2>X — Extender</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">X0–9</td><td class="ln">Ext0–9</td><td class="ds">Ext out n logical 0|1; bare toggles; glued X00≡X0 0; ok during EMO.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>C — Config</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">CS</td><td class="ln">ConfigSet</td><td class="ds">Set persistent key value (mc.ini); silent ok; updates session init_speed/init_accel/…</td></tr>
+<tr><td class="sh">CG</td><td class="ln">ConfigGet</td><td class="ds">Get key → CG:key=value; bare dumps all keys.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>W — Wait</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">W</td><td class="ln">Wait</td><td class="ds">Delay sec then continue ; chain; bare → 1 s; never !E:timeout.</td></tr>
+<tr><td class="sh">WM</td><td class="ln">WaitMoving</td><td class="ds">Pause chain until move ends; optional timeout cancels remaining chain.</td></tr>
+<tr><td class="sh">WH</td><td class="ln">WaitHoming</td><td class="ds">Pause chain until homing ends; optional timeout cancels remaining chain.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>V — Version</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">VA</td><td class="ln">VersionAbout</td><td class="ds">Reply VA: about string (name, version, author).</td></tr>
+<tr><td class="sh">VF</td><td class="ln">VersionFW</td><td class="ds">Reply VF:&lt;version&gt; — firmware version.</td></tr>
+<tr><td class="sh">VP</td><td class="ln">VersionProtocol</td><td class="ds">Reply VP:&lt;n&gt; — protocol version.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>Special</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">H/HT</td><td class="ln">Halt</td><td class="ds">Immediate STEP abort; enable off; cancel waits and remaining ; chain.</td></tr>
+<tr><td class="sh">P</td><td class="ln">Pins</td><td class="ds">List PIN_*=GPIO lines (machine-readable, read-only).</td></tr>
+<tr><td class="sh">$/HL</td><td class="ln">Help</td><td class="ds">ASCII table of all commands (≤80 columns).</td></tr>
+</tbody></table></section>
+</div></div>
+<footer>
+<div class="row"><strong>Wire:</strong> one command per line (<code>\n</code>); chain with <code>;</code>; <code>#</code> comment to EOL (comment-only lines ignored); bare bool setters toggle; motion/settings silent on success; errors <code>!E:code message</code>.</div>
+<div class="row"><strong>Realtime</strong> (no newline): <code>?</code> status · <code>!</code> soft stop · <code>Ctrl-X</code> (0x18) soft reset.</div>
+<div class="row"><strong>Status</strong> (<code>#X …</code>): <code>I</code> idle · <code>A</code> accel · <code>M</code> cruise · <code>B</code> decel · <code>H</code> homing · <code>L</code> hard-limit · <code>D</code> disabled · <code>E</code> error. Moving: <code>#M/#A/#B pos speed accel [target]</code>.</div>
+<div class="row"><strong>Halt vs Stop:</strong> <code>MS</code>/<code>!</code> soft decel (enable kept); <code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits.</div>
+</footer>
+</div></body></html>

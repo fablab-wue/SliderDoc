@@ -1,0 +1,31 @@
+Raspberry Pi Pico — SliderMC pinout (top view, USB at top)
+Defaults in include/pins.h + data/mc.ini
+
+        function         pin              pin        function
+                         +--- USB ---+
+  EXT_0            GP0      1 |o         o| 40 VBUS     VBUS
+  EXT_1            GP1      2 |o         o| 39 VSYS     VSYS
+  GND              GND      3 |o         o| 38 GND      GND
+  EXT_2            GP2      4 |o         o| 37 3V3_EN   3V3_EN
+  EXT_3            GP3      5 |o         o| 36 3V3      3V3 OUT
+  EXT_4            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
+  EXT_5            GP5      7 |o         o| 34 GP28     free
+  GND              GND      8 |o         o| 33 AGND     ADC GND
+  EXT_6            GP6      9 |o         o| 32 GP27     SW_LIMIT_R*
+  EXT_7            GP7     10 |o         o| 31 GP26     SW_LIMIT_L*
+  EXT_8            GP8     11 |o         o| 30 RUN      RUN
+  EXT_9            GP9     12 |o         o| 29 GP22     SW_HOME*
+  GND              GND     13 |o         o| 28 GND      GND
+  DBG_FIFO         GP10    14 |o         o| 27 GP21     DRV_ERROR
+  DBG_MOV          GP11    15 |o         o| 26 GP20     DRV_EN
+  DBG_MOV_CONST    GP12    16 |o         o| 25 GP19     DRV_DIR
+  DBG_CMD          GP13    17 |o         o| 24 GP18     DRV_STEP
+  GND              GND     18 |o         o| 23 GND      GND
+  DBG_IRQ          GP14    19 |o         o| 22 GP17     UART_RX
+  DBG_UNDERRUN     GP15    20 |o         o| 21 GP16     UART_TX
+                         +-----------+
+
+Legend: EXT_0…9 on GP0–9 (X0…X9); UART 1 Mbaud GP16/17; motor DRV on GP18–20.
+SW_HOME* / SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.
+GP10–15 DBG_* (DEBUG_HW only, brown); GP23–25, GP28 free.
+Pin names match P / IX (Pinout) commands.

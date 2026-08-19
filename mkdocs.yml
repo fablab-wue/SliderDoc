@@ -1,0 +1,45 @@
+site_name: SliderDoc
+site_url: https://fablab-wue.github.io/SliderDoc/
+repo_url: https://github.com/fablab-wue/SliderDoc
+docs_dir: .
+exclude_docs: |
+  tools/
+  .git/
+  LICENSE
+use_directory_urls: false
+nav:
+  - Home: README.md
+  - Architecture:
+    - architecture/README.md
+    - Overview: architecture/overview.md
+    - Compare: architecture/compare.md
+    - Marketing: architecture/marketing.md
+  - Contract:
+    - contract/README.md
+    - Protocol: contract/protocol.md
+    - Link: contract/link-and-handshake.md
+  - UIC:
+    - uic/README.md
+    - API: uic/api/overview.md
+    - JKSlider:
+      - uic/projects/jkslider/README.md
+      - User manual: uic/projects/jkslider/user-manual.md
+      - Technical: uic/projects/jkslider/technical/README.md
+    - B4Slider:
+      - uic/projects/b4slider/README.md
+      - User manual: uic/projects/b4slider/user-manual.md
+  - SliderMC:
+    - mc/README.md
+    - Build: mc/build.md
+    - Config: mc/config.md
+    - Pins: mc/pins.md
+    - Motion: mc/motion.md
+  - Components: components/index.md
+  - Build:
+    - build/README.md
+    - Hardware: build/hardware-manual.md
+    - Checklists: build/checklists/README.md
+  - Reference: reference/glossary.md
+  - Contributing: CONTRIBUTING.md
+theme:
+  name: material

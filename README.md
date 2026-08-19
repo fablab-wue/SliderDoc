@@ -1,45 +1,64 @@
 # SliderDoc
 
-![JKSlider](docs/img/jkslider-hero.png)
+![JKSlider](assets/img/jkslider-hero.png)
 
-This is a collection of **Documentation** and **Manuals** to all Slider Projects
+Documentation and manuals for an **open DIY motorized camera slider** ecosystem: **UIC** ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) + **MC** ([SliderMC](https://github.com/fablab-wue/SliderMC)) + shared UART contract.
 
-## Linked Projects / Repositorys
+Whether you operate on set, install a panel, build the rail, or extend the firmware — this repo is the single source for architecture, protocol, user manuals, and build guides. **Mechanics and enclosure are yours**; the docs cover control feel, motion firmware, and wiring so your build can behave like a commercial motorized slider on the things that matter for shooting — or as a **construction kit** for custom motorized rigs.
 
-### SliderCtrl / JKSlider
+## Linked code repositories
 
-User Interface Controller (**UIC**) - https://github.com/fablab-wue/SliderCtrl
-
-### SliderMC
-
-Motor Controller (**MC**) - https://github.com/fablab-wue/SliderMC
+| Repo | Role |
+|------|------|
+| [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) | UI controller — MicroPython panel firmware (JKSlider, B4Slider, libraries) |
+| [SliderMC](https://github.com/fablab-wue/SliderMC) | Motion controller — C++ / FreeRTOS STEP/DIR axis |
 
 ---
 
-## Documentation
+## Features (system summary)
 
-| Document | Contents |
-|----------|----------|
-| [manuals/JKSlider_Manual.md](manuals/JKSlider_Manual.md) | Index of all manuals |
-| [manuals/JKSlider_User_Manual.md](manuals/JKSlider_User_Manual.md) | Operator — knobs, buttons, OLED / LED on a ready panel |
-| [manuals/JKSlider_Technical_Manual.md](manuals/JKSlider_Technical_Manual.md) | Installer hub — links to Link / Bring-up / Panel / Motion / Config |
-| [manuals/JKSlider_Hardware_Manual.md](manuals/JKSlider_Hardware_Manual.md) | Builder — rails, drive, motors, mounting, power, housings |
-| [manuals/JKSlider_Components.md](manuals/JKSlider_Components.md) | DIY — tested modules, pinouts, schematics, config deltas |
-| [manuals/JKSlider_Compare.md](manuals/JKSlider_Compare.md) | Competitive scan |
-| [manuals/JKSlider_Mrk.md](manuals/JKSlider_Mrk.md) | Short marketing overview |
-| [manuals/glossary.md](manuals/glossary.md) | Acronyms and panel control names |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | UIC ↔ SliderMC architecture |
-| [docs/API.md](docs/API.md) | `MC_Client` / `UIC_Base` library API |
-| [docs/img/jkslider-hero.png](docs/img/jkslider-hero.png) | Marketing hero image |
-| [docs/img/pico_pinout_button.png](docs/img/pico_pinout_button.png) · [keypad](docs/img/pico_pinout_keypad.png) | Pico pinout diagrams |
-| [docs/img/keypad_map.png](docs/img/keypad_map.png) | Recommended keypad silk labels |
-| [docs/img/discrete_button_layout.png](docs/img/discrete_button_layout.png) | Recommended discrete button / pot layout |
-| [docs/img/rocker_switch_layout.png](docs/img/rocker_switch_layout.png) | Recommended rocker-switch panel layout |
-| [docs/img/oled/](docs/img/oled/) | OLED screen mockups |
+One consolidated view of the whole stack — details live in each repo README and in [architecture/marketing.md](architecture/marketing.md).
 
-GPIO maps, keypad wiring, LED / NeoPixel schematics, and `JKS_*` options are all in the **Technical Manual** — not duplicated here.
+- **Motorized camera slider control** — laptop-free set operation; analogue speed and accel; STOP / EMO / limits  
+- **JKSlider** full panel + **B4Slider** minimal remote — and room for more UIC faces on the same protocol  
+- **Construction kit** — JKSlider / B4Slider panel apps, **`MC_Client`** / **`UIC_Base`**, SliderMC motion; build sliders, mini-dollies, rotating heads, turntables, or other STEP/DIR rigs  
+- **Production moves** — marks A/B/C, pair loops, DELAY, timelapse dividers, pause/resume, live retarget, camera trigger  
+- **Dedicated motion MCU** — PIO step timing isolated from MicroPython UIC; crossed UART contract at 1 Mbaud  
+- **Open firmware, open docs** — MIT licensed; Thonny / REPL and USB CLI; edit pins, fork panels, script moves  
+- **DIY mechanics** — rail, motor, driver, and housing up to the builder; upcycle linear units and off-the-shelf STEP/DIR drivers  
 
-Marketing one-pager: [manuals/JKSlider_Mrk.md](manuals/JKSlider_Mrk.md) · Set cheat sheet (A4): [manuals/JKSlider_Cheat_Sheet.pdf](manuals/JKSlider_Cheat_Sheet.pdf)
+How this compares to commercial motorized sliders: [architecture/compare.md](architecture/compare.md).
+
+---
+
+## Start here (by role)
+
+| I am… | Start here |
+|-------|------------|
+| Operator | [jkslider/user-manual.md](uic/projects/jkslider/user-manual.md) or [b4slider/user-manual.md](uic/projects/b4slider/user-manual.md) |
+| Installer | [jkslider/technical/](uic/projects/jkslider/technical/README.md) + [build/checklists/](build/checklists/README.md) |
+| Builder (mechanics) | [build/hardware-manual.md](build/hardware-manual.md) |
+| UIC developer | [uic/api/overview.md](uic/api/overview.md) |
+| MC developer | [mc/README.md](mc/README.md) |
+| Protocol author | [contract/protocol.md](contract/protocol.md) |
+
+## Documentation tree
+
+| Section | Contents |
+|---------|----------|
+| [architecture/](architecture/README.md) | System split, philosophy, compare, marketing |
+| [contract/](contract/README.md) | UART protocol, link/handshake, MC command cheat sheet |
+| [uic/](uic/README.md) | API, libraries, JKSlider / B4Slider / template projects |
+| [mc/](mc/README.md) | Build, config, pins, motion firmware |
+| [components/](components/README.md) | Tested hardware module catalog |
+| [build/](build/README.md) | Hardware manual + installer checklists |
+| [reference/](reference/README.md) | Glossary |
+| [assets/](assets/README.md) | Images, SVG, pinout text, OLED mockups |
+| [tools/](tools/README.md) | Render/sim scripts (maintainers) |
+
+## Maintaining docs
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Regenerate cheat sheets and pinouts with scripts in [tools/](tools/README.md).
 
 ---
 
@@ -50,5 +69,3 @@ Copyright (c) 2026 Jochen Krapf \<jk@nerd2nerd.org\>
 Licensed under the [MIT License](LICENSE).
 
 Company names and product names mentioned in this project are trademarks or registered trademarks of their respective owners. Use here is for identification only.
-
-`ssd1306.py` / `sh1106.py` / `ssd1309.py` are based on common MicroPython OLED patterns (SSD1306 lineage typically MIT). `oledfont.py` uses Adafruit GFX 5×7 font data (BSD-style upstream). Keep their notices if you redistribute those files alone.
