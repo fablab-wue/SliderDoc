@@ -9,7 +9,7 @@ Panel wiring and firmware config: [../uic/projects/jkslider/technical/README.md]
 On-set operation: [../uic/projects/jkslider/user-manual.md](../uic/projects/jkslider/user-manual.md).  
 Electronics architecture (UIC + SliderMC): [../architecture/overview.md](../../architecture/overview.md).
 
-JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion Pico** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
+JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. Config `axis2_use=1` optionally enables a **second** STEP/DIR axis (e.g. pan) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
 
 ---
 
@@ -42,7 +42,7 @@ Alignment matters more than brand: parallel rails, no binding at ends, carriage 
 | **Timing belt + pulley** | Fast travel, quiet if tensioned, printer-grade parts plentiful | Stretch / tensioning; less “locked” when unpowered; pulley teeth and idlers |
 | **3D-printer ecosystem** | GT2 belts, T8 screws, NEMA mounts, couplers everywhere | Designed for print heads, not always for fluid heads — derate load and stiffen mounts |
 
-**Gearing tip for JKSlider:** set `steps_per_mm` (or motor steps × microsteps ÷ mm per rev) in **SliderMC** config so the millimetre world matches the real carriage. Soft limits and marks only make sense after that.
+**Gearing tip for JKSlider:** set `steps_per_unit` (or motor steps × microsteps ÷ mm per rev) in **SliderMC** config so the millimetre world matches the real carriage. Soft limits and marks only make sense after that.
 
 Belt systems love higher top speed; screws love finer positioning. Both work — match MC `max_speed` / `max_accel` (and optional `JKS_SPEED_MAX_MM_S` / `JKS_ACCEL_MAX_MM_S2` panel clamps) to what the mechanics can do without ringing.
 
@@ -168,7 +168,7 @@ Suggestions beyond the sections above — useful checklist when you design a kit
 
 | Hardware choice | Main config knobs |
 |-----------------|-------------------|
-| Pitch / belt / microsteps | `steps_per_mm` (and related keys) in **SliderMC** config |
+| Pitch / belt / microsteps | `steps_per_unit` (and related keys) in **SliderMC** config |
 | Travel | MC `slider_min` / `slider_max` (UIC reads via `CG`) |
 | Home end | `HOME_DIRECTION`, `PIN_SW_HOME`, switch polarity (MC) |
 | Speed / torque feel | driver current, MC `max_speed` / `max_accel`, ACCEL pot range |

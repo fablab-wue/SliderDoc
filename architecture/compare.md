@@ -15,9 +15,9 @@ Competitive scan of commercial and DIY motorized sliders vs **JKSlider V1** (UIC
 | Strong | MSM timelapse + shutter (default) |
 | Strong | Dedicated motion MCU (UI load isolated) |
 | Strong | MicroPython UIC (maker / DIY panel) |
-| Gap | Remote + multi-axis |
+| Gap | Remote; panel still primarily 1-axis |
 
-**Positioning in one line:** JKSlider is a set-first, laptop-free 1-axis controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL; it loses where products sell pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
+**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive a **2nd STEP/DIR axis** (`axis2_use` on Pico or Zero); shipping JKSlider/B4Slider panels remain primarily **1-axis** UX. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
 
 ---
 
@@ -43,7 +43,7 @@ Yes / Partial / No relative to typical shipping capability. DIY column = common 
 | Camera shutter trigger cable | Yes | Yes | Yes | Yes | Yes | Yes | Often |
 | Continuous ÷N hyper-slow TL | Yes | Partial | Partial | Partial | Partial | Partial | Varies |
 | Phone / app remote | No | Yes | Yes | Yes | Yes | Yes | Often |
-| Multi-axis (pan / tilt / focus) | No | Partial | Yes | Yes | Yes | Yes | Often |
+| Multi-axis (pan / tilt / focus) | Partial | Partial | Yes | Yes | Yes | Yes | Often |
 | Subject / face tracking | No | Partial | Partial | Yes | Partial | No | Rare |
 | Turnkey mechanics + battery pack | No | Yes | Yes | Yes | Yes | Yes | DIY |
 | Open firmware / DIY STEP·DIR | Yes | No | No | No | No | No | Yes |
@@ -111,7 +111,7 @@ Gaps vs what buyers expect from “motorized camera slider” products and from 
 | Priority | Missing capability | Why it matters | Who has it |
 |----------|--------------------|----------------|------------|
 | **P1** | Wireless / app remote | Tight spaces, solo interview B-cam, phone as joystick. Pico W could host BLE/Wi‑Fi later. | Edelkrone app, Accsoon TopRig, Rhino Arc II, Syrp, QuadMeUp ESP32 web UI |
-| **P1** | 2nd axis: pan (orbit / tracking) | Interview loop + keep subject framed is a top rental / B-cam ask. | Accsoon 55° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
+| **P1** | Dual-axis **panel** UX (pan orbit / tracking) | SliderMC optional 2nd STEP/DIR (`axis2_use`) is available; JKSlider/B4Slider still drive primarily one axis. | Accsoon 55° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
 | **P2** | More keyframes / path edit | A/B/C is strong for set work; VFX/macro wants 5+ keyframes and ease per segment. | Rhino Arc II (5 KF), Edelkrone, Kessler CineDrive, ESP32 3-axis DIY |
 | **P2** | Incline / vertical mode + holding torque UX | Safety when hand-control or power loss could back-drive. | Edelkrone SliderONE v3, Kessler worm drives, Accsoon vertical rating |
 | **P3** | Turnkey battery + mechanics SKU | Product gap vs controller-only positioning — not a firmware gap. | Accsoon NP-F kits, Rhino/Syrp/Edelkrone complete systems |
@@ -128,7 +128,7 @@ Gaps vs what buyers expect from “motorized camera slider” products and from 
 
 ### P1 — Reach
 
-Pico W BLE or simple web remote · optional 2nd STEP/DIR for pan.
+Pico W BLE or simple web remote · dual-axis panel UX on top of SliderMC `axis2_use`.
 
 ### P2+ — Pro polish
 
@@ -140,7 +140,7 @@ More keyframes · incline hold UX · packaged NP-F power notes in Hardware Manua
 
 **Against Accsoon TopRig:** JKSlider is more flexible mechanically and richer as a set panel, with onboard MSM + shutter; Accsoon wins as a finished short slider with app remote + pan assist.
 
-**Against Edelkrone / Rhino / Syrp / Kessler:** those are multi-axis motion products; JKSlider should not chase full MoCo — keep owning tactile 1-axis control, open hardware, and MSM, then add a light remote / pan option.
+**Against Edelkrone / Rhino / Syrp / Kessler:** those are multi-axis motion products; JKSlider should not chase full MoCo — keep owning tactile control, open hardware, and MSM. SliderMC already supports an optional 2nd STEP/DIR; next reach is a light remote / dual-axis panel UX.
 
 **Against DIY OSS:** JKSlider already looks more “rental desk” as a set panel and ships shutter MSM; the UIC↔MC split isolates UI load from STEP timing (many single-MCU DIY projects do not). Wi‑Fi/remote remains the main DIY advantage to close next.
 

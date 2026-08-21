@@ -54,7 +54,9 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 6. **Soft limits** clamp remaining steps; illegal `MT` outside limits is rejected.
 7. **Homing** — FSM via `MH` (`home_mode`, `home_speed`, `home_accel`, `home_move_out`); mode `0` = silent no-op.
 
-API units mm / mm/s / mm/s²; internals use steps via `steps_per_mm`.
+API units are user units (typically mm / mm/s / mm/s², or ° / °/s / °/s²); internals use steps via `steps_per_unit` (and `steps_per_unit_2` when axis2 is enabled). See [dual-movement.md](dual-movement.md) for dual-axis timing and units.
+
+With `axis2_use=1`, the planner maintains **two** independent axes, each with its own PIO state machine, position, soft limits, and homing FSM. Session `SS`/`SA` apply to both; dual-arg `MT`/`M` and mask args on `ML`/`MR`/`MH` select which axes move. See [dual-movement.md](dual-movement.md) and [protocol.md — Optional 2nd axis](../contract/protocol.md#optional-2nd-axis-axis2_use).
 
 Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.cpp`.
 
@@ -62,14 +64,14 @@ Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.
 
 `PC`/`PD`/`PG`/`PN`/`PS` (see [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path)) implement a host-authored motion
 path via a second, deliberately simpler planner in `src/motion/motion_path.cpp`,
-kept separate from the sine-ramp planner above.
+kept separate from the sine-ramp planner above. This is a **second planner**, not the optional physical axis2 — though when `axis2_use=1`, path mode plays **two** sample streams (dual `PD` args).
 
-- **Buffer:** a flat `int16_t` array (`PATH_BUFFER_MAX` = 65536 samples, 128 KB,
+- **Buffer:** a flat `int16_t` array (`PATH_BUFFER_MAX` = 32768 samples per axis,
   static — no malloc), holding one signed µm delta-distance per fixed time
-  slice (`PS`, µs). `PD` appends; `PG` always plays from sample 0.
+  slice (`PS`, µs). With axis2 enabled there are two parallel buffers. `PD` appends; `PG` always plays from sample 0.
 - **Playback:** the `feed` task calls `motion_path_fill_fifo()` instead of
   `planner_fill_fifo()` while path-mode is active. Each slice converts to a
-  step count (`steps_per_mm`) and a PIO delay (constant rate for that slice —
+  step count (`steps_per_unit`) and a PIO delay (constant rate for that slice —
   no ramp), chunked into ≤64-pulse words like the normal planner. A `0` sample
   emits no word; the PIO naturally holds/stalls, giving an exact stand-still.
 - **Error diffusion:** both the distance→steps and slice-time→PIO-cycles

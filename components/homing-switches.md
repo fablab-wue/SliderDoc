@@ -2,7 +2,7 @@
 
 [← Components index](index.md)
 
-Hard-limit / home input on **SliderMC** **`PIN_SW_HOME`** (GP22).
+Hard-limit / home input on **SliderMC** **`PIN_SW_HOME`** (GP22). With `axis2_use=1`, axis 2 uses **`PIN_SW_HOME2`** (GP9) and matching `SW_HOME_*_2` / `home_*_2` config keys.
 
 SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../../architecture/overview.md)
 

@@ -51,9 +51,17 @@ Source: [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) (`JKSlider.py`, `
 
 The stack is a **software and electronics construction kit**. Start from a turnkey panel face or compose **`MC_Client`** + **`UIC_Base`** on the UIC Pico; pair with [SliderMC](https://github.com/fablab-wue/SliderMC) for deterministic motion over UART.
 
-**Software:** panel variants, libraries, and open protocol. **Electronics:** two Picos, STEP/DIR driver, limits, and a crossed UART link. Your mechanics decide whether the axis becomes a motorized camera slider, mini-dolly, rotating head, turntable, or something else.
+**Software:** panel variants, libraries, and open protocol. **Electronics:** two Picos, STEP/DIR driver(s), limits, and a crossed UART link. Your mechanics decide whether the axis becomes a motorized camera slider, mini-dolly, rotating head, turntable, or a **two-axis** rig.
 
 API and composition: [uic/api/overview.md](../uic/api/overview.md) · new panel scaffold: [project template](../uic/projects/_template/README.md).
+
+---
+
+## Optional 2-axis — slider + pan
+
+SliderMC can run a **second** STEP/DIR axis (`axis2_use=1`, reboot). The usual pairing is **axis 1 = linear travel** and **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` finishes both axes together — **time-synced**, not a CNC diagonal feedrate. Timing: [dual-movement.md](../mc/dual-movement.md).
+
+**JKSlider** and **B4Slider** stay **1-axis operator faces** (they drive and display axis 1). A custom UIC uses [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(2)`, and `set_status2_callback` — see [uic/api/overview.md](../uic/api/overview.md).
 
 ---
 
@@ -73,7 +81,7 @@ Technical architecture: [overview.md](overview.md).
 
 JKSlider is the turnkey face — the construction kit is for **special-purpose, feature-rich** builds that do not fit a stock panel.
 
-**MC_Client** + **UIC_Base** give you the modular software half: millimetre API over UART to SliderMC, soft/hard limits, EMO, OLED/LED hooks. Strip JKSlider down, fork B4Slider, or script a one-off rig — mini-dolly track, pan head, product turntable, or the next motorized workflow you have in mind.
+**MC_Client** + **UIC_Base** give you the modular software half: millimetre API over UART to SliderMC, soft/hard limits, EMO, OLED/LED hooks, optional **2-axis** (linear + pan). Strip JKSlider down, fork B4Slider, or script a one-off rig — mini-dolly track, pan head, product turntable, slider + pan, or the next motorized workflow you have in mind.
 
 **MC_Client** + **UIC_Base** + **SliderMC** are the engine; your enclosure and mechanics define the shot.
 

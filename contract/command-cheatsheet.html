@@ -139,12 +139,12 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">SS</td><td class="ln">SetSpeed</td><td class="ds">Set cruise speed mm/s (≤ max_speed); bare reloads init_speed; applies live to the next fill.</td></tr>
-<tr><td class="sh">SA</td><td class="ln">SetAccel</td><td class="ds">Set accel mm/s² (≤ max_accel); bare reloads init_accel; applies live to the next fill.</td></tr>
-<tr><td class="sh">SE</td><td class="ln">SetEnable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off stops hard.</td></tr>
-<tr><td class="sh">ST</td><td class="ln">SetTerminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART command sniff to USB.</td></tr>
-<tr><td class="sh">SV</td><td class="ln">SetVerbose</td><td class="ds">Verbose status push 0|1; bare toggles; ~3 Hz #M/#I lines when on.</td></tr>
-<tr><td class="sh">SD</td><td class="ln">SetDebug</td><td class="ds">USB-only debug level 0..5; bare restores default; never sent on UIC UART.</td></tr>
+<tr><td class="sh">SS</td><td class="ln">SetSpeed</td><td class="ds">Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill. Dual MT: axis1=session, axis2×ratio.</td></tr>
+<tr><td class="sh">SA</td><td class="ln">SetAccel</td><td class="ds">Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill. Dual MT: same ratio scaling as SS.</td></tr>
+<tr><td class="sh">SE</td><td class="ln">SetEnable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop.</td></tr>
+<tr><td class="sh">ST</td><td class="ln">SetTerminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).</td></tr>
+<tr><td class="sh">SV</td><td class="ln">SetVerbose</td><td class="ds">Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).</td></tr>
+<tr><td class="sh">SD</td><td class="ln">SetDebug</td><td class="ds">USB-only debug level 0..5; bare restores default; never on UIC UART.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>G — Get (session)</h2>
@@ -152,12 +152,12 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">GS</td><td class="ln">GetSpeed</td><td class="ds">Reply GS:&lt;mm/s&gt; — current session cruise speed.</td></tr>
-<tr><td class="sh">GA</td><td class="ln">GetAccel</td><td class="ds">Reply GA:&lt;mm/s2&gt; — current session acceleration.</td></tr>
-<tr><td class="sh">GE</td><td class="ln">GetEnable</td><td class="ds">Reply GE:0|1 — driver enable state.</td></tr>
-<tr><td class="sh">GT</td><td class="ln">GetTerminal</td><td class="ds">Reply GT:0|1 — Terminal Mode state.</td></tr>
-<tr><td class="sh">GV</td><td class="ln">GetVerbose</td><td class="ds">Reply GV:0|1 — verbose push state.</td></tr>
-<tr><td class="sh">GD</td><td class="ln">GetDebug</td><td class="ds">Reply GD:&lt;0..5&gt; — USB debug level.</td></tr>
+<tr><td class="sh">GS</td><td class="ln">GetSpeed</td><td class="ds">Current session cruise speed.</td></tr>
+<tr><td class="sh">GA</td><td class="ln">GetAccel</td><td class="ds">Current session acceleration.</td></tr>
+<tr><td class="sh">GE</td><td class="ln">GetEnable</td><td class="ds">Driver enable state.</td></tr>
+<tr><td class="sh">GT</td><td class="ln">GetTerminal</td><td class="ds">Terminal Mode state.</td></tr>
+<tr><td class="sh">GV</td><td class="ln">GetVerbose</td><td class="ds">Verbose push state.</td></tr>
+<tr><td class="sh">GD</td><td class="ln">GetDebug</td><td class="ds">USB debug level.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>I — Is / status</h2>
@@ -165,17 +165,18 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">IM</td><td class="ln">IsMoving</td><td class="ds">Reply IM:0|1 — axis currently moving (or settling).</td></tr>
-<tr><td class="sh">IH</td><td class="ln">IsHoming</td><td class="ds">Reply IH:0|1 — homing cycle active.</td></tr>
-<tr><td class="sh">IL</td><td class="ln">IsLimit</td><td class="ds">Reply IL:0|1 — at soft-limit position.</td></tr>
-<tr><td class="sh">IE</td><td class="ln">IsError</td><td class="ds">Reply IE:0|1 — PIN_DRV_ERROR / EMO latched.</td></tr>
-<tr><td class="sh">IP</td><td class="ln">IsPosition</td><td class="ds">Reply IP:&lt;mm&gt; — current planner position.</td></tr>
-<tr><td class="sh">IT</td><td class="ln">IsTarget</td><td class="ds">Reply IT:&lt;mm&gt;|- — seek target, or - if none.</td></tr>
-<tr><td class="sh">IR</td><td class="ln">IsReady</td><td class="ds">Reply IR:1 only if idle, not homing, enabled, and not waiting.</td></tr>
-<tr><td class="sh">IW</td><td class="ln">IsWaiting</td><td class="ds">Reply IW:1 if any W / WM / WH wait is active.</td></tr>
-<tr><td class="sh">ID</td><td class="ln">IsDiag</td><td class="ds">Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level.</td></tr>
-<tr><td class="sh">IZ</td><td class="ln">IsReset</td><td class="ds">Reply last chip reset cause (power|wdt|run|soft|debug|brownout|…).</td></tr>
-<tr><td class="sh">IX</td><td class="ln">Pinout</td><td class="ds">ASCII table: GP number, pin name, brief description (≤80 cols).</td></tr>
+<tr><td class="sh">IM</td><td class="ln">IsMoving</td><td class="ds">Moving or settling on any active axis.</td></tr>
+<tr><td class="sh">IH</td><td class="ln">IsHoming</td><td class="ds">Homing cycle active.</td></tr>
+<tr><td class="sh">IL</td><td class="ln">IsLimit</td><td class="ds">At soft-limit position (axis1).</td></tr>
+<tr><td class="sh">IE</td><td class="ln">IsError</td><td class="ds">PIN_DRV_ERROR / EMO latched.</td></tr>
+<tr><td class="sh">IP</td><td class="ln">IsPosition</td><td class="ds">Axis-1 position; second field when axis2_use=1.</td></tr>
+<tr><td class="sh">IA</td><td class="ln">IsAxis</td><td class="ds">Active axis count (config_axis2_enabled).</td></tr>
+<tr><td class="sh">IT</td><td class="ln">IsTarget</td><td class="ds">Axis-1 seek target, or - if none / soft-stop.</td></tr>
+<tr><td class="sh">IR</td><td class="ln">IsReady</td><td class="ds">1 only if idle, not homing, enabled, and not waiting.</td></tr>
+<tr><td class="sh">IW</td><td class="ln">IsWaiting</td><td class="ds">1 if any W / WM / WH wait is active.</td></tr>
+<tr><td class="sh">ID</td><td class="ln">IsDiag</td><td class="ds">Motion diag counters (FIFO underrun, peak STEP Hz, …).</td></tr>
+<tr><td class="sh">IZ</td><td class="ln">IsReset</td><td class="ds">Last chip reset: power|wdt|run|soft|debug|brownout|…</td></tr>
+<tr><td class="sh">IX</td><td class="ln">Pinout</td><td class="ds">ASCII GP / name / desc (≤80 cols). Axis-2 rows only if axis2 on.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>M — Movement</h2>
@@ -183,12 +184,24 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">MT</td><td class="ln">MoveTo</td><td class="ds">Move to absolute mm; needs enable; live-retargets an active move.</td></tr>
-<tr><td class="sh">M</td><td class="ln">Move</td><td class="ds">Relative move by mm (alias MoveBy); needs enable; live-retargets.</td></tr>
-<tr><td class="sh">ML</td><td class="ln">MoveLeft</td><td class="ds">Continuous jog negative; soft-stop with MS or !.</td></tr>
-<tr><td class="sh">MR</td><td class="ln">MoveRight</td><td class="ds">Continuous jog positive; soft-stop with MS or !.</td></tr>
-<tr><td class="sh">MH</td><td class="ln">MoveHome</td><td class="ds">Homing cycle (home_mode); no-op if 0; needs SE 1; cancel with MS/H.</td></tr>
-<tr><td class="sh">MS</td><td class="ln">MoveStop</td><td class="ds">Soft decelerate to stop; keeps enable; does not cancel waits.</td></tr>
+<tr><td class="sh">MT</td><td class="ln">MoveTo</td><td class="ds">Absolute user units; optional 2nd axis; skip none/N/_/*; needs SE; live-retarget. Dual: time-sync ratio.</td></tr>
+<tr><td class="sh">M</td><td class="ln">Move</td><td class="ds">Relative move (alias MoveBy); same dual/skip rules as MT.</td></tr>
+<tr><td class="sh">ML</td><td class="ln">MoveLeft</td><td class="ds">Jog −; mask 0=both, 1=axis1, 2=axis2 when axis2 on; soft-stop MS/!.</td></tr>
+<tr><td class="sh">MR</td><td class="ln">MoveRight</td><td class="ds">Jog +; mask same as ML; soft-stop MS/!.</td></tr>
+<tr><td class="sh">MH</td><td class="ln">MoveHome</td><td class="ds">Homing; axis 1 (default) or 2; no-op if home_mode=0; cancel MS/H.</td></tr>
+<tr><td class="sh">MS</td><td class="ln">MoveStop</td><td class="ds">Soft decelerate both axes; keeps enable; does not cancel waits. Dual: scaled accel kept.</td></tr>
+</tbody></table></section>
+<section class="group">
+<h2>P — Path</h2>
+<table>
+<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
+<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td class="sh">PC</td><td class="ln">PathClear</td><td class="ds">Clear path buffer (count→0); !E:busy while PG active.</td></tr>
+<tr><td class="sh">PD</td><td class="ln">PathData</td><td class="ds">Append signed µm sample(s); optional axis2; skip→0; OK while PG (live stream).</td></tr>
+<tr><td class="sh">PG</td><td class="ln">PathGo</td><td class="ds">Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/H ends path.</td></tr>
+<tr><td class="sh">PN</td><td class="ln">PathNumber</td><td class="ds">Samples in buffer; allowed during PG.</td></tr>
+<tr><td class="sh">PS</td><td class="ln">PathSlice</td><td class="ds">Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.</td></tr>
 </tbody></table></section>
 </div>
 <div class="col">
@@ -198,7 +211,7 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">X0–9</td><td class="ln">Ext0–9</td><td class="ds">Ext out n logical 0|1; bare toggles; glued X00≡X0 0; ok during EMO.</td></tr>
+<tr><td class="sh">X0–3</td><td class="ln">Ext0–3</td><td class="ds">Ext out n logical 0|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>C — Config</h2>
@@ -206,8 +219,10 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">CS</td><td class="ln">ConfigSet</td><td class="ds">Set persistent key value (mc.ini); silent ok; updates session init_speed/init_accel/…</td></tr>
-<tr><td class="sh">CG</td><td class="ln">ConfigGet</td><td class="ds">Get key → CG:key=value; bare dumps all keys.</td></tr>
+<tr><td class="sh">CS</td><td class="ln">ConfigSet</td><td class="ds">Persist key to mc.ini; silent ok. axis2_use / WDT_use need RB to take HW effect.</td></tr>
+<tr><td class="sh">CR</td><td class="ln">ConfigReset</td><td class="ds">Reset all config to compiled defaults and save mc.ini.</td></tr>
+<tr><td class="sh">CG</td><td class="ln">ConfigGet</td><td class="ds">One key, or bare dumps all keys (multi-line).</td></tr>
+<tr><td class="sh">RB</td><td class="ln">Reboot</td><td class="ds">Soft MCU reset (no power cycle); EN off first. After CS axis2_use.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>W — Wait</h2>
@@ -215,9 +230,9 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">W</td><td class="ln">Wait</td><td class="ds">Delay sec then continue ; chain; bare → 1 s; never !E:timeout.</td></tr>
-<tr><td class="sh">WM</td><td class="ln">WaitMoving</td><td class="ds">Pause chain until move ends; optional timeout cancels remaining chain.</td></tr>
-<tr><td class="sh">WH</td><td class="ln">WaitHoming</td><td class="ds">Pause chain until homing ends; optional timeout cancels remaining chain.</td></tr>
+<tr><td class="sh">W</td><td class="ln">Wait</td><td class="ds">Delay then continue ; chain; bare→1 s; never !E:timeout.</td></tr>
+<tr><td class="sh">WM</td><td class="ln">WaitMoving</td><td class="ds">Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.</td></tr>
+<tr><td class="sh">WH</td><td class="ln">WaitHoming</td><td class="ds">Pause until homing ends; timeout same as WM.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>V — Version</h2>
@@ -225,9 +240,9 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">VA</td><td class="ln">VersionAbout</td><td class="ds">Reply VA: about string (name, version, author).</td></tr>
-<tr><td class="sh">VF</td><td class="ln">VersionFW</td><td class="ds">Reply VF:&lt;version&gt; — firmware version.</td></tr>
-<tr><td class="sh">VP</td><td class="ln">VersionProtocol</td><td class="ds">Reply VP:&lt;n&gt; — protocol version.</td></tr>
+<tr><td class="sh">VA</td><td class="ln">VersionAbout</td><td class="ds">About string (name, version, author).</td></tr>
+<tr><td class="sh">VF</td><td class="ln">VersionFW</td><td class="ds">Firmware version.</td></tr>
+<tr><td class="sh">VP</td><td class="ln">VersionProtocol</td><td class="ds">Protocol version.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>Special</h2>
@@ -236,14 +251,14 @@ code {
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">H/HT</td><td class="ln">Halt</td><td class="ds">Immediate STEP abort; enable off; cancel waits and remaining ; chain.</td></tr>
-<tr><td class="sh">P</td><td class="ln">Pins</td><td class="ds">List PIN_*=GPIO lines (machine-readable, read-only).</td></tr>
+<tr><td class="sh">P</td><td class="ln">Pins</td><td class="ds">Machine-readable pin map (alias VersionGPIO). Axis-2 pins if axis2 on.</td></tr>
 <tr><td class="sh">$/HL</td><td class="ln">Help</td><td class="ds">ASCII table of all commands (≤80 columns).</td></tr>
 </tbody></table></section>
 </div></div>
 <footer>
 <div class="row"><strong>Wire:</strong> one command per line (<code>\n</code>); chain with <code>;</code>; <code>#</code> comment to EOL (comment-only lines ignored); bare bool setters toggle; motion/settings silent on success; errors <code>!E:code message</code>.</div>
 <div class="row"><strong>Realtime</strong> (no newline): <code>?</code> status · <code>!</code> soft stop · <code>Ctrl-X</code> (0x18) soft reset.</div>
-<div class="row"><strong>Status</strong> (<code>#X …</code>): <code>I</code> idle · <code>A</code> accel · <code>M</code> cruise · <code>B</code> decel · <code>H</code> homing · <code>L</code> hard-limit · <code>D</code> disabled · <code>E</code> error. Moving: <code>#M/#A/#B pos speed accel [target]</code>.</div>
+<div class="row"><strong>Status</strong> (<code>#X …</code>): <code>I</code> idle · <code>A</code> accel · <code>M</code> cruise · <code>B</code> decel · <code>H</code> homing · <code>P</code> path · <code>L</code> hard-limit · <code>D</code> disabled · <code>E</code> error. Moving: <code>#M/#A/#B pos speed accel [target]</code>.</div>
 <div class="row"><strong>Halt vs Stop:</strong> <code>MS</code>/<code>!</code> soft decel (enable kept); <code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits.</div>
 </footer>
 </div></body></html>

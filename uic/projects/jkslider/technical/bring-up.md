@@ -162,7 +162,7 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 - [ ] **Motor steps per turn** — usual NEMA17 = `200` (1.8°).
 - [ ] **Microstepping** — must match the **driver DIP / MS straps / SPI config**. Project default is often **8**.
 - [ ] **Travel per motor revolution (mm)** — leadscrew pitch or belt pitch × pulley teeth.
-- [ ] Confirm: `steps_per_mm = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV`  
+- [ ] Confirm: `steps_per_unit = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV`  
   Example: 200 × 8 ÷ 5 → **320 steps/mm**.
 
 ### B. How far the carriage may travel

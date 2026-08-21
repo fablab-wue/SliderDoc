@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Render SliderMC Command Cheat Sheet (DIN A4 HTML + optional PDF).
+"""Render SliderMC Command Cheat Sheet (DIN A4 HTML + Markdown + optional PDF).
 
 Command rows mirror firmware k_help_rows in src/protocol/commands.cpp.
 Canonical command prose: contract/protocol.md — keep GROUPS descriptions in sync.
 Regenerate after editing protocol tables: python tools/render_command_cheatsheet.py
+
+Each row: (short, long, call, reply, desc)
+  call/reply appear in the Markdown reference; HTML print sheet uses short/long/desc.
 """
 
 from __future__ import annotations
@@ -16,117 +19,315 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_OUT = ROOT / "contract" / "command-cheatsheet.html"
+MD_OUT = ROOT / "contract" / "command-cheatsheet.md"
 PDF_OUT = ROOT / "contract" / "command-cheatsheet.pdf"
 FW_VERSION = "1.0"
 
-# (group_title, [(short, long, desc), ...])
-# Descriptions are shared with PROTOCOL.md command tables.
+SILENT = "—"
+
+# (group_title, [(short, long, call, reply, desc), ...])
 GROUPS = [
     (
         "S — Set (session)",
         [
-            ("SS", "SetSpeed",
-             "Set cruise speed mm/s (≤ max_speed); bare reloads init_speed; applies live to the next fill."),
-            ("SA", "SetAccel",
-             "Set accel mm/s² (≤ max_accel); bare reloads init_accel; applies live to the next fill."),
-            ("SE", "SetEnable",
-             "Driver enable 0|1; bare toggles; required before motion; off stops hard."),
-            ("ST", "SetTerminal",
-             "Terminal Mode 0|1; bare toggles; local echo + UART command sniff to USB."),
-            ("SV", "SetVerbose",
-             "Verbose status push 0|1; bare toggles; ~3 Hz #M/#I lines when on."),
-            ("SD", "SetDebug",
-             "USB-only debug level 0..5; bare restores default; never sent on UIC UART."),
+            (
+                "SS",
+                "SetSpeed",
+                "SS [<v>]",
+                SILENT,
+                "Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill. Dual MT: axis1=session, axis2×ratio.",
+            ),
+            (
+                "SA",
+                "SetAccel",
+                "SA [<a>]",
+                SILENT,
+                "Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill. Dual MT: same ratio scaling as SS.",
+            ),
+            (
+                "SE",
+                "SetEnable",
+                "SE [0|1]",
+                SILENT,
+                "Driver enable 0|1; bare toggles; required before motion; off = hard stop.",
+            ),
+            (
+                "ST",
+                "SetTerminal",
+                "ST [0|1]",
+                SILENT,
+                "Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).",
+            ),
+            (
+                "SV",
+                "SetVerbose",
+                "SV [0|1]",
+                SILENT,
+                "Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).",
+            ),
+            (
+                "SD",
+                "SetDebug",
+                "SD [0..5]",
+                SILENT,
+                "USB-only debug level 0..5; bare restores default; never on UIC UART.",
+            ),
         ],
     ),
     (
         "G — Get (session)",
         [
-            ("GS", "GetSpeed", "Reply GS:<mm/s> — current session cruise speed."),
-            ("GA", "GetAccel", "Reply GA:<mm/s2> — current session acceleration."),
-            ("GE", "GetEnable", "Reply GE:0|1 — driver enable state."),
-            ("GT", "GetTerminal", "Reply GT:0|1 — Terminal Mode state."),
-            ("GV", "GetVerbose", "Reply GV:0|1 — verbose push state."),
-            ("GD", "GetDebug", "Reply GD:<0..5> — USB debug level."),
+            ("GS", "GetSpeed", "GS", "GS:<mm/s>", "Current session cruise speed."),
+            ("GA", "GetAccel", "GA", "GA:<mm/s2>", "Current session acceleration."),
+            ("GE", "GetEnable", "GE", "GE:0|1", "Driver enable state."),
+            ("GT", "GetTerminal", "GT", "GT:0|1", "Terminal Mode state."),
+            ("GV", "GetVerbose", "GV", "GV:0|1", "Verbose push state."),
+            ("GD", "GetDebug", "GD", "GD:<0..5>", "USB debug level."),
         ],
     ),
     (
         "I — Is / status",
         [
-            ("IM", "IsMoving", "Reply IM:0|1 — axis currently moving (or settling)."),
-            ("IH", "IsHoming", "Reply IH:0|1 — homing cycle active."),
-            ("IL", "IsLimit", "Reply IL:0|1 — at soft-limit position."),
-            ("IE", "IsError", "Reply IE:0|1 — PIN_DRV_ERROR / EMO latched."),
-            ("IP", "IsPosition", "Reply IP:<mm> — current planner position."),
-            ("IT", "IsTarget", "Reply IT:<mm>|- — seek target, or - if none."),
-            ("IR", "IsReady",
-             "Reply IR:1 only if idle, not homing, enabled, and not waiting."),
-            ("IW", "IsWaiting", "Reply IW:1 if any W / WM / WH wait is active."),
-            ("ID", "IsDiag",
-             "Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level."),
-            ("IZ", "IsReset",
-             "Reply last chip reset cause (power|wdt|run|soft|debug|brownout|…)."),
-            ("IX", "Pinout",
-             "ASCII table: GP number, pin name, brief description (≤80 cols)."),
+            ("IM", "IsMoving", "IM", "IM:0|1", "Moving or settling on any active axis."),
+            ("IH", "IsHoming", "IH", "IH:0|1", "Homing cycle active."),
+            ("IL", "IsLimit", "IL", "IL:0|1", "At soft-limit position (axis1)."),
+            ("IE", "IsError", "IE", "IE:0|1", "PIN_DRV_ERROR / EMO latched."),
+            (
+                "IP",
+                "IsPosition",
+                "IP",
+                "IP:<pos> [<pos2>]",
+                "Axis-1 position; second field when axis2_use=1.",
+            ),
+            ("IA", "IsAxis", "IA", "IA:1|2", "Active axis count (config_axis2_enabled)."),
+            (
+                "IT",
+                "IsTarget",
+                "IT",
+                "IT:<pos>|-",
+                "Axis-1 seek target, or - if none / soft-stop.",
+            ),
+            (
+                "IR",
+                "IsReady",
+                "IR",
+                "IR:0|1",
+                "1 only if idle, not homing, enabled, and not waiting.",
+            ),
+            ("IW", "IsWaiting", "IW", "IW:0|1", "1 if any W / WM / WH wait is active."),
+            (
+                "ID",
+                "IsDiag",
+                "ID",
+                "ID:underrun=N peak_hz=… overshoot=… fifo_min=…",
+                "Motion diag counters (FIFO underrun, peak STEP Hz, …).",
+            ),
+            (
+                "IZ",
+                "IsReset",
+                "IZ",
+                "IZ:<reason>",
+                "Last chip reset: power|wdt|run|soft|debug|brownout|…",
+            ),
+            (
+                "IX",
+                "Pinout",
+                "IX",
+                "(multi-line table)",
+                "ASCII GP / name / desc (≤80 cols). Axis-2 rows only if axis2 on.",
+            ),
         ],
     ),
     (
         "M — Movement",
         [
-            ("MT", "MoveTo",
-             "Move to absolute mm; needs enable; live-retargets an active move."),
-            ("M", "Move",
-             "Relative move by mm (alias MoveBy); needs enable; live-retargets."),
-            ("ML", "MoveLeft", "Continuous jog negative; soft-stop with MS or !."),
-            ("MR", "MoveRight", "Continuous jog positive; soft-stop with MS or !."),
-            ("MH", "MoveHome",
-             "Homing cycle (home_mode); no-op if 0; needs SE 1; cancel with MS/H."),
-            ("MS", "MoveStop",
-             "Soft decelerate to stop; keeps enable; does not cancel waits."),
+            (
+                "MT",
+                "MoveTo",
+                "MT <pos> [<pos2>]",
+                SILENT,
+                "Absolute user units; optional 2nd axis; skip none/N/_/*; needs SE; live-retarget. Dual: time-sync ratio.",
+            ),
+            (
+                "M",
+                "Move",
+                "M <delta> [<delta2>]",
+                SILENT,
+                "Relative move (alias MoveBy); same dual/skip rules as MT.",
+            ),
+            (
+                "ML",
+                "MoveLeft",
+                "ML [0|1|2]",
+                SILENT,
+                "Jog −; mask 0=both, 1=axis1, 2=axis2 when axis2 on; soft-stop MS/!.",
+            ),
+            (
+                "MR",
+                "MoveRight",
+                "MR [0|1|2]",
+                SILENT,
+                "Jog +; mask same as ML; soft-stop MS/!.",
+            ),
+            (
+                "MH",
+                "MoveHome",
+                "MH [1|2]",
+                SILENT,
+                "Homing; axis 1 (default) or 2; no-op if home_mode=0; cancel MS/H.",
+            ),
+            (
+                "MS",
+                "MoveStop",
+                "MS",
+                SILENT,
+                "Soft decelerate both axes; keeps enable; does not cancel waits. Dual: scaled accel kept.",
+            ),
+        ],
+    ),
+    (
+        "P — Path",
+        [
+            (
+                "PC",
+                "PathClear",
+                "PC",
+                SILENT,
+                "Clear path buffer (count→0); !E:busy while PG active.",
+            ),
+            (
+                "PD",
+                "PathData",
+                "PD <um> [<um2>]",
+                SILENT,
+                "Append signed µm sample(s); optional axis2; skip→0; OK while PG (live stream).",
+            ),
+            (
+                "PG",
+                "PathGo",
+                "PG",
+                SILENT,
+                "Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/H ends path.",
+            ),
+            (
+                "PN",
+                "PathNumber",
+                "PN",
+                "PN:<count>",
+                "Samples in buffer; allowed during PG.",
+            ),
+            (
+                "PS",
+                "PathSlice",
+                "PS [<us>]",
+                SILENT,
+                "Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.",
+            ),
         ],
     ),
     (
         "X — Extender",
         [
-            ("X0–9", "Ext0–9",
-             "Ext out n logical 0|1; bare toggles; glued X00≡X0 0; ok during EMO."),
+            (
+                "X0–3",
+                "Ext0–3",
+                "Xn [0|1]",
+                SILENT,
+                "Ext out n logical 0|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected.",
+            ),
         ],
     ),
     (
         "C — Config",
         [
-            ("CS", "ConfigSet",
-             "Set persistent key value (mc.ini); silent ok; updates session init_speed/init_accel/…"),
-            ("CG", "ConfigGet",
-             "Get key → CG:key=value; bare dumps all keys."),
+            (
+                "CS",
+                "ConfigSet",
+                "CS <key> <value>",
+                SILENT,
+                "Persist key to mc.ini; silent ok. axis2_use / WDT_use need RB to take HW effect.",
+            ),
+            (
+                "CR",
+                "ConfigReset",
+                "CR",
+                SILENT,
+                "Reset all config to compiled defaults and save mc.ini.",
+            ),
+            (
+                "CG",
+                "ConfigGet",
+                "CG [<key>]",
+                "CG:<key>=<value>",
+                "One key, or bare dumps all keys (multi-line).",
+            ),
+            (
+                "RB",
+                "Reboot",
+                "RB",
+                SILENT,
+                "Soft MCU reset (no power cycle); EN off first. After CS axis2_use.",
+            ),
         ],
     ),
     (
         "W — Wait",
         [
-            ("W", "Wait",
-             "Delay sec then continue ; chain; bare → 1 s; never !E:timeout."),
-            ("WM", "WaitMoving",
-             "Pause chain until move ends; optional timeout cancels remaining chain."),
-            ("WH", "WaitHoming",
-             "Pause chain until homing ends; optional timeout cancels remaining chain."),
+            (
+                "W",
+                "Wait",
+                "W [<sec>]",
+                SILENT,
+                "Delay then continue ; chain; bare→1 s; never !E:timeout.",
+            ),
+            (
+                "WM",
+                "WaitMoving",
+                "WM [<timeout_s>]",
+                SILENT,
+                "Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.",
+            ),
+            (
+                "WH",
+                "WaitHoming",
+                "WH [<timeout_s>]",
+                SILENT,
+                "Pause until homing ends; timeout same as WM.",
+            ),
         ],
     ),
     (
         "V — Version",
         [
-            ("VA", "VersionAbout", "Reply VA: about string (name, version, author)."),
-            ("VF", "VersionFW", "Reply VF:<version> — firmware version."),
-            ("VP", "VersionProtocol", "Reply VP:<n> — protocol version."),
+            ("VA", "VersionAbout", "VA", "VA:…", "About string (name, version, author)."),
+            ("VF", "VersionFW", "VF", "VF:<version>", "Firmware version."),
+            ("VP", "VersionProtocol", "VP", "VP:<n>", "Protocol version."),
         ],
     ),
     (
         "Special",
         [
-            ("H/HT", "Halt",
-             "Immediate STEP abort; enable off; cancel waits and remaining ; chain."),
-            ("P", "Pins", "List PIN_*=GPIO lines (machine-readable, read-only)."),
-            ("$/HL", "Help", "ASCII table of all commands (≤80 columns)."),
+            (
+                "H/HT",
+                "Halt",
+                "H | HT",
+                SILENT,
+                "Immediate STEP abort; enable off; cancel waits and remaining ; chain.",
+            ),
+            (
+                "P",
+                "Pins",
+                "VG | P",
+                "VG:PIN_*=n (multi-line)",
+                "Machine-readable pin map (alias VersionGPIO). Axis-2 pins if axis2 on.",
+            ),
+            (
+                "$/HL",
+                "Help",
+                "$ | HL | Help",
+                "(multi-line table)",
+                "ASCII table of all commands (≤80 columns).",
+            ),
         ],
     ),
 ]
@@ -254,9 +455,8 @@ code {
 }
 """
 
-# Split groups across two fixed columns so footer stays on page 1.
-# Left: S, G, I, M   Right: X, C, W, V, Special
-COL_SPLIT = 4
+# Left: S, G, I, M, Path   Right: X, C, W, V, Special
+COL_SPLIT = 5
 
 
 def build_html() -> str:
@@ -289,7 +489,7 @@ def build_html() -> str:
             "<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>"
         )
         parts.append("<tbody>")
-        for sh, lng, desc in rows:
+        for sh, lng, _call, _reply, desc in rows:
             parts.append(
                 "<tr>"
                 f'<td class="sh">{html.escape(sh)}</td>'
@@ -325,7 +525,7 @@ def build_html() -> str:
     parts.append(
         '<div class="row"><strong>Status</strong> (<code>#X …</code>): '
         "<code>I</code> idle · <code>A</code> accel · <code>M</code> cruise · "
-        "<code>B</code> decel · <code>H</code> homing · "
+        "<code>B</code> decel · <code>H</code> homing · <code>P</code> path · "
         "<code>L</code> hard-limit · <code>D</code> disabled · <code>E</code> error. "
         "Moving: <code>#M/#A/#B pos speed accel [target]</code>.</div>"
     )
@@ -337,6 +537,50 @@ def build_html() -> str:
     parts.append("</footer>")
     parts.append("</div></body></html>")
     return "\n".join(parts)
+
+
+def _md_cell(s: str) -> str:
+    """Escape pipes for markdown tables."""
+    return s.replace("|", "\\|")
+
+
+def build_markdown() -> str:
+    lines = [
+        "# SliderMC Command Cheat Sheet",
+        "",
+        f"Firmware V{FW_VERSION}. Same groups as the [printable sheet](command-cheatsheet.html).",
+        "Canonical prose: [protocol.md](protocol.md). Dual-axis timing: [dual-movement.md](../mc/dual-movement.md).",
+        "",
+        "Regenerate: `python tools/render_command_cheatsheet.py`",
+        "",
+        "- **Call** — send this (brackets = optional; bare = omit args).",
+        "- **Reply** — typical success line; `—` = silent (errors still `!E:…`).",
+        "",
+    ]
+    for title, rows in GROUPS:
+        lines.append(f"## {title}")
+        lines.append("")
+        lines.append("| Short | Long | Call | Reply | Description |")
+        lines.append("|-------|------|------|-------|-------------|")
+        for sh, lng, call, reply, desc in rows:
+            lines.append(
+                f"| `{_md_cell(sh)}` | `{_md_cell(lng)}` | `{_md_cell(call)}` | "
+                f"`{_md_cell(reply)}` | {_md_cell(desc)} |"
+            )
+        lines.append("")
+    lines.append("## Notes")
+    lines.append("")
+    lines.append(
+        "- Chain with `;`. Realtime (no newline): `?` status, `!` soft stop, `Ctrl-X` soft reset."
+    )
+    lines.append(
+        "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`."
+    )
+    lines.append(
+        "- Soft limits / units: see config keys `slider_min`/`max`, `steps_per_unit`, `unit_name`."
+    )
+    lines.append("")
+    return "\n".join(lines)
 
 
 def find_browser() -> list[str] | None:
@@ -389,6 +633,10 @@ def main() -> int:
     html_text = build_html()
     HTML_OUT.write_text(html_text, encoding="utf-8")
     print(f"Wrote {HTML_OUT}")
+
+    md_text = build_markdown()
+    MD_OUT.write_text(md_text, encoding="utf-8")
+    print(f"Wrote {MD_OUT}")
 
     if export_pdf(HTML_OUT, PDF_OUT):
         print(f"Wrote {PDF_OUT}")

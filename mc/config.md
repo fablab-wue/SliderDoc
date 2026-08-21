@@ -42,13 +42,16 @@ Default is **3**.
 | `init_accel` | float mm/s² | 200 | Peak sine-ramp acceleration init; must be ≤ `max_accel` |
 | `max_speed` | float mm/s | 100 | Speed ceiling (`SS` rejects above; planner also caps cruise) |
 | `max_accel` | float mm/s² | 300 | Accel ceiling (`SA` rejects above) |
-| `steps_per_mm` | float | 320 | Mechanics scaling |
-| `slider_min` | float mm or `none` | 0 | Soft limit min (`none` / `-` disables) |
-| `slider_max` | float mm or `none` | 600 | Soft limit max |
+| `steps_per_unit` | float | 320 | Steps per user unit (mm, deg, …); legacy alias `steps_per_mm` |
+| `unit_name` | string | `mm` | UIC unit label (max 7 printable ASCII chars; no `#`) |
+| `slider_min` | float units or `none` | 0 | Soft limit min (`none` / `-` disables) |
+| `slider_max` | float units or `none` | 600 | Soft limit max |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
 | `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](PROTOCOL.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
 | `WDT_use` | 0/1 | 1 | `1` = arm RP2040 WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
+| `axis2_use` | 0/1 | 0 | `1` = enable 2nd STEP/DIR axis (Pico / Pico W / RP2040-Zero) |
+| `name` | string | *(empty)* | Optional device name in welcome banner (max 31 printable ASCII chars; no `#`) |
 | `DRV_STEP_active` | 0/1 | 1 | STEP active level (PIO program) |
 | `DRV_DIR_active` | 0/1 | 1 | `1` = DIR high means +mm |
 | `DRV_EN_active` | 0/1 | 0 | EN active level (`0` = low-active) |
@@ -59,15 +62,23 @@ Default is **3**.
 | `SW_LIMIT_R_active` | 0/1 | 0 | Right hard-limit active level |
 | `SW_LIMIT_L_use` | 0/1 | 0 | `1` = enable left hard limit on `PIN_SW_LIMIT_L` |
 | `SW_LIMIT_R_use` | 0/1 | 0 | `1` = enable right hard limit on `PIN_SW_LIMIT_R` |
-| `EXT_0_active` … `EXT_9_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default) |
+| `EXT_0_active` … `EXT_3_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default); four extenders (`X0`…`X3`) |
 | `home_mode` | 0..4 | 0 | Homing reference mode (see below) |
 | `home_move_out` | float mm | 3 | Extra travel after leaving reference switch |
 | `home_speed` | float mm/s | 25 | Cruise speed during homing |
 | `home_accel` | float mm/s² | 20 | Acceleration during homing |
+| `steps_per_unit_2` | float | *(same default as axis1)* | Axis-2 steps per user unit (alias `steps_per_mm_2`) |
+| `slider_min_2` | float mm or `none` | *(mirror)* | Axis-2 soft min |
+| `slider_max_2` | float mm or `none` | *(mirror)* | Axis-2 soft max |
+| `DRV_STEP_active_2` … `DRV_ERROR_active_2` | 0/1 | *(mirror)* | Axis-2 driver pin polarities |
+| `SW_HOME_active_2` / `SW_HOME_use_2` | 0/1 | *(mirror)* | Axis-2 home switch |
+| `SW_LIMIT_*_active_2` / `SW_LIMIT_*_use_2` | 0/1 | *(mirror)* | Axis-2 hard limits |
+| `home_mode_2` | 0..4 | 0 | Axis-2 homing mode |
+| `home_move_out_2` / `home_speed_2` / `home_accel_2` | float | *(mirror)* | Axis-2 homing parameters |
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
 | `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
-| `path_buffer_size` | int | 64000 | `PD` sample capacity (1..65536); see [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path) |
+| `path_buffer_size` | int | 32000 | `PD` sample capacity per axis (1..32768); dual buffers when axis2 on; see [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path) |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); session field set via `PS`; bare `PS` reloads this |
 
 ### Pin active levels
@@ -94,7 +105,7 @@ On a stable assert: **immediate** stop (PIO FIFO cleared, no decelerate), driver
 
 Until the first `\n` (UIC UART or USB CDC) and banner, the LED uses the **WAIT** pattern. After `board_heartbeat_ready()`, patterns follow `McState` (same source as verbose/`?`), priority: ERROR → HARD_LIMIT → HOMING → MOVING → DISABLED → IDLE → HOLD/other.
 
-`CS WDT_use=0` updates RAM/`mc.ini`, but **disabling takes effect only after reboot** (the hardware WDT cannot be cleanly turned off once armed; while armed, the heartbeat keeps feeding it). Enabling via `CS` also applies after the next boot.
+`CS WDT_use=0` updates RAM/`mc.ini`, but **disabling takes effect only after reboot** (the hardware WDT cannot be cleanly turned off once armed; while armed, the heartbeat keeps feeding it). Enabling via `CS` also applies after the next boot (`RB` / power-cycle).
 
 #### LED timing (counter beats, `#`=ON `.`=OFF)
 
@@ -142,7 +153,13 @@ HOLD/else (c&0x30)==0     duty 16/64   ~1 Hz longer still
 | `3` | `PIN_SW_LIMIT_L` as reference (needs `SW_LIMIT_L_use=1`) |
 | `4` | `PIN_SW_LIMIT_R` as reference (needs `SW_LIMIT_R_use=1`) |
 
-`MH` / `MoveHome` requires `SE 1`. Cycle: optional drive-out of an existing hard limit → seek toward reference at `home_speed` / `home_accel` → reverse off the switch plus `home_move_out` → set position to `slider_min` (modes 1/3) or `slider_max` (2/4). Seek is capped at 110% of `(slider_max − slider_min)`. Abort: `MS`/`Halt` (silent), `!E:home travel`, or `!E:home hard` (modes 1/2). See [MOTION.md](MOTION.md).
+`MH` / `MoveHome` requires `SE 1`. Optional axis arg `1` (default) or `2` when `axis2_use=1`. Cycle: optional drive-out of an existing hard limit → seek toward reference at `home_speed` / `home_accel` → reverse off the switch plus `home_move_out` → set position to `slider_min` (modes 1/3) or `slider_max` (2/4). Seek is capped at 110% of `(slider_max − slider_min)`. Abort: `MS`/`Halt` (silent), `!E:home travel`, or `!E:home hard` (modes 1/2). See [MOTION.md](MOTION.md).
+
+### Optional 2nd axis (`axis2_use`)
+
+`axis2_use=1` enables a second independent STEP/DIR planner axis on **Pico / Pico W / RP2040-Zero**. Session cruise/accel (`SS`/`SA`) are shared; mechanics, soft limits, pin polarities, and homing use the `*_2` keys. Query `IA` / `Axis` / `IsAxis` → `IA:2`. Welcome banner gains `- 2 Axis`. Position query `IP` returns two mm values. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md).
+
+`CS axis2_use` updates RAM/`mc.ini` immediately (`IA` / banner reflect the new value), but **PIO state machines and axis-2 GPIO take effect only after reboot** (`RB` / `Reboot`, or power-cycle). Dual `MT` before reboot can show targets while `pos2` stays at 0. Same pattern as `WDT_use` (see above).
 
 ## Persistence
 

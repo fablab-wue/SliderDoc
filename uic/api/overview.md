@@ -62,6 +62,8 @@ await mc.wait()
 
 Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 1 000 000 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
 
+**Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `axis2_use=1` then reboot. `mc.axis_count` / `getAxisCount()` come from CG `axis2_use` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Shipping JKSlider / B4Slider keep `set_status_callback` (axis 1). Custom 2-axis UIs use `set_status2_callback` and optional `pos2`. Wire: [protocol.md — Optional 2nd axis](../../contract/protocol.md#optional-2nd-axis-axis2_use).
+
 Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `M`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, …; status `#…`; errors `!E:`; replies `TAG:value`).
 
 ```python
@@ -73,14 +75,24 @@ mc.setSpeed(40)
 mc.enable(True)
 mc.moveTo(100)
 await mc.wait()
+# 2-axis example (axis_count == 2):
+# mc.set_status2_callback(on_dual)
+# mc.moveTo(100, 45)                   # MT 100 45  (time-synced)
+# mc.moveTo(None, 45)                  # MT _ 45
+# mc.home(2)
 ```
 
 | Method | Notes |
 |--------|-------|
-| `await start(banner_timeout_s=3.0)` | Sends `\n` every 100 ms until welcome `# …` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG |
-| `await send(command, arg=None, wait_answer=False, timeout_s=1.0)` | Raw MC line; with `wait_answer` returns payload of matching `TAG:…` |
-| `set_status_callback` / `set_error_callback` / `set_answer_callback` | Assignable hooks from the RX task (composition) |
+| `await start(banner_timeout_s=3.0)` | Sends `\n` every 100 ms until welcome `# …` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG. Banner may include a device `name` and/or `- 2 Axis` when SliderMC `axis2_use=1`. |
+| `await send(command, arg=None, arg2=None, wait_answer=False, timeout_s=1.0)` | Raw MC line. 2-axis: `arg is None` with `arg2` set sends skip `_` for axis 1. 1-axis ignores `arg2` and never emits `_`. With `wait_answer` returns the raw `TAG:` payload string (spaces kept). Pass `wait_answer` as a **keyword** — a 3rd positional is `arg2`, not `wait_answer`. |
+| `await query(command, arg=None, arg2=None, timeout_s=1.0)` | `send(..., wait_answer=True)`. `IP` may return `"100 20"` — use `_split_nums(answer)` or `getPosition()` / `getPosition2()` (cache). Do not `float(query("IP"))` in 2-axis mode. |
+| `set_status_callback` | 5-arg: `cb(state, pos, speed, accel, target)` — axis 1. JKSlider / B4Slider / `UIC_Base.on_status`. `None` unregisters. Independent of `set_status2_callback`. |
+| `set_status2_callback` | 9-arg: `cb(state, pos, pos2, speed, speed2, accel, accel2, target, target2)`. Axis-2 fields are `None` on 1-axis HW. `None` unregisters. |
+| `set_error_callback` / `set_answer_callback` | Assignable hooks from the RX task (composition) |
 | `moveTo` / `moveBy` / `move` / `home` / `stop` / `halt` / `wait` | Map to MC motion commands; getters prefer cached `#` status |
+
+Verbose **parse** follows CG `axis2_use` (wire format). Callback **arity** follows which hook you registered, not `axis2_use` — a 1-axis `set_status_callback` stays 5-arg on a 2-axis MC.
 
 `setPosition` is not supported on the MC wire protocol (`NotImplementedError`).
 
@@ -137,10 +149,10 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 
 | Method | Description |
 |--------|-------------|
-| `moveTo(position)` | Absolute move to `position` mm (soft-limit clamped). Live-retargetable. |
-| `moveBy(dist)` | Relative move by `dist` millimetres. Live-retargetable. |
-| `move(speed)` | Continuous velocity mode (mm/s). See below. |
-| `home()` | Home to `SW_HOME`, then set position to `0`. Returns the asyncio task. |
+| `moveTo(position, position2=None)` | Absolute move (mm). 2-axis: `moveTo(pos, pos2)` → `MT pos pos2` (time-synced); `moveTo(None, pos2)` → `MT _ pos2`. 1-axis ignores `position2`. Live-retargetable. |
+| `moveBy(dist, dist2=None)` | Relative move (mm). Same skip/`pos2` rules as `moveTo` (`M`). Live-retargetable. |
+| `move(speed)` | Continuous velocity mode (mm/s). No jog mask — both axes when `axis_count==2`. See below. |
+| `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` → `MH n`. Axis 2 is a no-op if `axis_count==1`. Returns the asyncio task. |
 | `stop()` | Decelerate to standstill using `setAcceleration()`. Non-blocking. |
 | `halt()` | Emergency halt (`H`) — hard abort, enable off. Non-blocking. |
 | `await wait()` | Wait until the current motion finishes. |
@@ -190,12 +202,18 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `isNearSoftLimit()` | `True` within `SOFT_LIMIT_WARN_MM` of a soft limit. |
 | `isAtHardLimit()` | `True` while a hard limit is active outside of homing. |
 | `isDRVErrorActive()` | `True` while the MC `DRV_ERROR` input is held (motion APIs ignored). |
-| `getPosition()` | Current position in mm. |
+| `axis_count` / `getAxisCount()` | `1` or `2` from CG `axis2_use` (default `1` before `fetchConfig`). |
+| `getPosition()` | Axis-1 position (user units, typically mm). |
+| `getPosition2()` | Axis-2 position (0.0 if unknown). |
+| `getSpeed()` | Axis-1 actual speed from verbose cache. |
+| `getSpeed2()` | Axis-2 actual speed from verbose cache. |
+| `getTarget()` | Axis-1 target, or `None` when idle. |
+| `getTarget2()` | Axis-2 target, or `None` when idle. |
 | `setPosition(position_mm)` | Not supported on SliderMC (`NotImplementedError`). |
 
 ### Helpers
 
-Conversion helpers use MC `steps_per_mm` from `mc_config` when present (optional app-side). Soft-limit warn for LED lives on `UIC_Base` after `set_soft_limits`.
+Conversion helpers use MC `steps_per_unit` from `mc_config` when present (optional app-side). Soft-limit warn for LED lives on `UIC_Base` after `set_soft_limits`.
 
 ---
 
@@ -449,7 +467,7 @@ v(\varphi) = v_0 + (v_1 - v_0)\,\frac{1 - \cos\varphi}{2},\quad \varphi: 0 \righ
   (default `DEFAULT_ACCEL_MM_S2`, e.g. 200 mm/s²).
 - Velocity is an S-shaped blend (zero accel at the start and end of each ramp).
 - Leaving standstill toward a faster command snaps the first speed to
-  `RAMP_START_HZ` / `STEPS_PER_MM` (default **1000 Hz**, ~3.1 mm/s @ 320 steps/mm)
+  `RAMP_START_HZ` / `steps_per_unit` (default **1000 Hz**, ~3.1 mm/s @ 320 steps/mm)
   so the first STEP FIFO words are not multi-second crawl pulses. Set
   `RAMP_START_HZ = 0` to disable. Commands slower than that floor keep true crawl.
 - Cruise speed from `setSpeed()` / `setMaxSpeed()` (position moves) or `move(speed)`.
@@ -497,7 +515,7 @@ Useful timing (peak accel \(a\), speed change \(\Delta v\)):
 |-------|--------|-------------------|
 | Minimum usable speed | `MIN_SPEED_MM_S` | **0.006 mm/s** (~21.6 mm/h; matches 26-bit PIO delay floor @ 320 steps/mm) |
 | Maximum step rate | `MAX_STEP_RATE_HZ` | **100 kHz** (5 µs STEP high + 5 µs low) |
-| Maximum speed | `MAX_STEP_RATE_HZ / STEPS_PER_MM` | e.g. **312.5 mm/s** at 320 steps/mm |
+| Maximum speed | `MAX_STEP_RATE_HZ / steps_per_unit` | e.g. **312.5 mm/s** at 320 steps/mm |
 
 - Speeds below `MIN_SPEED_MM_S` are treated as stop / idle (planning and status).
 - `setSpeed()` / `setMaxSpeed()` / `setAcceleration()` clamp to at least `MIN_SPEED_MM_S`.
@@ -574,7 +592,7 @@ Shipped defaults live in `MC_config.py` / `UIC_config.py` / `JKSliderConfig.py`.
 | `PIN_LED_ONBOARD` | `"LED"` | Pico onboard LED (heartbeat) |
 | `DEBUG_LEVEL` | 3 | USB debug verbosity |
 
-Mechanics (`steps_per_mm`), `max_speed` / `max_accel`, and `slider_min` / `slider_max` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, `max_speed`, `max_accel`, `slider_min`, `slider_max`). `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
+Mechanics (`steps_per_unit`), `max_speed` / `max_accel`, `unit_name`, `slider_min` / `slider_max`, and `slider_min_2` / `slider_max_2` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, `axis_count` from `axis2_use`). `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
 
 ### JKSlider panel (`JKSliderConfig.py`)
 
@@ -618,7 +636,7 @@ Copy [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/mai
 | `SW_HOME` | MC | Homing reference (GP22) |
 | `DRV_ERROR` | MC | Driver alarm / E-stop (GP21) |
 | `SW_LIMIT_L` / `SW_LIMIT_R` | MC | Optional hard limits (GP26/27) |
-| `EXT_0`…`EXT_9` | MC | General-purpose outputs |
+| `EXT_0`…`EXT_3` | MC | General-purpose outputs |
 
 Full MC map: [PINS.md](../../mc/pins.md).
 

@@ -2,6 +2,8 @@
 
 Optional MicroPython modules and alternate motion backends.
 
+> Note: the libs are for future UICs - not used yet
+
 | Document | Topic |
 |----------|-------|
 | [mks-servo-rs485.md](mks-servo-rs485.md) | MKS SERVO42/57 RS485 via `MC_MKS_Client` |

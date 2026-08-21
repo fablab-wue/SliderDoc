@@ -15,14 +15,14 @@ Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [pic
 | `DRV_EN` | 20 | `DRV_EN_active` (typical `0` = active-low) |
 | `DRV_ERROR` | **21** | `DRV_ERROR_active` (always polled) |
 
-Mechanics (must match the integrated drive’s microstep/setting) — set on SliderMC as `steps_per_mm` (and related home keys). UIC `UIC_config.py` may keep matching `MICROSTEPS` / `MM_PER_REV` for display helpers only.
+Mechanics (must match the integrated drive’s microstep/setting) — set on SliderMC as `steps_per_unit` (and related home keys). UIC `UIC_config.py` may keep matching `MICROSTEPS` / `MM_PER_REV` for display helpers only.
 
 | Symbol | Default | Role |
 |--------|---------|------|
 | Full steps / rev | 200 | 1.8° motor |
 | Microsteps | 8 | Must match driver straps / menu |
 | mm per rev | 5.0 | Lead / belt pitch × teeth |
-| `steps_per_mm` | 320 | e.g. `(200 × 8) / 5` |
+| `steps_per_unit` | 320 | e.g. `(200 × 8) / 5` |
 
 ### Closed-loop STEP/DIR + alarm → `DRV_ERROR`
 
@@ -45,7 +45,7 @@ Full notes: [Technical Manual — Closed-loop drivers](../uic/projects/jkslider/
 
 ```ini
 # mc.ini
-steps_per_mm=320
+steps_per_unit=320
 DRV_STEP_active=1
 DRV_DIR_active=1
 DRV_EN_active=0
@@ -108,7 +108,7 @@ Calibrate the encoder once per the MKS procedure (shaft free).
 | Menu | Recommended |
 |------|-------------|
 | **Mode** | **`CR_vFOC`** (closed-loop STEP/DIR). Do **not** use `CR_UART` with JKSlider/SliderMC. |
-| **MStep** | Fixed microstep (e.g. **8** or **16**) — must match firmware `steps_per_mm`. |
+| **MStep** | Fixed microstep (e.g. **8** or **16**) — must match firmware `steps_per_unit`. |
 | **En** | **`L`** (low = enabled) to match `DRV_EN_active=0`. Or **Hold** if EN is unused. |
 | **Dir** | **CW** or **CCW** so “+mm” matches the mechanics (or flip `DRV_DIR_active`). |
 | **Protect** | Optional stall/locked-rotor protection. |
@@ -118,11 +118,11 @@ Calibrate the encoder once per the MKS procedure (shaft free).
 #### Config (SliderMC)
 
 ```ini
-steps_per_mm=320
+steps_per_unit=320
 DRV_STEP_active=1
 DRV_DIR_active=1
 DRV_EN_active=0
 DRV_ERROR_active=0
 ```
 
-`steps_per_mm = (200 × MStep) / mm_per_rev`. Enable with `SE 1`, then test small moves (`MT 10`).
+`steps_per_unit = (200 × MStep) / mm_per_rev`. Enable with `SE 1`, then test small moves (`MT 10`).

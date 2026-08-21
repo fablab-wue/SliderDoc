@@ -13,7 +13,7 @@ SliderMC planner & PIO: [MOTION.md](../../../../mc/motion.md) · command list: [
 
 How fast (and how slowly) the carriage can move is set by **three ceilings**. The slowest one wins.
 
-Numbers below assume the default mechanics **320 steps/mm** (`200` full steps × `8` microsteps / `5` mm per rev). If you change `MICROSTEPS` or `MM_PER_REV`, mm/s scales with `STEPS_PER_MM`.
+Numbers below assume the default mechanics **320 steps/mm** (`200` full steps × `8` microsteps / `5` mm per rev). If you change `MICROSTEPS` or `MM_PER_REV`, mm/s scales with `steps_per_unit`.
 
 ### 1. Three ceilings
 
@@ -109,7 +109,7 @@ At high step rates the PIO FIFO packs equal pulses, so a ramp is an approximate 
 
 These plots are from a word-level simulation of the STEP FIFO fill loop (`tools/sim_sine_ramp_fifo.py`): each stair is one packed PIO word (`delay` + `repeat`). X is **planner / real time** when the word is issued. Assumptions: 320 steps/mm, PIO 125 MHz, `STEP_PACK_MIN_HZ = 200`, `RAMP_START_HZ = 1000`, 8 ms FIFO time budget, one queued word per ~200 µs of planner loop.
 
-Leaving standstill snaps the first ramp speed to `RAMP_START_HZ` / `STEPS_PER_MM` (~3.1 mm/s) so the first FIFO words are ~1 ms/pulse instead of ~0.5 s crawl pulses. Each run queues the ramp distance from that floor: \(d = \pi(v^2 - v_{\mathrm{start}}^2)/(4a)\).
+Leaving standstill snaps the first ramp speed to `RAMP_START_HZ` / `steps_per_unit` (~3.1 mm/s) so the first FIFO words are ~1 ms/pulse instead of ~0.5 s crawl pulses. Each run queues the ramp distance from that floor: \(d = \pi(v^2 - v_{\mathrm{start}}^2)/(4a)\).
 
 Regenerate:
 
@@ -265,7 +265,7 @@ Firmware checklist for any of these drivers:
 - [ ] `EN_ACTIVE_LOW = True`
 - [ ] `DIR_POSITIVE_HIGH` flipped if travel direction is wrong
 - [ ] Shared GND; VM from motor PSU only
-- [ ] `steps_per_mm = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV` on **SliderMC**
+- [ ] `steps_per_unit = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV` on **SliderMC**
 
 ### Closed-loop drivers and stall / alarm → DRV_ERROR
 
