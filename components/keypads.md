@@ -4,14 +4,14 @@
 
 **UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
 
-4×3 matrix mode: `JKS_INPUT_MODE = "keypad"`. Rows use **High-Z idle scan** (no row diodes): idle rows are inputs; the scanned row is driven LOW; columns read with pull-ups. Discrete **STOP** on GP5 is ORed with matrix `0`. Discrete **OPTION** on GP13 is ORed with matrix `*`.
+Matrix mode (up to 4×4): `JKS_INPUT_MODE = "keypad"`. Key-to-cell map: [`JKSliderKeypad.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/JKSliderKeypad.py). Rows use **High-Z idle scan** (no row diodes): idle rows are inputs; the scanned row is driven LOW; columns read with pull-ups. Discrete **STOP** on GP5 is ORed with matrix `0`. Discrete **OPTION** on GP14 is ORed with matrix `*`. **KP_COL_4** is GP13 (scanned when LAYOUT has 4 columns).
 
 | Matrix | Default | Config |
 |--------|---------|--------|
 | Rows KP_ROW1…4 | GP6…9 | `PIN_KEYPAD_ROWS = (6, 7, 8, 9)` |
-| Cols KP_COL1…3 | GP10…12 | `PIN_KEYPAD_COLS = (10, 11, 12)` |
+| Cols KP_COL1…4 | GP10…13 | `PIN_KEYPAD_COLS = (10, 11, 12, 13)` |
 | STOP (discrete) | GP5 | `PIN_BTN_STOP` |
-| OPTION (discrete) | GP13 | `PIN_BTN_OPTION` |
+| OPTION (discrete, keypad) | GP14 | `PIN_BTN_OPTION_KEYPAD` |
 
 Recommended silk (Technical Manual):
 

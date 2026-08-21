@@ -21,6 +21,7 @@ Shipped defaults: [`MC_config.py`](../MC_config.py) (link) and [`UIC_config.py`]
 | `UIC_base.py` | `UIC_Base` class — OLED / RGB / camera / WDT; status callback |
 | `JKSliderConfig.py` | JKSlider panel defaults (`JKS_*`) |
 | `JKSlider.py` | Camera-slider control panel application |
+| `JKSliderKeypad.py` | Keypad cell map (tuple of rows; up to 4×4) |
 | `B4SliderConfig.py` | B4Slider panel defaults (`B4S_*`) |
 | `B4Slider.py` | 4-button slider app (L/R/OPTION/SET + SPEED pot) |
 | `SliderPins.example.py` | Template for one full overlay file per slider HW |
@@ -30,7 +31,7 @@ Shipped defaults: [`MC_config.py`](../MC_config.py) (link) and [`UIC_config.py`]
 
 Architecture (UIC ↔ SliderMC): [architecture/overview.md](../../architecture/overview.md).
 
-For the panel app on a **SliderMC** UIC, copy `MC_client.py`, `UIC_base.py`, `MC_config.py`, `UIC_config.py`, `JKSliderConfig.py`, and `JKSlider.py` (plus OLED drivers as needed). Optional: `SliderPins.py` from `SliderPins.example.py`.
+For the panel app on a **SliderMC** UIC, copy `MC_client.py`, `UIC_base.py`, `MC_config.py`, `UIC_config.py`, `JKSliderConfig.py`, `JKSliderKeypad.py`, and `JKSlider.py` (plus OLED drivers as needed). Optional: `SliderPins.py` from `SliderPins.example.py`.
 
 ---
 
