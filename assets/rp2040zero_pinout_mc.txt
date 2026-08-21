@@ -1,42 +1,41 @@
 Waveshare RP2040-Zero — SliderMC pinout (USB at top)
 Defaults in include/pins.h (BOARD_RP2040_ZERO)
 
-  function       pad                    pad    function
+    function     pad                  pad    function
                         +---- USB ----+
-  5V             5V     |o           o| GP0    EXT_0
-  GND            GND    |o           o| GP1    EXT_1
-  3V3            3V3    |o           o| GP2    EXT_2
-  DRV_ERROR      GP29   |o           o| GP3    EXT_3
-  DRV_EN         GP28   |o           o| GP4    EXT_4
-  DRV_DIR        GP27   |o           o| GP5    EXT_5
-  DRV_STEP       GP26   |o           o| GP6    EXT_6
-  free           GP15   |o           o| GP7    EXT_7
-  LED            GP14   |o           o| GP8    EXT_8
+  5V             5V     |o           o| GP0    DRV_STEP
+  GND            GND    |o           o| GP1    DRV_DIR
+  3V3            3V3    |o           o| GP2    DRV_EN
+  LED            GP29   |o           o| GP3    DRV_ERROR
+  free           GP28   |o           o| GP4    SW_HOME*
+  EXT_0          GP27   |o           o| GP5    DRV_STEP2
+  EXT_1          GP26   |o           o| GP6    DRV_DIR2
+  EXT_2          GP15   |o           o| GP7    DRV_ERROR2
+  EXT_3          GP14   |o           o| GP8    SW_HOME2*
                         +-------------+
                          13 12 11 10 9
 
-                      Bottom edge (left→right):
-                        GP13   UART_RX
-                        GP12   UART_TX
-                        GP11   SW_LIMIT_R*
-                        GP10   SW_LIMIT_L*
-                        GP9    SW_HOME*
+Bottom edge (left→right):
+  GP13   UART_RX
+  GP12   UART_TX
+  GP11   free
+  GP10   SW_LIMIT_L*
+  GP9    SW_LIMIT_R*
 
 Bottom-side SMD pads (top→bottom):
   GND    GND
-  GP25   DBG_UNDERRUN
-  GP24   DBG_IRQ
-  GP23   DBG_CMD
-  GP22   DBG_MOV_CONST
-  GP21   DBG_MOV
-  GP20   DBG_FIFO
-  GP19   free
-  GP18   free
-  GP17   EXT_9
+  GP25   SW_LIMIT_L2*
+  GP24   SW_LIMIT_R2*
+  GP23   DBG_FIFO
+  GP22   DBG_MOV
+  GP21   DBG_MOV_CONST
+  GP20   DBG_CMD
+  GP19   DBG_IRQ
+  GP18   DBG_UNDERRUN
+  GP17   DRV_EN2
 
-Legend: EXT_0…8 on GP0–8, EXT_9 on GP17 (X0…X9); UART 1 Mbaud GP12/13;
-motor DRV on GP26–29 (GP29 DRV_ERROR always polled).
-SW_HOME* / SW_LIMIT_* off until CS …_use=1.
-GP20–25 DBG_* (DEBUG_HW only, brown); GP14 status LED; GP15/18/19 free.
-GP16 = onboard RGB LED, unused by firmware.
-Pin names match P / IX (Pinout) commands.
+Legend: motor DRV on GP0–3; axis2 STEP/DIR/ERR/HOME on GP5–8; EN2 on GP17.
+EXT_0…3 on GP27/26/15/14 (X0…X3); UART 1 Mbaud GP12/13; axis2_use supported.
+SW_* / LIMIT_* off until CS …_use=1. LIMIT2 on GP24/25; DBG GP18–23 (OK with axis2).
+GP29 status LED; GP11/16/28 free; GP16 = onboard RGB unused.
+Pin names match IX / VG (axis2 rows only when axis2_use=1).

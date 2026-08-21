@@ -34,10 +34,10 @@ What may attach to each board (same ownership as the overview diagram):
 
 ### MC — may connect
 
-- Motor / STEP·DIR driver (integrated or external)
-- Home switch (`SW_HOME`)
-- Hard limit switch(es) (`SW_LIMIT_*`)
-- Ext outputs (`EXT_0`…`EXT_9`)
+- Motor / STEP·DIR driver (integrated or external); optional **2nd** STEP·DIR when `axis2_use=1` — typical **linear travel (axis 1) + pan (axis 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
+- Home switch (`SW_HOME`; optional `SW_HOME2` with axis2)
+- Hard limit switch(es) (`SW_LIMIT_*`; optional `*_2` with axis2)
+- Ext outputs (`EXT_0`…`EXT_3`)
 - `DRV_ERROR` / E-stop interlock
 - USB debug (host PC)
 - UART to UIC

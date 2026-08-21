@@ -54,11 +54,13 @@ Architecture overview: [../architecture/overview.md](../../architecture/overview
 
 ### Session start (handshake)
 
-The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **UIC UART or USB CDC** (whichever arrives first). Bytes before that LF are discarded on both ports. Production panels unlock over UART: the UIC (`MC_Client.start()`) sends `\n` and waits for a line starting with `# ` (hash + space):
+The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **UIC UART or USB CDC** (whichever arrives first). Bytes before that LF are discarded on both ports. Production panels unlock over UART: the UIC (`MC_Client.start()`) sends `\n` and waits for a line starting with `# ` (hash + space), for example:
 
 ```text
 # Slider Motion Controller V1.0 ['$' for help]
 ```
+
+When config `axis2_use=1` (Pico), the banner includes the literal suffix `- 2 Axis`. When config `name` is set, the device name is prefixed (`# <name> - Slider Motion Controller V…`). Hosts should accept any `# ` ready line; see [protocol.md — Startup banner](protocol.md#startup-banner).
 
 If no banner arrives within **100 ms**, the UIC sends another `\n`. After **3 s** without a banner it prints an error to the USB/REPL shell and **continues** (panel UI can start without motion). On success (or soft-continue) it sends `SV 1` for verbose status.
 

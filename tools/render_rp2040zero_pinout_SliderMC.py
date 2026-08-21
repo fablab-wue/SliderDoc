@@ -62,48 +62,48 @@ LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
     ("3V3", "3V3"),
-    ("GP29", "DRV_ERROR"),
-    ("GP28", "DRV_EN"),
-    ("GP27", "DRV_DIR"),
-    ("GP26", "DRV_STEP"),
-    ("GP15", "free"),
-    ("GP14", "LED"),
+    ("GP29", "LED"),
+    ("GP28", "free"),
+    ("GP27", "EXT_0"),
+    ("GP26", "EXT_1"),
+    ("GP15", "EXT_2"),
+    ("GP14", "EXT_3"),
 ]
 
 # Right edge, top→bottom.
 RIGHT = [
-    ("GP0", "EXT_0"),
-    ("GP1", "EXT_1"),
-    ("GP2", "EXT_2"),
-    ("GP3", "EXT_3"),
-    ("GP4", "EXT_4"),
-    ("GP5", "EXT_5"),
-    ("GP6", "EXT_6"),
-    ("GP7", "EXT_7"),
-    ("GP8", "EXT_8"),
+    ("GP0", "DRV_STEP"),
+    ("GP1", "DRV_DIR"),
+    ("GP2", "DRV_EN"),
+    ("GP3", "DRV_ERROR"),
+    ("GP4", "SW_HOME*"),
+    ("GP5", "DRV_STEP2"),
+    ("GP6", "DRV_DIR2"),
+    ("GP7", "DRV_ERROR2"),
+    ("GP8", "SW_HOME2*"),
 ]
 
 # Bottom edge, left→right (drawn rotated 90 deg CW under the matching pad).
 BOTTOM = [
     ("GP13", "UART_RX"),
     ("GP12", "UART_TX"),
-    ("GP11", "SW_LIMIT_R*"),
+    ("GP11", "free"),
     ("GP10", "SW_LIMIT_L*"),
-    ("GP9", "SW_HOME*"),
+    ("GP9", "SW_LIMIT_R*"),
 ]
 
 # Bottom view SMD pads, top→bottom.
 BOT_PADS = [
     ("GND", "GND"),
-    ("GP25", "DBG_UNDERRUN"),
-    ("GP24", "DBG_IRQ"),
-    ("GP23", "DBG_CMD"),
-    ("GP22", "DBG_MOV_CONST"),
-    ("GP21", "DBG_MOV"),
-    ("GP20", "DBG_FIFO"),
-    ("GP19", "free"),
-    ("GP18", "free"),
-    ("GP17", "EXT_9"),
+    ("GP25", "SW_LIMIT_L2*"),
+    ("GP24", "SW_LIMIT_R2*"),
+    ("GP23", "DBG_FIFO"),
+    ("GP22", "DBG_MOV"),
+    ("GP21", "DBG_MOV_CONST"),
+    ("GP20", "DBG_CMD"),
+    ("GP19", "DBG_IRQ"),
+    ("GP18", "DBG_UNDERRUN"),
+    ("GP17", "DRV_EN2"),
 ]
 
 LEGEND = [
@@ -146,12 +146,11 @@ def render_ascii() -> str:
     lines.extend(
         [
             "",
-            "Legend: EXT_0…8 on GP0–8, EXT_9 on GP17 (X0…X9); UART 1 Mbaud GP12/13;",
-            "motor DRV on GP26–29 (GP29 DRV_ERROR always polled).",
-            "SW_HOME* / SW_LIMIT_* off until CS …_use=1.",
-            "GP20–25 DBG_* (DEBUG_HW only, brown); GP14 status LED; GP15/18/19 free.",
-            "GP16 = onboard RGB LED, unused by firmware.",
-            "Pin names match P / IX (Pinout) commands.",
+            "Legend: motor DRV on GP0–3; axis2 STEP/DIR/ERR/HOME on GP5–8; EN2 on GP17.",
+            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 1 Mbaud GP12/13; axis2_use supported.",
+            "SW_* / LIMIT_* off until CS …_use=1. LIMIT2 on GP24/25; DBG GP18–23 (OK with axis2).",
+            "GP29 status LED; GP11/16/28 free; GP16 = onboard RGB unused.",
+            "Pin names match IX / VG (axis2 rows only when axis2_use=1).",
         ]
     )
     return "\n".join(lines) + "\n"

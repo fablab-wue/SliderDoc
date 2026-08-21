@@ -30,7 +30,7 @@ reintroduce rounding and phase drift. Motion Path instead:
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `PC` | `PathClear` | — | Clear the path buffer (path count → 0). |
-| `PD` | `PathData` | `um` | Append one signed 16-bit µm sample; increments path count. |
+| `PD` | `PathData` | `um [um2]` | Append signed 16-bit µm sample(s); with axis2 on, optional 2nd sample (skip → `0`; single arg → `(a, 0)`). |
 | `PG` | `PathGo` | — | Play the buffer from sample 0 until path count is reached, or `MS`/`H`. |
 | `PN` | `PathNumber` | — | Reply `PN:<count>` — samples currently buffered. |
 | `PS` | `PathSlice` | `us` or bare | Set the slice length in µs (≥1000); bare reloads the config default. |
@@ -49,17 +49,19 @@ usual `!E:<code> <text>` form:
 ## Data model
 
 - **Sample:** one signed 16-bit integer, unit **µm** (micrometres), range
-  `-32768..32767` (≈ ±32.767 mm of delta-distance per slice).
+  `-32768..32767` (≈ ±32.767 mm of delta-distance per slice). With
+  `axis2_use=1`, each `PD` can supply a second sample for axis 2; skip tokens
+  (`none`/`N`/`_`/`*`) become `0` µm on that axis.
 - **`0` means stand still** for that slice — no STEP pulses are issued; the
   PIO naturally holds its output level for the slice duration.
 - **Buffer:** a flat array, not a ring buffer. `PD` always appends; `PG`
   always starts playback at sample 0. The buffer is **retained** after
   playback ends (naturally, or via `MS`/`H`), so `PG` can replay the same
   data without resending it.
-- **Capacity:** `path_buffer_size` (config key, default 64000 samples,
-  settable 1..65536 via `CS path_buffer_size <n>` / `CG path_buffer_size`).
-  The static RAM buffer itself is always 65536 samples (128 KB); the config
-  value is a runtime logical limit at/under that.
+- **Capacity:** `path_buffer_size` (config key, default 32000 samples,
+  settable 1..32768 via `CS path_buffer_size <n>` / `CG path_buffer_size`).
+  The static RAM buffer is `PATH_BUFFER_MAX` (32768) **per axis**; with axis2
+  on, both axes share the same logical capacity.
 - **Slice length:** `PS <us>` (µs, integer, ≥1000). This is a **session**
   value (like `SS`/`SA`), not persisted to `mc.ini` by `PS` itself — the
   persisted default is config key `init_path_slice_us` (default 10000 = 10
@@ -113,7 +115,7 @@ samples queued ahead of the current slice rate.
 
 For each slice, SliderMC:
 
-1. Converts the signed µm distance to a step count using `steps_per_mm`.
+1. Converts the signed µm distance to a step count using `steps_per_unit`.
 2. Converts the slice time (µs) to PIO clock cycles.
 3. If the step count is `0`, no STEP word is queued for that slice — the
    owed idle time is carried forward and merged into the delay ahead of the
@@ -135,7 +137,7 @@ slices), causing the final position or the total elapsed time to drift.
 Motion Path instead carries the fractional remainder from one slice to the
 next, for both quantities independently:
 
-- **Steps:** `steps_f = distance_mm * steps_per_mm + step_err_carry`;
+- **Steps:** `steps_f = distance_mm * steps_per_unit + step_err_carry`;
   `steps_i = round(steps_f)`; `step_err_carry = steps_f - steps_i`. A `0`
   sample always yields exactly `0` steps and leaves the carry untouched, so
   a run of stand-still slices never "steals" or "donates" fractional steps.
@@ -216,7 +218,7 @@ move/session-set commands (`MT`, `M`, `ML`, `MR`, `MH`, `SS`, `SA`, `SE`,
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `path_buffer_size` | int | 64000 | `PD` sample capacity (1..65536); `CS`/`CG` |
+| `path_buffer_size` | int | 32000 | `PD` sample capacity (1..32768); `CS`/`CG` |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); reloaded by bare `PS` |
 
 See [CONFIG.md](CONFIG.md) for the full config key list and general

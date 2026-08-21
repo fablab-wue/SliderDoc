@@ -1,5 +1,5 @@
 # Generate Pico board pinout ASCII + PNG for SliderMC (stdlib only).
-#   python docs/render_pico_pinout.py
+#   python tools/render_pico_pinout_SliderMC.py
 #
 # Top view, USB at top. Pins from include/pins.h + data/mc.ini.
 
@@ -33,23 +33,23 @@ OUT_TXT = DOCS / "assets"
 
 # Left / right edge, top→bottom (USB at top). Official 40-pin header map.
 LEFT = [
-    ("GP0", "EXT_0"),
-    ("GP1", "EXT_1"),
+    ("GP0", "free"),
+    ("GP1", "free"),
     ("GND", "GND"),
-    ("GP2", "EXT_2"),
-    ("GP3", "EXT_3"),
-    ("GP4", "EXT_4"),
-    ("GP5", "EXT_5"),
+    ("GP2", "EXT_0"),
+    ("GP3", "EXT_1"),
+    ("GP4", "EXT_2"),
+    ("GP5", "EXT_3"),
     ("GND", "GND"),
-    ("GP6", "EXT_6"),
-    ("GP7", "EXT_7"),
-    ("GP8", "EXT_8"),
-    ("GP9", "EXT_9"),
+    ("GP6", "SW_LIMIT_R2*"),
+    ("GP7", "SW_LIMIT_L2*"),
+    ("GP8", "free"),
+    ("GP9", "SW_HOME2*"),
     ("GND", "GND"),
-    ("GP10", "DBG_FIFO"),
-    ("GP11", "DBG_MOV"),
-    ("GP12", "DBG_MOV_CONST"),
-    ("GP13", "DBG_CMD"),
+    ("GP10", "DRV_ERROR2"),
+    ("GP11", "DRV_EN2"),
+    ("GP12", "DRV_DIR2"),
+    ("GP13", "DRV_STEP2"),
     ("GND", "GND"),
     ("GP14", "DBG_IRQ"),
     ("GP15", "DBG_UNDERRUN"),
@@ -112,10 +112,10 @@ def render_ascii() -> str:
         [
             "                         +-----------+",
             "",
-            "Legend: EXT_0…9 on GP0–9 (X0…X9); UART 1 Mbaud GP16/17; motor DRV on GP18–20.",
-            "SW_HOME* / SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
-            "GP10–15 DBG_* (DEBUG_HW only, brown); GP23–25, GP28 free.",
-            "Pin names match P / IX (Pinout) commands.",
+            "Legend: EXT_0…3 on GP2–5 (X0…X3); UART 1 Mbaud GP16/17; motor DRV on GP18–20.",
+            "axis2_use=1: GP6/7/9 + GP10–13 (LIMIT_*/HOME2 / DRV_*2); DBG GP10–13 off then.",
+            "SW_* / LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
+            "GP14–15 DBG_* (DEBUG_HW); GP0/1/8/23–25/28 free. Pin names match IX / VG.",
         ]
     )
     return "\n".join(lines) + "\n"

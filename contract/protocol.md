@@ -23,7 +23,9 @@ SliderMC is a **named ASCII CLI** (expert-friendly, UIC-friendly), not a G-code 
 | `ok` / `error:N` per line | Motion/settings **silent** on success; errors `!E:code message`; queries `XX:value` |
 | `$N=` EEPROM settings | `CS` / `CG` + `mc.ini` on LittleFS |
 
-**Not adopted in v1:** full G-code, multi-axis words, spindle/coolant realtime, jog `$J=`, character-count streaming.
+**Not adopted in v1:** full G-code (incl. multi-axis XYZ words), spindle/coolant realtime, jog `$J=`, character-count streaming.
+
+**Optional 2nd STEP/DIR axis:** enable with config `axis2_use=1` on **Pico / Pico W / RP2040-Zero**. When active, dual-arg motion/`PD`, dual verbose/`?`/`IP` fields, and a `- 2 Axis` banner suffix apply. See [Optional 2nd axis](#optional-2nd-axis-axis2_use), [About dual movement](../mc/dual-movement.md), and [config.md](../mc/config.md) / [pins.md](../mc/pins.md).
 
 ## Wire rules
 
@@ -53,11 +55,24 @@ With verbose + terminal together, status lines are still printed only when they 
 
 After power-up the protocol task initializes, then **waits for a single `\n` (LF)** on the **UIC UART or USB CDC** (whichever arrives first). Every other byte received on either port before that LF is **discarded** (not parsed as commands).
 
-Only after that LF does the MC send one ready line beginning with `# ` (hash + **space**), distinct from status lines (`#I …`, `#M …`). The banner is mirrored to **USB + UART**:
+Only after that LF does the MC send one ready line beginning with `# ` (hash + **space**), distinct from status lines (`#I …`, `#M …`). The banner is mirrored to **USB + UART**.
+
+Base form (1-axis, no device name):
 
 ```text
 # Slider Motion Controller V1.0 ['$' for help]
 ```
+
+Optional pieces from config:
+
+| `name` | `axis2_use` (and board supports it) | Banner |
+|--------|--------------------------------------|--------|
+| empty | off | `# Slider Motion Controller V… ['$' for help]` |
+| empty | on | `# Slider Motion Controller V… - 2 Axis ['$' for help]` |
+| set | off | `# <name> - Slider Motion Controller V… ['$' for help]` |
+| set | on | `# <name> - Slider Motion Controller V… - 2 Axis ['$' for help]` |
+
+Literal suffix is **`- 2 Axis`** (space before `2`). Config key `name` is printable ASCII (max 31 chars), no `#` or control characters.
 
 ```mermaid
 sequenceDiagram
@@ -86,8 +101,8 @@ Hosts can treat the banner like GRBL’s welcome string: init finished, ready fo
 | Error | `!E:<code> <text>` | `!E:soft soft max`, `!E:timeout` |
 | Get / Is / Version | `<SHORT>:<value>` | `IM:1`, `GS:50.00`, `VF:1.0` |
 | Config get | `CG:<key>=<value>` | `CG:init_speed=50` |
-| Help / Pins dump | Multi-line text (no `ok`) | `$` / `Help` / `HL` → ASCII command table; `P` / `Pins` → `PIN_*=n`; `IX` / `Pinout` → GP / name / desc table |
-| Verbose push / `?` | Compact `#` status | `#M 12.5 25 80 100` |
+| Help / Pins dump | Multi-line text (no `ok`) | `$` / `Help` / `HL` → ASCII command table; `VG` / `VersionGPIO` → `PIN_*=n`; `IX` / `Pinout` → GP / name / desc table |
+| Verbose push / `?` | Compact `#` status | `#M 12.5 25 80 100` (1-axis) or `#M 12.5 67.8 10 5 50 25 200 90` (2-axis) |
 
 ### State letters
 
@@ -132,7 +147,7 @@ API values use **mm**, **mm/s**, and **mm/s²** unless a config key says otherwi
 
 ## Commands
 
-Printable one-page overview: [command-cheatsheet.html](command-cheatsheet.html) / [command-cheatsheet.pdf](command-cheatsheet.pdf) (regenerate with `python tools/render_command_cheatsheet.py`).
+Printable one-page overview: [command-cheatsheet.html](command-cheatsheet.html) / [command-cheatsheet.pdf](command-cheatsheet.pdf). Markdown with Call/Reply columns: [command-cheatsheet.md](command-cheatsheet.md) (regenerate with `python tools/render_command_cheatsheet.py`).
 
 Descriptions below match the printable cheat sheet (`tools/render_command_cheatsheet.py`). Extra notes follow each group.
 
@@ -160,7 +175,7 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 | `GV` | `GetVerbose` | — | Reply `GV:0\|1` — verbose push state. |
 | `GD` | `GetDebug` | — | Reply `GD:<0..5>` — USB debug level. |
 
-### I — Is / status
+### I — Is / Info
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
@@ -168,13 +183,14 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 | `IH` | `IsHoming` | — | Reply `IH:0\|1` — homing cycle active. |
 | `IL` | `IsLimit` | — | Reply `IL:0\|1` — at soft-limit position. |
 | `IE` | `IsError` | — | Reply `IE:0\|1` — `PIN_DRV_ERROR` / EMO latched. |
-| `IP` | `IsPosition` | — | Reply `IP:<mm>` — current planner position. |
-| `IT` | `IsTarget` | — | Reply `IT:<mm>\|-` — seek target, or `-` if none. |
+| `IP` | `IsPosition` | — | Reply `IP:<mm>` — axis-1 position; with axis2 on: `IP:<mm1> <mm2>`. |
+| `IA` | `IsAxis` / `Axis` | — | Reply `IA:1` or `IA:2` — active axis count (`config_axis2_enabled()`). |
+| `IT` | `IsTarget` | — | Reply `IT:<mm>\|-` — axis-1 seek target, or `-` if none. |
 | `IR` | `IsReady` | — | Reply `IR:1` only if idle, not homing, enabled, and not waiting. |
 | `IW` | `IsWaiting` | — | Reply `IW:1` if any `W` / `WM` / `WH` wait is active. |
 | `ID` | `IsDiag` | — | Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level. |
 | `IZ` | `IsReset` | — | Reply last chip reset cause (`power\|wdt\|run\|soft\|debug\|brownout\|…`). |
-| `IX` | `Pinout` | — | ASCII table of GP number, pin name, brief description (≤80 columns). |
+| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
 
 Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 
@@ -182,12 +198,14 @@ Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
-| `MT` | `MoveTo` | `x` | Move to absolute mm; needs enable; live-retargets an active move. |
-| `M` | `Move` / `MoveBy` | `x` | Relative move by mm (alias `MoveBy`); needs enable; live-retargets. |
-| `ML` | `MoveLeft` | — | Continuous jog negative; soft-stop with `MS` or `!`. |
-| `MR` | `MoveRight` | — | Continuous jog positive; soft-stop with `MS` or `!`. |
-| `MH` | `MoveHome` | — | Homing cycle (`home_mode`); no-op if `0`; needs `SE 1`; cancel with `MS`/`H`. |
+| `MT` | `MoveTo` | `x [y]` | Absolute mm; optional 2nd arg = axis2 when enabled; skip tokens idle that axis; needs enable; live-retargets. |
+| `M` | `Move` / `MoveBy` | `x [y]` | Relative mm (alias `MoveBy`); dual-arg same as `MT` when axis2 on. |
+| `ML` | `MoveLeft` | `[0\|1\|2]` | Continuous jog negative; optional mask (axis2 on): `0`=both, `1`=axis1, `2`=axis2; soft-stop with `MS` or `!`. |
+| `MR` | `MoveRight` | `[0\|1\|2]` | Continuous jog positive; mask same as `ML`. |
+| `MH` | `MoveHome` | `[1\|2]` | Homing cycle; optional axis `1` (default) or `2` when axis2 on; no-op if that axis `home_mode` is `0`; needs `SE 1`; cancel with `MS`/`H`. |
 | `MS` | `MoveStop` | — | Soft decelerate to stop; keeps enable; does not cancel waits. |
+
+**Skip tokens** (case-insensitive `none`/`N`, or exact `_`/`*`): on `MT`/`M` leave that axis idle; on `PD` become `0` µm. Bare `-` is **not** a skip (parses as a number).
 
 `MH` / `MoveHome` failures: `!E:home cfg`, `!E:home travel`, `!E:home hard`. Soft-cancel with `MS`; emergency abort with `H`/`HT`/`Halt`.
 
@@ -198,33 +216,34 @@ A 2nd, simpler planner for a host-authored motion path: fixed-size time slices, 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `PC` | `PathClear` | — | Clear the path buffer (path count → 0); rejected with `!E:busy` while `PG` is active. |
-| `PD` | `PathData` | `um` | Append one signed 16-bit µm sample (-32768..32767); increments path count; `!E:parse` out of range, `!E:full` at `path_buffer_size`. Allowed even while `PG` is active (live-move streaming). |
+| `PD` | `PathData` | `um [um2]` | Append signed 16-bit µm sample(s) (-32768..32767); with axis2 on, optional 2nd sample for axis2 (skip → `0`; single arg → `(a, 0)`); increments path count; `!E:parse` / `!E:full`. Allowed while `PG` is active (live-move streaming). |
 | `PG` | `PathGo` | — | Play the path buffer from sample 0 until path count is reached (then auto soft-stop) or `MS`/`H` is received; needs enable; `!E:disabled` / `!E:empty` / `!E:busy`. May be sent while `PD` is still being streamed in (live move). |
 | `PN` | `PathNumber` | — | Reply `PN:<count>` — number of samples currently in the buffer; allowed even while path-mode is active. |
 | `PS` | `PathSlice` | `us` or bare | Set the time-slice length in µs (≥1000); bare reloads `init_path_slice_us`; `!E:parse` below minimum, `!E:busy` while active. |
 
-A sample value of `0` means the axis stands still for that slice. Distance→steps and slice-time→PIO-cycles both use an error-diffusion accumulator so rounding never biases total distance or total playback time. `steps_per_mm` and PIO limits apply as usual; speed/accel limits are **not** checked — the host is expected to deliver an already speed/accel-limited path.
+A sample value of `0` means the axis stands still for that slice. Distance→steps and slice-time→PIO-cycles both use an error-diffusion accumulator so rounding never biases total distance or total playback time. `steps_per_unit` and PIO limits apply as usual; speed/accel limits are **not** checked — the host is expected to deliver an already speed/accel-limited path.
 
-While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `H`/`HT`/`Halt`, `PD`/`PathData` (live-move streaming), `PN`/`PathNumber`, all `I*`/`G*`/`V*` queries, `IX`/`Pinout`, `Help`/`HL`/`$`, `CG`/`ConfigGet`. The buffer is retained after playback ends (naturally or via `MS`/`H`), so `PG` can replay the same data.
+While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `PD`/`PathData` (live-move streaming), `PN`/`PathNumber`, all `I*`/`G*`/`V*` queries, `IX`/`Pinout`, `Help`/`HL`/`$`, `CG`/`ConfigGet`. The buffer is retained after playback ends (naturally or via `MS`/`H`), so `PG` can replay the same data.
 
-Verbose / `?` while in path-mode (state letter `P`) report `#P <pos> <vel> <accel>`: `pos` and `vel` are live (`vel` is the rate of the most recently issued STEP word); `accel` is always `0` (path-mode plays each slice at a constant rate, with no ramp to measure); there is no target field.
-
+Verbose / `?` while in path-mode (state letter `P`) use the same layouts as other moving states (`#P …` with live pos/speed; accel is typically `0` for constant-rate slices).
 ### X — Extender outputs (silent)
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
-| `X0`…`X9` | `Ext0`…`Ext9` | `0` \| `1` or bare | Ext out n logical 0\|1; bare toggles; glued `X00`≡`X0 0`; ok during EMO. |
+| `X0`…`X3` | `Ext0`…`Ext3` | `0` \| `1` or bare | Ext out n logical 0\|1; bare toggles; glued `X00`≡`X0 0`; ok during EMO. |
 
-Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` ≡ `X1 0`. Levels use `EXT_n_active`. Reset to inactive on reboot.
+Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` ≡ `X1 0`. Levels use `EXT_n_active`. Reset to inactive on reboot. **`X4`…`X9` / `Ext4`…`Ext9` are rejected** (`!E:parse`) — `PIN_EXT_COUNT` is 4.
 
 ### C — Config (persistent)
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `CS` | `ConfigSet` | `key value` | Set persistent key value (`mc.ini`); silent ok; updates session init_speed/init_accel/…. |
+| `CR` | `ConfigReset` | — | Reset all config to compiled defaults and save `mc.ini`. |
 | `CG` | `ConfigGet` | `key` or bare | Get key → `CG:key=value`; bare dumps all keys. |
+| `RB` | `Reboot` | — | Soft MCU reset (no power cycle): halt/EN off, then reboot. Next `IZ` → `soft`. |
 
-Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `steps_per_mm`, `slider_min`, `slider_max`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_9_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. See [CONFIG.md](CONFIG.md).
+Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
 
 ### W — Wait (silent)
 
@@ -253,8 +272,9 @@ Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `steps_per
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `H` / `HT` | `Halt` | — | Immediate STEP abort; enable off; cancel waits and remaining `;` chain. |
-| `P` | `Pins` | — | List `PIN_*=GPIO` lines (machine-readable, read-only). |
-| `IX` | `Pinout` | — | ASCII table of GP number, pin name, brief description (≤80 columns). |
+| `RB` | `Reboot` | — | Soft MCU reset (no power cycle); EN off first. Allowed during EMO / path. |
+| `VG` | `VersionGPIO` | — | List `PIN_*=GPIO` lines (machine-readable). Axis-2 pins only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
+| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
 | `$` / `HL` | `Help` | — | ASCII table of all commands (≤80 columns). |
 
 ### Stop vs Halt
@@ -270,7 +290,20 @@ Hard-limit trips and `PIN_DRV_ERROR` use the same internal halt path as `H`/`HT`
 
 Polled with ~20 ms debounce (including **already asserted at power-up**). While asserted: `IE:1`, state letter `E`, halt applied, most commands rejected with `!E:emo active`.
 
-Allowed while error active: `IE`, `ID`, `IZ`, `IX`/`Pinout`, `VA`/`VF`/`VP`, `P`, `Help`/`HL`/`$`, `CS`/`CG`, `H`/`HT`/`Halt`, `X0`…`X9` / `Ext0`…`Ext9`, realtime `?` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
+Allowed while error active: `IE`, `IA`/`Axis`/`IsAxis`, `ID`, `IZ`, `IX`/`Pinout`, `VA`/`VF`/`VP`, `VG`, `Help`/`HL`/`$`, `CS`/`CR`/`CG`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `X0`…`X3` / `Ext0`…`Ext3`, realtime `?` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
+
+---
+
+## Optional 2nd axis (`axis2_use`)
+
+| Board | Support |
+|-------|---------|
+| Pico / Pico W | Yes — `CS axis2_use 1` enables dual STEP/DIR (DBG GP10–13 reclaimed) |
+| RP2040-Zero | Yes — dual STEP/DIR; DBG GP18–23 remain usable with axis2 |
+
+When enabled: dual planner axes, dual path buffers, `IA` replies `IA:2`. `IX` / `VG` list axis-2 pins only while enabled. See [pins.md](../mc/pins.md).
+
+**Reboot required for HW:** `CS axis2_use` updates config/`IA` immediately, but the second STEP PIO SM and axis-2 pins are initialized only at boot. After changing `axis2_use`, send `RB` / `Reboot` (or power-cycle) before dual-axis motion. Narrative guide: [About dual movement](../mc/dual-movement.md). See also [config.md](../mc/config.md#optional-2nd-axis-axis2_use).
 
 ---
 
@@ -278,35 +311,50 @@ Allowed while error active: `IE`, `ID`, `IZ`, `IX`/`Pinout`, `VA`/`VF`/`VP`, `P`
 
 Verbose mode pushes compact `#…` status so the UIC can refresh a display (e.g. OLED). It also acts as a **heartbeat** that the MC is alive.
 
+### 1-axis (`axis2` off)
+
 ```text
 #<state> <pos_mm> [<speed_mm_s> <accel_mm_s2> [<target_mm>]]
 ```
 
+Homing (`#H`) includes speed and accel but **omits target**.
+
+### 2-axis (`axis2` on)
+
+| State | Line |
+|-------|------|
+| Idle / non-moving (`I`, `E`, `D`, `L`, …) | `#<letter> <pos1> <pos2>` |
+| Homing (`H`) | `#H <pos1> <pos2> <speed1> <speed2> <accel1> <accel2>` — **no targets** |
+| Moving (`M`, `A`, `B`, `P`, …) | `#<letter> <pos1> <pos2> <speed1> <speed2> <accel1> <accel2> <target1> <target2>` |
+
 - Numbers use at most **2 decimal digits**, without trailing zeros (`100`, `100.1`, `0.1`).
-- When moving/homing, **speed** is the actual planner speed (approx), unsigned.
-- **accel** is the measured magnitude of `dv/dt` across the issued STEP words (lightly smoothed), so it covers both the accel ramp and braking; **0** in cruise. It is not the `SA` setpoint, and it peaks at `SA` only when the ramp runs to full amplitude.
-- **target** is present only for position seeks (not continuous jog / soft-stop bleed).
+- When moving/homing, **speed** / **accel** magnitudes use absolute values (`fabs`).
+- **accel** is measured `dv/dt` magnitude (lightly smoothed), not the `SA` setpoint; **0** in cruise.
+- 1-axis **target** is present only for position seeks (not continuous jog / soft-stop bleed). 2-axis moving lines always emit both targets.
 - With **Terminal Mode + verbose** together, a status line is printed only when it **differs** from the previous one.
 - With verbose alone (terminal off), lines are still pushed every ~3 Hz even if unchanged.
 
-Examples:
+Examples (1-axis):
 
 ```text
 #I 12.5
 #A 12.5 10 80 100
 #M 12.5 25 0 100
-#B 12.5 10 80 100
+#H 10 25 20
 #L 0
+```
+
+Examples (2-axis):
+
+```text
+#I 123.45 67.8
+#H 10 0 25 25 20 20
+#M 123.45 67.8 10 5 50 25 200 90
 ```
 
 ## Status report (`?`)
 
 Same format as verbose push (one immediate `#…` line).
-
-```text
-#I 100
-#M 12.5 25 80 100
-```
 
 ---
 

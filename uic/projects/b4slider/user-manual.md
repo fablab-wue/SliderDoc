@@ -12,6 +12,8 @@ Optional second pot (**ACCEL**) when `B4S_USE_ACCEL_POT=1`. OLED is not required
 
 The panel Pico talks to a **motion board** (SliderMC) over UART, or to an MKS SERVO via [MC_MKS_Client](../../libraries/mks-servo-rs485.md). If that link is unplugged, the UI may still start, but moves will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
+The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_status_callback`). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
+
 ## Getting started
 
 1. Power on — status LED does a rainbow while locked (if unlock is enabled).

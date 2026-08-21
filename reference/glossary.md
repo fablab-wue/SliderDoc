@@ -8,6 +8,9 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 |---------|-----------|---------|
 | **ADC** | Analogue-to-digital converter | Reads a continuous voltage as a number. On JKSlider, ADC channels sample the SPEED, ACCEL, and optional JOYSTICK pots so the firmware can map knob position to mm/s and mm/s². |
 | **API** | Application programming interface | The documented methods and config for writing your own code on top of `MC_Client` / `UIC_Base` (see [`../uic/api/overview.md`](../../uic/api/overview.md)). JKSlider is one application that uses this API. |
+| **IA** | IsAxis | SliderMC query `IA` / `Axis` / `IsAxis` → `IA:1` or `IA:2` when optional 2nd STEP/DIR (`axis2_use`) is active. |
+| **axis2** | Optional 2nd STEP/DIR | Config `axis2_use=1` enables a second planner axis (typical **linear travel + pan**, time-synced dual `MT`/`M` — not CNC). Pico / Pico W / RP2040-Zero. On Pico, DBG GP10–13 are reclaimed; on Zero, DBG and axis2 coexist. UIC: `MC_Client.axis_count`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#optional-2nd-axis-axis2_use). |
+| **unit_name** | User-unit label | SliderMC config (`CG unit_name`); default `mm`. UIC readout for user units used with `steps_per_unit`. |
 | **DIR** | Direction | Digital STEP/DIR line that selects motor travel sense (forward vs reverse). SliderMC `PIN_DRV_DIR` (GP19); polarity via `DRV_DIR_active` / `CS`. |
 | **DIP** | Dual in-line package | Small switch banks on many stepper driver boards. Often used to set microstepping; those straps must match `MICROSTEPS` on SliderMC. |
 | **DRV_ERROR** | Driver error / E-stop interlock | Hardware stop input (`PIN_DRV_ERROR`, SliderMC GP21). When active, motion halts immediately, the driver is disabled, and further moves are blocked until the input clears. Use for a closed-loop driver’s alarm/OC output and/or a panel emergency-stop button. Not the same as the panel **STOP** key. |
@@ -19,8 +22,8 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **I2C** | Inter-Integrated Circuit | Two-wire serial bus (SDA/SCL). Used for the optional 128×64 OLED when `DSP_ENABLED` is true (`DSP_I2C_*`). |
 | **LED** | Light-emitting diode | Status lighting: discrete RGB on GP2–GP4 and/or an optional NeoPixel. Colours mirror motion, delay, TL, limits, and DRV_ERROR (see User Manual). |
 | **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../../architecture/overview.md). |
-| **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `set_status_callback`. |
-| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). |
+| **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_status_callback` (1-axis) / `set_status2_callback` (2-axis). |
+| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional 2-axis: `axis_count` from CG `axis2_use`, dual `moveTo`/`home`, `set_status2_callback`. |
 | **MSM** | Stop–shoot–move | Stills timelapse: stand still → pulse `CTRL_CAMERA` → wait exposure → hop → settle → repeat. Default when `tl_mode`/`JKS_TL_MODE` is `"msm"` and TL ≠ 1. Toggle vs Cont with `T`+`D`+`*`. |
 | **Cont** | Continuous crawl | TL≠1 ÷N crawl with `CTRL_CAMERA` hold-high like video (not pulses). OLED `Cont xN @Ffps`; video time = wall-time÷TL. Match the camera’s own TL to the slider TL. |
 | **NP-F** | NP-F battery mount | Common camcorder / LED light battery form factor. Mentioned in compare and hardware notes for turnkey or field power packs—not required by the Pico firmware itself. |
