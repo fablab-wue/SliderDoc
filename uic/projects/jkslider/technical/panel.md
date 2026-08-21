@@ -54,8 +54,8 @@ Software is the same for all builds. Omit unused switches (leave GPIOs unwired �
 
 | Include | Omit |
 |---------|------|
-| SPEED, ACCEL; full keypad; discrete BTN_STOP GP5; discrete BTN_OPTION GP13 | Discrete GP14–15; joystick optional |
-| `JKS_INPUT_MODE = "keypad"` | High-Z row scan (no row diodes) |
+| SPEED, ACCEL; keypad (`JKSliderKeypad.py`); discrete BTN_STOP GP5; discrete OPTION GP14 | Discrete DELAY/TL GPIOs; joystick optional |
+| `JKS_INPUT_MODE = "keypad"` | High-Z row scan (no row diodes). GP13 = KP_COL_4 |
 
 ### Custom - All you want / need
 
@@ -99,7 +99,7 @@ Operator-facing details and chords: **User Manual**.
 Set `JKS_INPUT_MODE` in `JKSliderConfig.py`:
 
 - `"button"` — one GPIO per switch (default)
-- `"keypad"` — 4×3 matrix; same panel logic
+- `"keypad"` — matrix up to 4×4 (`JKSliderKeypad.py`); same panel logic
 
 ### Naming: `BTN_*` vs operator names
 
@@ -181,18 +181,20 @@ KEYPAD mode  |  defaults in UIC_config.py + JKSliderConfig.py
   KP_COL1          GP10    14 |o         o| 27 GP21     free
   KP_COL2          GP11    15 |o         o| 26 GP20     free
   KP_COL3          GP12    16 |o         o| 25 GP19     free
-  BTN_OPTION       GP13    17 |o         o| 24 GP18     free
+  KP_COL_4         GP13    17 |o         o| 24 GP18     free
   GND              GND     18 |o         o| 23 GND      GND
-  free             GP14    19 |o         o| 22 GP17     UART_RX
+  BTN_OPTION       GP14    19 |o         o| 22 GP17     UART_RX
   free             GP15    20 |o         o| 21 GP16     UART_TX
                          +-----------+
 
   Rows: High-Z idle; drive LOW one at a time to scan (no row diodes).
+  Default 3×4 map (edit JKSliderKeypad.py):
   KP_ROW1 (GP6, upper): MOVE_L, DELAY, MOVE_R
   KP_ROW2 (GP7): FAST_L, TIMELAPSE, FAST_R
   KP_ROW3 (GP8): A, B, C
   KP_ROW4 (GP9, lower): OPTION, STOP, OPTION
-  Discrete: BTN_STOP GP5; BTN_OPTION GP13 (ORed with matrix).
+  Discrete: BTN_STOP GP5; BTN_OPTION GP14 (ORed with matrix).
+  KP_COL_4 GP13 is scanned only when LAYOUT has 4 columns.
 ```
 
 Note: Do not use the RUN pin!  
@@ -350,9 +352,12 @@ Note: For reducing ESD problems add a capacitor (100 nF) to GND and a capacitor 
 | GP5 | BTN_STOP (also matrix key; ORed in software) |
 | GP6–GP9 | KP_ROW1 … KP_ROW4 (`KP_ROW1` = upper keys on GP6) |
 | GP10–GP12 | KP_COL1 … KP_COL3 |
-| GP13 | BTN_OPTION (also matrix `*`; ORed in software) |
+| GP13 | KP_COL_4 (scanned if `JKSliderKeypad.py` LAYOUT has 4 columns) |
+| GP14 | BTN_OPTION (also matrix `*`; ORed in software) |
 
-Freed vs button mode: **GP14, GP15**. UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 = CTRL_CAMERA. Optional NeoPixel: free GPIO (e.g. GP18–21) via `PIN_NEOPIXEL`.
+Freed vs button mode: **GP15**. UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 = CTRL_CAMERA. Optional NeoPixel: free GPIO (e.g. GP18–21) via `PIN_NEOPIXEL`.
+
+Existing builds that wired discrete OPTION to **GP13** must move that switch to **GP14**.
 
 #### Recommended key labeling
 
@@ -376,7 +381,9 @@ PCB connector pins, left → right (top view, keys facing you):
 nc  C2  R1  C1  R4  C3  R3  R2  nc
 ```
 
-`C1`/`C2`/`C3` ↔ `KP_COL1`/`KP_COL2`/`KP_COL3`; `R1`…`R4` ↔ `KP_ROW1`…`KP_ROW4`. Outer `nc` pins are unused.
+`C1`/`C2`/`C3` ↔ `KP_COL1`/`KP_COL2`/`KP_COL3`; `R1`…`R4` ↔ `KP_ROW1`…`KP_ROW4`. Outer `nc` pins are unused. A 4×4 pad adds `KP_COL_4` on **GP13**.
+
+Key-to-cell map: edit [`JKSliderKeypad.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/JKSliderKeypad.py) on the Pico (tuple of rows). Optional override: `KEYPAD_LAYOUT` in `SliderPins.py`. Unknown names (e.g. `MOVE_L2`) are ignored until a later 2-axis UI.
 
 For other PCB or flex keypads see manufatorer manuals
 
@@ -385,34 +392,36 @@ For other PCB or flex keypads see manufatorer manuals
 `KP_ROW1` is the **upper** row of keys (GPIO order on the Pico: GP6…GP9 = `KP_ROW1`…`KP_ROW4`).
 
 ```
-              KP_COL1 GP10      KP_COL2 GP11      KP_COL3 GP12
-KP_ROW1 GP6   ` < `             ` D `             ` > `
+              KP_COL1 GP10      KP_COL2 GP11      KP_COL3 GP12      KP_COL_4 GP13
+KP_ROW1 GP6   ` < `             ` D `             ` > `             (4×4 only)
 KP_ROW2 GP7   ` << `            ` T `             ` >> `
 KP_ROW3 GP8   ` A `             ` B `             ` C `
 KP_ROW4 GP9   ` * `             ` 0 `             ` * `
 ```
 
-Both bottom ` * ` keys are one logical OPTION. Matrix ` 0 ` (STOP) and discrete GP5 **BTN_STOP** share one logical STOP. Matrix ` * ` and discrete GP13 **BTN_OPTION** share one logical OPTION (`DOUBLE_OPTION` stays matrix-only when both `*` are down).
+Shipped `LAYOUT` is the 3×4 silk above. Example 4×4 (in `JKSliderKeypad.py` comments): A/B/C on column 4; `MOVE_L2` / `MOVE_R2` reserved.
+
+Both bottom ` * ` keys are one logical OPTION. Matrix ` 0 ` (STOP) and discrete GP5 **BTN_STOP** share one logical STOP. Matrix ` * ` and discrete GP14 **BTN_OPTION** share one logical OPTION (`DOUBLE_OPTION` stays matrix-only when both `*` are down).
 
 #### Keypad wiring — High-Z row scan
 
-Scan: idle **rows** are inputs (Hi-Z); the scanned row is set **OUT/LOW**; read **columns** with pull-ups. No row diodes — Hi-Z idle avoids GPIO fights when several keys are down. Discrete **BTN_STOP**: GP5 — switch — GND. Discrete **BTN_OPTION**: GP13 — switch — GND.
+Scan: idle **rows** are inputs (Hi-Z); the scanned row is set **OUT/LOW**; read **columns** with pull-ups. No row diodes — Hi-Z idle avoids GPIO fights when several keys are down. Discrete **BTN_STOP**: GP5 — switch — GND. Discrete **BTN_OPTION**: GP14 — switch — GND. **KP_COL_4**: GP13.
 
 ![Keypad matrix wiring (High-Z row scan)](../../../../assets/img/keypad_matrix_wiring.svg)
 
 ## Keypad ghosting
 
-Without per-key diodes, three corners of a matrix rectangle can make a fourth **ghost** key look pressed. JKSlider’s layout and firmware are built around that. High-Z scan does not remove those ghosts; it only protects the row GPIOs.
+Without per-key diodes, three corners of a matrix rectangle can make a fourth **ghost** key look pressed. **You check this yourself** for your `LAYOUT` — firmware does not filter ghosts. High-Z scan does not remove those ghosts; it only protects the row GPIOs.
 
-### Why documented chords still work
+### Why documented chords still work (stock 3×4)
 
 | Factor | Effect |
 |--------|--------|
 | Dual ` * ` (OPTION) on KP_ROW4 | MOVE/FAST triples ghost only the other OPTION; scanner adds `DOUBLE_OPTION` when both cells are down |
 | ` A `+` B `+` C ` on one row | No rectangle |
-| Firmware | Filters ghost matrix STOP when OPTION+≥2 of A/B/C; ignores OPTION+pair loops; joy-cal only when stopped; `DOUBLE_OPTION`+STOP → immediate halt |
-| Discrete GP5 BTN_STOP | Applied after the ghost filter |
-| Discrete GP13 BTN_OPTION | ORed after scan (does not create DOUBLE_OPTION) |
+| Firmware | Ignores OPTION+pair loops; joy-cal only when stopped; `DOUBLE_OPTION`+STOP → immediate halt. Does **not** drop a ghost STOP |
+| Discrete GP5 BTN_STOP | ORed after scan (real E-stop) |
+| Discrete GP14 BTN_OPTION | ORed after scan (does not create DOUBLE_OPTION) |
 
 ### Documented chords
 
@@ -423,8 +432,8 @@ Without per-key diodes, three corners of a matrix rectangle can make a fourth **
 | OPTION + MOVE_L + MOVE_R | ` * ` ` < ` ` > ` | Other ` * ` | OK |
 | OPTION + FAST_L + FAST_R | ` * ` ` << ` ` >> ` | Other ` * ` | OK |
 | TIMELAPSE + DELAY + OPTION | ` T ` ` D ` ` * ` | None | Toggle MSM ↔ Cont |
-| OPTION + A+B / A+C / B+C | ` * ` + marks | Often ` 0 ` (STOP) | Loops ignored; STOP filtered |
-| OPTION + A+B+C | ` * ` + marks | Matrix STOP | STOP filtered; cal if idle |
+| OPTION + A+B / A+C / B+C | ` * ` + marks | Often ` 0 ` (STOP) | Loops ignored; ghost STOP possible |
+| OPTION + A+B+C | ` * ` + marks | Matrix STOP | Ghost STOP possible; cal if idle |
 | Both ` * ` + ` 0 ` | `DOUBLE_OPTION`+STOP | None (same row) | Immediate halt |
 
 Residual: odd accidental multi-key presses outside these chords can still ghost — avoid leaning on the keypad.

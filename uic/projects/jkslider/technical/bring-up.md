@@ -81,6 +81,7 @@ From the project folder, copy **at least** these onto the Pico (right-click → 
 - `MC_config.py`
 - `UIC_config.py`
 - `JKSlider.py`
+- `JKSliderKeypad.py`
 - `JKSliderConfig.py`
 - `SliderPins.py` (from `SliderPins.example.py` — your HW profile)
 

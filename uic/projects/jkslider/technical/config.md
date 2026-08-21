@@ -46,9 +46,11 @@ Later panel apps can add another dict (e.g. `OtherApp = { ... }`) in the same `S
 | `JKS_INPUT_MODE` | `"button"` or `"keypad"` |
 | `PIN_POT_SPEED` / `PIN_POT_ACCEL` / `PIN_POT_JOYSTICK` | ADC pots; joystick `None` = off |
 | `PIN_BTN_*` | Discrete buttons (button mode) |
-| `PIN_KEYPAD_ROWS` / `PIN_KEYPAD_COLS` | Keypad matrix |
-| `PIN_BTN_STOP` | Always; ORed with matrix BTN_STOP in keypad mode |
-| `PIN_BTN_OPTION` | Always; ORed with matrix OPTION (`*`) in keypad mode |
+| `PIN_KEYPAD_ROWS` / `PIN_KEYPAD_COLS` | Keypad matrix (cols default GP10–13; 4th col scanned if LAYOUT has 4 columns) |
+| `KEYPAD_LAYOUT` | `None` = use `JKSliderKeypad.py`. Or a tuple of rows to override |
+| `PIN_BTN_STOP` | Always; ORed with matrix STOP in keypad mode |
+| `PIN_BTN_OPTION` | Button mode discrete OPTION (GP13) |
+| `PIN_BTN_OPTION_KEYPAD` | Keypad mode discrete OPTION (GP14); ORed with matrix `*` |
 
 ### Behaviour
 
