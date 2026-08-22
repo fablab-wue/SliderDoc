@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Motion architecture";
+  --doc-path: ".\\SliderDoc\\mc\\motion.md";
+}
+</style>
+
 # Motion architecture
 
 Highest priority: smooth, jerk-limited STEP generation. Protocol and UI traffic must never starve the FIFO.
@@ -62,7 +70,7 @@ Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.
 
 ## Path playback (2nd planner)
 
-`PC`/`PD`/`PG`/`PN`/`PS` (see [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path)) implement a host-authored motion
+`PC`/`PD`/`PG`/`PN`/`PS` (see [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path)) implement a host-authored motion
 path via a second, deliberately simpler planner in `src/motion/motion_path.cpp`,
 kept separate from the sine-ramp planner above. This is a **second planner**, not the optional physical axis2 — though when `axis2_use=1`, path mode plays **two** sample streams (dual `PD` args).
 

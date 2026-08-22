@@ -1,0 +1,42 @@
+Waveshare RP2040-Zero — JKSlider UIC pinout (USB at top)
+BUTTON mode  |  overlay in SliderPins.py (RP2040-Zero keys)
+
+    function     pad                  pad    function
+                        +---- USB ----+
+  5V             5V     |o           o| GP0    BTN_STOP
+  GND            GND    |o           o| GP1    BTN_MOVE_L
+  3V3            3V3    |o           o| GP2    BTN_MOVE_R
+  CTRL_CAMERA    GP29   |o           o| GP3    BTN_FAST_L
+  POT_JOYSTICK   GP28   |o           o| GP4    BTN_FAST_R
+  POT_ACCEL      GP27   |o           o| GP5    BTN_A
+  POT_SPEED      GP26   |o           o| GP6    BTN_B
+  DSP_I2C_SCL    GP15   |o           o| GP7    BTN_C
+  DSP_I2C_SDA    GP14   |o           o| GP8    BTN_OPTION
+                        +-------------+
+                         13 12 11 10 9
+
+Bottom edge (left→right):
+  GP13   UART_RX
+  GP12   UART_TX
+  GP11   LED_R
+  GP10   LED_G
+  GP9    LED_B
+
+Bottom-side SMD pads (top→bottom):
+  GND    GND
+  GP25   BTN_DELAY
+  GP24   BTN_TIMELAPSE
+  GP23   free
+  GP22   free
+  GP21   free
+  GP20   free
+  GP19   free
+  GP18   free
+  GP17   free
+
+Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 1 Mbaud.
+OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.
+CTRL_CAMERA on GP29. DELAY / TIMELAPSE on underside GP25 / GP24.
+Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = "button".
+GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17–23 free SMD pads.
+Naming: BTN_* = electronics/pinout; User Manual uses plain names (STOP, MOVE_L, …).

@@ -1,10 +1,18 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Servos and Stepper Motors with integrated Drivers";
+  --doc-path: ".\\SliderDoc\\components\\integrated-drivers.md";
+}
+</style>
+
 # Servos and Stepper Motors with integrated Drivers
 
 [← Components index](index.md)
 
 JKSlider / SliderMC drive motion as **open-loop STEP/DIR** (plus EN and optional ERROR). Integrated closed-loop steppers / BLDC or servo drives that expose a STEP/DIR interface work the same way; the host does **not** read an encoder.
 
-Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../../architecture/overview.md)
+Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
 
 ### Shared SliderMC nets (axis)
 
@@ -58,10 +66,10 @@ DRV_ERROR_active=0
 |-------|---------|
 | **Name** | MKS SERVO42C — NEMA17 stepper with integrated closed-loop driver |
 | **Status** | `Documented` — wiring and menu from MKS manual + JKSlider STEP/DIR pattern; end-to-end build not yet marked Working |
-| **Photos** | [`../../assets/img/components/mks-servo42c.png`](../../assets/img/components/mks-servo42c.png) (Makerbase product / pinout photo) |
+| **Photos** | [`../assets/img/components/mks-servo42c.png`](../assets/img/components/mks-servo42c.png) (Makerbase product / pinout photo) |
 | **Manufacturer** | [Makerbase MKS-SERVO42C](https://github.com/makerbase-mks/MKS-SERVO42C), [wiki](https://github.com/makerbase-mks/MKS-SERVO42C/wiki), [Product introduction](https://github.com/makerbase-mks/MKS-SERVO42C/wiki/Product-introduction) |
 
-![MKS SERVO42C](../../assets/img/components/mks-servo42c.png)
+![MKS SERVO42C](../assets/img/components/mks-servo42c.png)
 
 JKSlider / SliderMC drive this unit as a normal STEP/DIR axis. The host does **not** use the SERVO42C UART API or read its encoder; closed-loop control stays on the motor board.
 

@@ -12,5 +12,5 @@ Installer hub for wiring, config, and bring-up.
 
 ## Shared references
 
-- [contract/link-and-handshake.md](../../../contract/link-and-handshake.md)
-- [mc/build.md](../../../mc/build.md)
+- [contract/link-and-handshake.md](../../../../contract/link-and-handshake.md)
+- [mc/build.md](../../../../mc/build.md)

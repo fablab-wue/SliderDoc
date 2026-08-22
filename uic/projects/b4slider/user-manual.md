@@ -1,12 +1,21 @@
+<link rel="stylesheet" type="text/css" href="../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "B4Slider — User Manual";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\b4slider\\user-manual.md";
+}
+</style>
+
 # B4Slider — User Manual
 
 **B4Slider** — four-button camera slider panel
 
 How to operate a **ready-configured** B4Slider on set.  
 App: [`B4Slider.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4Slider.py) · config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`).  
-Shared motion / LED stack: [../../api/overview.md](../../api/overview.md). Installer hub: [../jkslider/technical/README.md](../jkslider/technical/README.md).
+Shared motion / LED stack: [../../api/overview.md](../../api/overview.md). Installer hub: [../jkslider/technical/README.md](../jkslider/technical/README.md).  
+One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([HTML source](cheat-sheet/cheat-sheet.html)).
 
-B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window (see [Workflow: A / B](#workflow-a--b-soft-limits)).
+B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window (see [Workflow: A / B](#workflow-a--b-working-window)).
 
 Optional second pot (**ACCEL**) when `B4S_USE_ACCEL_POT=1`. OLED is not required.
 
@@ -27,14 +36,11 @@ The **Key** column uses silk labels: ` < ` MOVE_L, ` > ` MOVE_R, ` * ` OPTION, `
 
 ## Panel layout
 
-```text
-          [S]
-  [← L]         [R →]
-          [*]
-        (SPEED pot)
-```
+Recommended 6U × 6U (72 × 72 mm) discrete plate on a 12 mm grid. ACCEL is optional (`B4S_USE_ACCEL_POT`).
 
-Optional ACCEL pot sits beside SPEED when enabled in config.
+![Recommended B4Slider panel layout](../../../assets/img/B4Slider_button_layout.png)
+
+Silk: `S` SET, `<` MOVE_L, `>` MOVE_R, `*` OPTION.
 
 ## Knobs
 
@@ -74,7 +80,7 @@ Tap vs hold uses `B4S_MOVE_TAP_MS` (default **333 ms**). Left is toward decreasi
 
 ## Soft limits (A / B window)
 
-There are no separate PosA / PosB buttons. The two soft ends **are** the shot window:
+There are no separate PosA / PosB buttons. The two soft ends **are** the working window (A/B). MOVE cannot leave that window until you reset it. Marks vs this window: [Architecture — Marks vs working window](../../../architecture/marks-vs-working-window.md).
 
 | Action | Key | Result |
 |--------|-----|--------|
@@ -127,26 +133,7 @@ RGB status LED (shared [`UIC_Base`](https://github.com/fablab-wue/SliderCtrl/blo
 
 ## Cheat card
 
-```text
-B4Slider
-L/R tap      cruise to soft end
-L/R hold     jog while held
-L+R          HALT
-L+R 1s       swap L/R
-* + L/R      max-speed cruise
-* hold       max speed while moving
-* + S tap    disable; any key enables
-* + S hold   loop on/off (next MOVE starts)
-S tap        (idle: nothing)
-S            stop (while moving)
-S + L/R      set soft end here
-S + L/R 1s   reset that soft end
-S + L+R 1s   reset both soft ends
-S hold 1s    accel preset L   [no ACCEL pot]
-S hold 3s    accel preset H   [no ACCEL pot]
-S hold 5s    accel learn pot  [no ACCEL pot]
-*+S+L+R      HALT + reset like power-up
-```
+One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([HTML](cheat-sheet/cheat-sheet.html)).
 
 ## Workflow: normal moving
 
@@ -161,9 +148,9 @@ S hold 5s    accel learn pot  [no ACCEL pot]
 9. **SET** while moving soft-stops the carriage. **MOVE_L + MOVE_R** is the emergency halt; any button re-enables the driver after a disabled state.
 10. **All four** (MOVE_L + MOVE_R + OPTION + SET) resets the session like power-up and clears the soft-limit / loop state.
 
-## Workflow: A / B (soft limits)
+## Workflow: A / B (working window)
 
-Use the soft ends as your two shot marks.
+Use the two working-window ends as A and B.
 
 1. **Unlock** — press OPTION if the LED is still rainbow.
 2. **Open the window** (optional) — if limits were shrunk earlier: **SET + L + R** hold ≥ 1 s to restore full travel.

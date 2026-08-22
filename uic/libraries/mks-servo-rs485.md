@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "MKS SERVO42D/57D RS485 ↔ `MC_API`";
+  --doc-path: ".\\SliderDoc\\uic\\libraries\\mks-servo-rs485.md";
+}
+</style>
+
 # MKS SERVO42D/57D RS485 ↔ `MC_API`
 
 **`MC_MKS_Client`** ([`MC_MKS_client.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_MKS_client.py)) is a drop-in `MC_API` replacement for [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py) when the axis is an MKS SERVO42D/57D in **RS485 bus mode** (no SliderMC).

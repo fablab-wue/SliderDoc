@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "OLED Displays";
+  --doc-path: ".\\SliderDoc\\components\\oled.md";
+}
+</style>
+
 # OLED Displays
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
 I2C **128×64** status display. Copy matching driver file + `oledfont.py` to the Pico.
 
@@ -18,11 +26,11 @@ I2C **128×64** status display. Copy matching driver file + `oledfont.py` to the
 | SCL | GP1 | `PIN_DSP_I2C_SCL` |
 | — | — | `DSP_I2C_ID = 0`, `DSP_I2C_ADDR = 0x3C`, `DSP_I2C_FREQ = 400_000` |
 
-![OLED I2C module wiring](../../assets/img/oled_i2c_wiring.svg)
+![OLED I2C module wiring](../assets/img/oled_i2c_wiring.svg)
 
 Example UI (not a product photo — mockups live under `../assets/img/oled/`):
 
-![OLED homing](../../assets/img/oled/oled-homing.png)
+![OLED homing](../assets/img/oled/oled-homing.png)
 
 ### SSD1306 0.96″ I2C module
 

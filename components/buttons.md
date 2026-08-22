@@ -1,12 +1,20 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Distinct Buttons";
+  --doc-path: ".\\SliderDoc\\components\\buttons.md";
+}
+</style>
+
 # Distinct Buttons
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md.
 
 Discrete one-GPIO-per-switch panel (`JKS_INPUT_MODE = "button"`). Active-low to GND; Pico internal pull-ups.
 
-![Pico pinout — button mode](../../assets/img/pico_pinout_button.png)
+![Pico pinout — button mode](../assets/img/pico_pinout_button.png)
 
 | Function | Default GP | Config |
 |----------|------------|--------|
@@ -20,7 +28,7 @@ Discrete one-GPIO-per-switch panel (`JKS_INPUT_MODE = "button"`). Active-low to 
 
 Recommended panel (12 mm / 1U grid; pots and buttons Ø12 mm; RGB LED Ø5 mm). Clear edge-to-edge gaps; 1U margin to the plate (8U × 9U). Wire both OPTION switches in parallel to `PIN_BTN_OPTION`.
 
-![Recommended discrete button layout](../../assets/img/discrete_button_layout.png)
+![Recommended discrete button layout](../assets/img/JKSlider_button_layout.png)
 
 | Silk | Function |
 |------|----------|
@@ -33,7 +41,7 @@ Recommended panel (12 mm / 1U grid; pots and buttons Ø12 mm; RGB LED Ø5 mm). C
 
 Three momentary `(ON)-OFF-(ON)` rockers (19 × 13 mm cutouts) plus Ø12 mm STOP / OPTION. No `C`, `DELAY`, or `TIMELAPSE`. Plate ≈ 88 × 118 mm.
 
-![Recommended rocker switch layout](../../assets/img/rocker_switch_layout.png)
+![Recommended rocker switch layout](../assets/img/rocker_switch_layout.png)
 
 | Silk | Function |
 |------|----------|

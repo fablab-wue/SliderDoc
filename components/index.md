@@ -1,12 +1,20 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — Components";
+  --doc-path: ".\\SliderDoc\\components\\index.md";
+}
+</style>
+
 # JKSlider — Components
 
-![JKSlider](../../assets/img/jkslider-hero.png)
+![JKSlider](../assets/img/jkslider-hero.png)
 
 **JKSlider V1 by JK**
 
 This is a **living catalog of hardware that DIY users have run with JKSlider** — either **tested and working** or documented **problems**. When you validate a new part, update the matching chapter with pins, pinouts, schematics, photos, manufacturer links, and the exact config changes needed.
 
-JKSlider is a **UIC + SliderMC** split: panel I/O on the UIC Pico, motion axis on the motion Pico. Overview: [../architecture/overview.md](../../architecture/overview.md) · [architecture SVG](../../assets/img/architecture_overview.svg).
+JKSlider is a **UIC + SliderMC** split: panel I/O on the UIC Pico, motion axis on the motion Pico. Overview: [architecture/overview.md](../architecture/overview.md) · [architecture SVG](../assets/img/architecture_overview.svg).
 
 **Which board?**
 
@@ -22,7 +30,7 @@ MC protocol (sibling clone): [PROTOCOL.md](../contract/protocol.md).
 Mechanics / power / housings: [../build/hardware-manual.md](../build/hardware-manual.md).  
 Operator panel behaviour: [../uic/projects/jkslider/user-manual.md](../uic/projects/jkslider/user-manual.md).
 
-**Photos:** put all component product photos under [`../assets/img/components/`](../../assets/img/components/). Shared diagrams (Pico pinouts, silk map, OLED mockups) may stay under `../assets/img/` and be linked from entries.
+**Photos:** put all component product photos under [`../assets/img/components/`](../assets/img/components/). Shared diagrams (Pico pinouts, silk map, OLED mockups) may stay under `../assets/img/` and be linked from entries.
 
 ---
 
@@ -34,7 +42,7 @@ Copy this block into the matching chapter file:
 |-------|---------|
 | **Name** | Short product / module name |
 | **Status** | `Working` / `Issues` / `Untested` + one-line note |
-| **Photos** | `../../assets/img/components/...` |
+| **Photos** | `../assets/img/components/...` |
 | **Pins** | Board (**UIC** or **SliderMC**) + net names + GP# (and connector pin order if any) |
 | **Schematic / pinout** | ASCII and/or image embeds |
 | **Manufacturer** | Shop / datasheet links |

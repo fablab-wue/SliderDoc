@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Motion Path — technical manual";
+  --doc-path: ".\\SliderDoc\\mc\\motion-path.md";
+}
+</style>
+
 # Motion Path — technical manual
 
 A **Motion Path** is a host-authored motion profile: a PC application or other
@@ -6,7 +14,7 @@ limited) and streams it into SliderMC, which plays it back at a fixed,
 configurable time-slice. This is a second, deliberately simple "player"
 alongside the normal sine-ramp planner (`MT`/`M`/`ML`/`MR`/`MH`) — see
 [MOTION.md](MOTION.md#path-playback-2nd-planner) for the internal architecture
-and [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path) for the
+and [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) for the
 command reference. This document explains the feature end to end for
 integrators writing the PC/UIC side.
 
@@ -185,7 +193,7 @@ move/session-set commands (`MT`, `M`, `ML`, `MR`, `MH`, `SS`, `SA`, `SE`,
 ## Status reporting
 
 - **State letter:** `P` (new, alongside `E`/`I`/`M`/`A`/`B`/`H`/`L`/`D` — see
-  [PROTOCOL.md](PROTOCOL.md#state-letters)). Verbose (`SV 1`) and realtime
+  [PROTOCOL.md](../contract/protocol.md#state-letters)). Verbose (`SV 1`) and realtime
   `?` both report it the same way as any other state.
 - **Verbose/`?` payload:** `#P <pos> <vel> <accel>` — position and velocity
   are live (`vel` is the rate implied by the most recently issued STEP

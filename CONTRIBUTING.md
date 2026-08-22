@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Contributing to SliderDoc";
+  --doc-path: ".\\SliderDoc\\CONTRIBUTING.md";
+}
+</style>
+
 # Contributing to SliderDoc
 
 ## Where to edit

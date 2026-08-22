@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "SpaceBall API";
+  --doc-path: ".\\SliderDoc\\uic\\libraries\\spaceball.md";
+}
+</style>
+
 # SpaceBall API
 
 MicroPython UART reader for classic serial **6DOF** devices: Magellan / SpaceMouse, Spaceball 2003/3003/4000, and SpaceOrb 360. Implementation lives in [`SpaceBall.py`](../SpaceBall.py).

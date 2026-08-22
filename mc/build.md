@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Build and VS Code setup";
+  --doc-path: ".\\SliderDoc\\mc\\build.md";
+}
+</style>
+
 # Build and VS Code setup
 
 ## Prerequisites (Windows)

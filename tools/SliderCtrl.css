@@ -1,274 +1,329 @@
-  :root {
-      --doc-title: "SliderCtrl Manual";
-      --doc-path: "tools/SliderCtrl.css";
-  }
+:root {
+    --accent: #c45a12;
+    --doc-title: "SliderCtrl Manual";
+    --doc-path: "";
+}
 
-  @page {
-      size: A4;
-      margin: 10mm 10mm 14mm 10mm;
+@page {
+    size: A4;
+    margin: 10mm 10mm 8mm 10mm;
 
-      @bottom-left {
-          content: var(--doc-title);
-          font-size: 8pt;
-          color: #444;
-          border-top: 0.7pt solid #c45a12;
-          padding-top: 0;
-          white-space: nowrap;
-      }
+    @bottom-left {
+        content: var(--doc-title);
+        font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #444;
+        border-top: 0.7pt solid var(--accent);
+        vertical-align: top;
+        margin-top: 0;
+        padding-top: 0.4mm;
+        white-space: nowrap;
+    }
 
-      @bottom-center {
-          content: counter(page) " / " counter(pages);
-          font-size: 8pt;
-          color: #444;
-          border-top: 0.7pt solid #c45a12;
-          padding-top: 0;
-          white-space: nowrap;
-      }
+    @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #444;
+        border-top: 0.7pt solid var(--accent);
+        vertical-align: top;
+        margin-top: 0;
+        padding-top: 0.4mm;
+        white-space: nowrap;
+    }
 
-      @bottom-right {
-          content: var(--doc-path);
-          font-size: 6pt;
-          color: #444;
-          border-top: 0.7pt solid #c45a12;
-          padding-top: 0;
-          white-space: nowrap;
-      }
-  }
+    @bottom-right {
+        content: var(--doc-path);
+        font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 6pt;
+        color: #444;
+        border-top: 0.7pt solid var(--accent);
+        vertical-align: top;
+        margin-top: 0;
+        padding-top: 0.4mm;
+        white-space: nowrap;
+    }
+}
 
-  * {
-      box-sizing: border-box;
-  }
+* {
+    box-sizing: border-box;
+}
 
-  html,
-  body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: 8pt;
-      line-height: 1.18;
-      color: #000;
-  }
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 8pt;
+    line-height: 1.18;
+    color: #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
 
-  body {
-      width: 190mm;
-      min-height: 281mm;
-      column-count: 2;
-      column-gap: 5mm;
-      column-fill: auto;
-  }
+body {
+    width: 190mm;
+    min-height: 281mm;
+    column-count: 2;
+    column-gap: 5mm;
+    column-fill: auto;
+}
 
-  h1 {
-      column-span: all;
-      font-size: 24pt;
-      font-weight: 700;
-      color: #c45a12;
-      margin: 0 0 1.5mm 0;
-      padding-bottom: 1mm;
-      border-bottom: 1.5pt solid #c45a12;
-      letter-spacing: 0.02em;
-  }
+h1 {
+    column-span: all;
+    font-size: 24pt;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 1.5mm 0;
+    padding-bottom: 1mm;
+    border-bottom: 1.5pt solid var(--accent);
+    letter-spacing: 0.02em;
+}
 
-  h1 span.sub {
-      font-size: 8pt;
-      font-weight: 500;
-      color: #555;
-      margin-left: 0.4em;
-  }
+h1 span.sub {
+    font-size: 8pt;
+    font-weight: 500;
+    color: #555;
+    margin-left: 0.4em;
+}
 
-  .hero {
-      width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 0 1.2mm 0;
-      border-radius: 1mm;
-      break-inside: avoid;
-      page-break-inside: avoid;
-  }
+.hero {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 0 1.2mm 0;
+    border-radius: 1mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
 
-  .pinout {
-      width: 72%;
-      height: auto;
-      display: block;
-      margin: 1mm auto 0 auto;
-      border-radius: 1mm;
-      break-inside: avoid;
-      page-break-inside: avoid;
-  }
+.pinout {
+    width: 72%;
+    height: auto;
+    display: block;
+    margin: 1mm auto 0 auto;
+    border-radius: 1mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
 
-  h2 {
-      font-size: 10pt;
-      font-weight: 700;
-      margin: 2mm 0 1mm 0;
-      padding: 0.35mm 1mm;
-      background: #c45a12;
-      color: #fff;
-      break-inside: avoid;
-      break-before: page;
-      -webkit-column-break-before: always;
-      page-break-before: always;
-      break-after: avoid;
-      page-break-after: avoid;
-  }
+h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    margin: 2mm 0 1mm 0;
+    padding: 0.35mm 1mm;
+    background: var(--accent);
+    color: #fff;
+    break-inside: avoid;
+    break-after: avoid;
+    page-break-after: avoid;
+}
 
-  h3 {
-      font-size: 8pt;
-      font-weight: 700;
-      margin: 2mm 0 1mm 0;
-      padding: 0.35mm 1mm;
-      background: #f3f3f3;
-      color: #000;
-      break-inside: avoid;
-      break-before: page;
-      -webkit-column-break-before: always;
-      page-break-before: always;
-      break-after: avoid;
-      page-break-after: avoid;
-  }
+h3 {
+    font-size: 8pt;
+    font-weight: 700;
+    margin: 2mm 0 1mm 0;
+    padding: 0.35mm 1mm;
+    background: #f3f3f3;
+    color: #000;
+    break-inside: avoid;
+    break-after: avoid;
+    page-break-after: avoid;
+}
 
-    .block {
-      break-inside: avoid;
-      page-break-inside: avoid;
-      margin-bottom: 0.8mm;
-  }
+.block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 0.8mm;
+}
 
-  .block.col-break {
-      break-before: column;
-      -webkit-column-break-before: always;
-  }
+.block.col-break {
+    break-before: column;
+    -webkit-column-break-before: always;
+}
 
-  table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0;
-      break-inside: avoid;
-      page-break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-  }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+}
 
-  th,
-  td {
-      vertical-align: top;
-      text-align: left;
-      padding: 0.3mm 0.7mm;
-      border-bottom: 0.3pt solid #ccc;
-      break-inside: avoid;
-      page-break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-  }
+th,
+td {
+    vertical-align: top;
+    text-align: left;
+    padding: 0.3mm 0.7mm;
+    border-bottom: 0.3pt solid #ccc;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+}
 
-  th {
-      font-size: 8pt;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #000;
-      border-bottom: 0.8pt solid #888;
-      background: #f3f3f3;
-  }
+th {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #000;
+    border-bottom: 0.8pt solid #888;
+    background: #f3f3f3;
+}
 
-  td.a {
-      width: 36%;
-      font-weight: 600;
-  }
+td.a {
+    width: 36%;
+    font-weight: 600;
+}
 
-  td.k {
-      width: 28%;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 6.4pt;
-      white-space: nowrap;
-  }
+td.k {
+    width: 28%;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 6.4pt;
+    white-space: nowrap;
+}
 
-  td.d {
-      width: 36%;
-      color: #222;
-  }
+td.d {
+    width: 36%;
+    color: #222;
+}
 
-  .note {
-      font-size: 8pt;
-      color: #444;
-      margin: 0.4mm 0 0 0;
-  }
+.note {
+    font-size: 8pt;
+    color: #444;
+    margin: 0.4mm 0 0 0;
+}
 
-  ul {
-      margin: 0.3mm 0 0 3mm;
-      padding: 0;
-  }
+ul {
+    margin: 0.3mm 0 0 3mm;
+    padding: 0;
+}
 
-  li {
-      margin: 0.15mm 0;
-      font-size: 8pt;
-  }
+li {
+    margin: 0.15mm 0;
+    font-size: 8pt;
+}
 
-  ul ul {
-      margin: 0.2mm 0 0.4mm 3mm;
-  }
+ul ul {
+    margin: 0.2mm 0 0.4mm 3mm;
+}
 
-  .wf>li {
-      font-weight: 600;
-      margin-top: 0.5mm;
-  }
+.wf>li {
+    font-weight: 600;
+    margin-top: 0.5mm;
+}
 
-  .wf ul li {
-      font-weight: 400;
-  }
+.wf ul li {
+    font-weight: 400;
+}
 
-  .led td.c {
-      width: 34%;
-      font-weight: 600;
-      white-space: nowrap;
-  }
+.led td.c {
+    width: 34%;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
-  .led td.m {
-      width: 66%;
-  }
+.led td.m {
+    width: 66%;
+}
 
-  .dot {
-      display: inline-block;
-      width: 2.2mm;
-      height: 2.2mm;
-      border-radius: 50%;
-      margin-right: 1.2mm;
-      vertical-align: -0.3mm;
-      border: 0.2pt solid rgba(0, 0, 0, 0.25);
-  }
+.dot {
+    display: inline-block;
+    width: 2.2mm;
+    height: 2.2mm;
+    border-radius: 50%;
+    margin-right: 1.2mm;
+    vertical-align: -0.3mm;
+    border: 0.2pt solid rgba(0, 0, 0, 0.25);
+}
 
-  .dot.rainbow {
-      background: conic-gradient(red, orange, yellow, green, cyan, blue, magenta, red);
-      border: none;
-  }
+.dot.rainbow {
+    background: conic-gradient(red, orange, yellow, green, cyan, blue, magenta, red);
+    border: none;
+}
 
-  .dot.off {
-      background: #222;
-  }
+.dot.off {
+    background: #222;
+}
 
-  .dot.dim {
-      opacity: 0.45;
-  }
+.dot.dim {
+    opacity: 0.45;
+}
 
-  .dot.blink {
-      box-shadow: 0 0 0 0.55mm rgba(0, 0, 0, 0.12);
-  }
+.dot.blink {
+    box-shadow: 0 0 0 0.55mm rgba(0, 0, 0, 0.12);
+}
 
-  .dot.pair {
-      margin-right: 0.4mm;
-  }
+.dot.pair {
+    margin-right: 0.4mm;
+}
 
-  footer {
-      column-span: all;
-      margin-top: 1.2mm;
-      padding-top: 1mm;
-      border-top: 1pt solid #c45a12;
-      font-size: 8pt;
-  }
+img {
+    max-width: 100%;
+    height: auto;
+}
 
-  footer a {
-      color: #0645ad;
-      text-decoration: none;
-  }
+a {
+    color: #0645ad;
+}
 
-  kbd {
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 8pt;
-      background: #eee;
-      padding: 0 1px;
-      border-radius: 2px;
-  }
+pre,
+code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 7pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+pre,
+pre code,
+pre .hljs,
+code.hljs {
+    background: #f3f3f3 !important;
+}
+
+pre {
+    white-space: pre-wrap;
+    break-inside: avoid;
+    padding: 1mm;
+    margin: 1mm 0;
+}
+
+code {
+    background: #f3f3f3;
+    padding: 0 1px;
+}
+
+blockquote {
+    margin: 1mm 0;
+    padding-left: 2mm;
+    border-left: 2pt solid var(--accent);
+    color: #333;
+}
+
+hr {
+    border: none;
+    border-top: 0.5pt solid #ccc;
+    margin: 1.5mm 0;
+}
+
+footer {
+    column-span: all;
+    margin-top: 1.2mm;
+    padding-top: 1mm;
+    border-top: 1pt solid var(--accent);
+    font-size: 8pt;
+}
+
+footer a {
+    color: #0645ad;
+    text-decoration: none;
+}
+
+kbd {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8pt;
+    background: #eee;
+    padding: 0 1px;
+    border-radius: 2px;
+}

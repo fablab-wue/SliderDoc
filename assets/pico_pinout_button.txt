@@ -2,7 +2,7 @@ Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
 BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
 
         function         pin              pin        function
-                         +--- USB ---+
+                              +--- USB ---+
   DSP_I2C_SDA      GP0      1 |o         o| 40 VBUS     VBUS
   DSP_I2C_SCL      GP1      2 |o         o| 39 VSYS     VSYS
   GND              GND      3 |o         o| 38 GND      GND
@@ -23,7 +23,7 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
   GND              GND     18 |o         o| 23 GND      GND
   BTN_DELAY        GP14    19 |o         o| 22 GP17     UART_RX
   BTN_TIMELAPSE    GP15    20 |o         o| 21 GP16     UART_TX
-                         +-----------+
+                              +-----------+
 
 Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud.
 Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.

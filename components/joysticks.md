@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Analog JoySticks";
+  --doc-path: ".\\SliderDoc\\components\\joysticks.md";
+}
+</style>
+
 # Analog JoySticks
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
 Optional centre-return analogue axis on ADC2.
 

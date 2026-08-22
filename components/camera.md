@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Camera Connections (CTRL_CAMERA)";
+  --doc-path: ".\\SliderDoc\\components\\camera.md";
+}
+</style>
+
 # Camera Connections (CTRL_CAMERA)
 
 [← Components index](index.md)
 
-**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22). SliderMC uses GP22 for `SW_HOME`. Overview: [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22). SliderMC uses GP22 for `SW_HOME`. Overview: [ARCHITECTURE.md](../architecture/overview.md).
 
 Shutter / intervalometer output for timelapse and video move modes.
 
@@ -16,7 +24,7 @@ Shutter / intervalometer output for timelapse and video move modes.
 
 **Status:** Working (interface pattern documented).
 
-![CTRL_CAMERA optocoupler wiring](../../assets/img/camera_optocoupler_wiring.svg)
+![CTRL_CAMERA optocoupler wiring](../assets/img/camera_optocoupler_wiring.svg)
 
 Tip/ring/sleeve depends on the camera body — check that remote pinout.
 

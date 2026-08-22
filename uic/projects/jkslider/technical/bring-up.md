@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — Technical Manual: Bring-up";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\jkslider\\technical\\bring-up.md";
+}
+</style>
+
 # JKSlider — Technical Manual: Bring-up
 
 ![JKSlider](../../../../assets/img/jkslider-hero.png)

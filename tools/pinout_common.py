@@ -20,6 +20,10 @@ C_UART = (60, 130, 220)  # blue — UART to UIC
 C_SW = (120, 210, 205)  # light turquoise — SW_*
 C_DBG = (150, 95, 45)  # brown — DBG_* (DEBUG_HW)
 C_LED = (220, 170, 40)  # amber — status LED
+C_BTN = (40, 180, 175)  # turquoise — UIC BTN_*
+C_DSP = (230, 200, 50)  # yellow — DSP I2C
+C_POT = (140, 200, 110)  # light green — POT_*
+C_CTRL = (190, 150, 220)  # light purple — CTRL_* (same family as EXT)
 C_FREE = (190, 190, 195)
 C_CTRL_PIN = (240, 140, 140)
 C_GP = (90, 170, 100)
@@ -229,7 +233,15 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_SW
     if lab.startswith("DBG_"):
         return C_DBG
-    if lab in ("LED", "PIN_LED"):
+    if lab.startswith("BTN_"):
+        return C_BTN
+    if lab.startswith("DSP_") or "DSP_I2C" in lab:
+        return C_DSP
+    if lab.startswith("POT_"):
+        return C_POT
+    if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab:
+        return C_CTRL
+    if lab.startswith("LED_") or lab in ("LED", "PIN_LED") or "NEOPIXEL" in lab:
         return C_LED
     if lab in ("FREE", "(FREE)") or "(FREE)" in lab or lab == "RGB_UNUSED":
         return C_FREE

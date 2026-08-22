@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — Technical Manual: Motion";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\jkslider\\technical\\motion-installer.md";
+}
+</style>
+
 # JKSlider — Technical Manual: Motion
 
 ![JKSlider](../../../../assets/img/jkslider-hero.png)

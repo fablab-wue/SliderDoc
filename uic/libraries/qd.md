@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "QD / Denoiser API";
+  --doc-path: ".\\SliderDoc\\uic\\libraries\\qd.md";
+}
+</style>
+
 # QD / Denoiser API
 
 MicroPython helpers on the RP2040 PIO for a rotary **quadrature encoder** (`QD`) and an optional per-line **Denoiser**. Both live in [`QD.py`](../QD.py). They are **not** wired together in software — the application constructs them and, if used, HW-couples Denoiser outputs to the GPIOs that `QD` reads.

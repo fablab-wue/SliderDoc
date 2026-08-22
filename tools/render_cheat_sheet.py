@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Render JKSlider cheat sheet HTML to PDF (A4).
+"""Render UIC cheat sheet HTML to PDF (A4).
 
-Input:  uic/projects/jkslider/cheat-sheet/cheat-sheet.html
-Output: uic/projects/jkslider/cheat-sheet/cheat-sheet.pdf
+  python tools/render_cheat_sheet.py              # jkslider + b4slider
+  python tools/render_cheat_sheet.py jkslider
+  python tools/render_cheat_sheet.py b4slider
 """
 from __future__ import annotations
 
@@ -13,23 +14,32 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = ROOT / "uic" / "projects" / "jkslider" / "cheat-sheet" / "cheat-sheet.html"
-PDF = ROOT / "uic" / "projects" / "jkslider" / "cheat-sheet" / "cheat-sheet.pdf"
 GITHUB = "https://github.com/fablab-wue/SliderCtrl"
 
+SHEETS = {
+    "jkslider": {
+        "html": ROOT / "uic" / "projects" / "jkslider" / "cheat-sheet" / "cheat-sheet.html",
+        "pdf": ROOT / "uic" / "projects" / "jkslider" / "cheat-sheet" / "cheat-sheet.pdf",
+    },
+    "b4slider": {
+        "html": ROOT / "uic" / "projects" / "b4slider" / "cheat-sheet" / "cheat-sheet.html",
+        "pdf": ROOT / "uic" / "projects" / "b4slider" / "cheat-sheet" / "cheat-sheet.pdf",
+    },
+}
 
-def _render_playwright() -> bool:
+
+def _render_playwright(html: Path, pdf: Path) -> bool:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         return False
-    html_uri = HTML.resolve().as_uri()
+    html_uri = html.resolve().as_uri()
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
         page.goto(html_uri, wait_until="networkidle")
         page.pdf(
-            path=str(PDF),
+            path=str(pdf),
             format="A4",
             print_background=True,
             margin={
@@ -63,41 +73,43 @@ def _find_chrome() -> str | None:
     return None
 
 
-def _render_chrome(chrome: str) -> None:
-    # Chrome needs absolute file paths; output must not exist or be writable.
-    if PDF.exists():
-        PDF.unlink()
+def _render_chrome(chrome: str, html: Path, pdf: Path) -> None:
+    if pdf.exists():
+        pdf.unlink()
     cmd = [
         chrome,
         "--headless=new",
         "--disable-gpu",
         "--no-pdf-header-footer",
         "--no-margins",
-        f"--print-to-pdf={PDF}",
-        HTML.resolve().as_uri(),
+        f"--print-to-pdf={pdf}",
+        html.resolve().as_uri(),
     ]
     subprocess.run(cmd, check=True, capture_output=True)
 
 
-def main() -> int:
-    if not HTML.is_file():
-        print("Missing HTML:", HTML, file=sys.stderr)
+def _render_one(name: str) -> int:
+    sheet = SHEETS[name]
+    html = sheet["html"]
+    pdf = sheet["pdf"]
+    if not html.is_file():
+        print("Missing HTML:", html, file=sys.stderr)
         return 1
 
-    text = HTML.read_text(encoding="utf-8")
+    text = html.read_text(encoding="utf-8")
     if GITHUB not in text:
         print("Warning: expected GitHub URL missing from HTML:", GITHUB)
 
-    if _render_playwright():
-        print("Wrote", PDF, "(playwright)")
+    if _render_playwright(html, pdf):
+        print("Wrote", pdf, "(playwright)")
         return 0
 
     chrome = _find_chrome()
     if chrome:
         try:
-            _render_chrome(chrome)
-            if PDF.is_file():
-                print("Wrote", PDF, "(%s)" % Path(chrome).name)
+            _render_chrome(chrome, html, pdf)
+            if pdf.is_file():
+                print("Wrote", pdf, "(%s)" % Path(chrome).name)
                 return 0
         except (subprocess.CalledProcessError, OSError) as exc:
             print("Chrome/Edge print failed:", exc, file=sys.stderr)
@@ -108,6 +120,19 @@ def main() -> int:
         file=sys.stderr,
     )
     return 2
+
+
+def main() -> int:
+    args = sys.argv[1:] or list(SHEETS)
+    unknown = [a for a in args if a not in SHEETS]
+    if unknown:
+        print("unknown sheet(s):", ", ".join(unknown), file=sys.stderr)
+        print("usage: python tools/render_cheat_sheet.py [jkslider] [b4slider]", file=sys.stderr)
+        return 2
+    rc = 0
+    for name in args:
+        rc = max(rc, _render_one(name))
+    return rc
 
 
 if __name__ == "__main__":

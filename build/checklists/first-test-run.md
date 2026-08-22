@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Checklist — first test run";
+  --doc-path: ".\\SliderDoc\\build\\checklists\\first-test-run.md";
+}
+</style>
+
 # Checklist — first test run
 
 After firmware flash and wiring. See [bring-up.md § First test](../../uic/projects/jkslider/technical/bring-up.md#7-first-test-run).

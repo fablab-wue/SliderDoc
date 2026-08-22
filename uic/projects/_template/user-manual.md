@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "&lt;AppName&gt; — User Manual";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\_template\\user-manual.md";
+}
+</style>
+
 # &lt;AppName&gt; — User Manual
 
 How to operate a ready-configured panel on set.

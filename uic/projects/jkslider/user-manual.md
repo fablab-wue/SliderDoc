@@ -1,6 +1,14 @@
+<link rel="stylesheet" type="text/css" href="../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — User Manual";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\jkslider\\user-manual.md";
+}
+</style>
+
 # JKSlider — User Manual
 
-![JKSlider](../../../../assets/img/jkslider-hero.png)
+![JKSlider](../../../assets/img/jkslider-hero.png)
 
 **JKSlider V1 by JK**
 
@@ -10,7 +18,7 @@ One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([
 
 Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED, …). Missing hardware simply means those actions are unavailable.
 
-The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../contract/link-and-handshake.md#communication-mc--uic).
+The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
 The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_status_callback`, first position). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
 
@@ -26,7 +34,7 @@ The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typic
 
 **OPTION** is a modifier: hold it together with another control. Alone it does nothing.
 
-On **keypad** panels, the **Key** column shows the recommended silk labels (e.g. `` ` < ` for MOVE_L). Button panels use the Action names only.
+On **keypad** panels, the **Key** column shows the recommended silk labels (e.g. `` ` < ` `` for MOVE_L). Button panels use the Action names only.
 
 ## Knobs
 
@@ -70,6 +78,8 @@ Tap vs hold uses `JKS_MOVE_TAP_MS` (default **333 ms**). Locked cruise also ends
 During pause, goto elapsed time keeps counting (wall clock). In **TL ×1 video** and **continuous**, `CTRL_CAMERA` **stays high** while soft-paused (recording continues). In **MSM**, pause freezes the take (no extra pulses) until you release DELAY. STOP ends the move, clears pause, and drops the camera pin (idle).
 
 ## A / B / C
+
+PosA / PosB / PosC are **marks** (waypoints), not a travel wall — you can still MOVE outside them. Why that model vs B4Slider’s A/B window: [Architecture — Marks vs working window](../../../architecture/marks-vs-working-window.md).
 
 Defaults until you overwrite them: **A** ≈ start, **B** ≈ middle, **C** ≈ end of travel.
 
@@ -183,17 +193,6 @@ If an MSM hop cannot fit in the interval (accel too slow / TL too aggressive), s
 2. Hold **OPTION** — full deflection uses **max speed**; **accel stays at the pot value** while the boost is active.
 3. Release **OPTION** — back to pot values.
 
-### FAST jog
-
-1. Hold **FAST_L** or **FAST_R** — jogs at panel max speed/accel (no lock).
-2. Release — stops.
-
-### Joystick + OPTION boost
-
-1. Deflect the stick — speed scales from the SPEED pot; ACCEL pot sets acceleration (live while moving).
-2. Hold **OPTION** — full deflection uses max speed; accel switches to max accel.
-3. Release **OPTION** — back to pot values.
-
 ### OPTION + AB loop (starts at B)
 
 1. Store PosA / PosB if needed.
@@ -265,43 +264,15 @@ Use TL ×1 first so you can *see* the move at real speed, then decide how that m
 
 Idle:
 
-![OLED idle](../../../../assets/img/oled/oled-idle.png)
-
-Delay + TL:
-
-![OLED delay](../../../../assets/img/oled/oled-delay.png)
-
-Wait countdown:
-
-![OLED wait](../../../../assets/img/oled/oled-wait.png)
-
-Near limit while cruising:
-
-![OLED moving](../../../../assets/img/oled/oled-moving.png)
+![OLED idle](../../../assets/img/oled/oled-idle.png)
 
 Goto remain:
 
-![OLED goto](../../../../assets/img/oled/oled-goto.png)
-
-Loop dwell:
-
-![OLED loop](../../../../assets/img/oled/oled-loop.png)
-
-Homing:
-
-![OLED homing](../../../../assets/img/oled/oled-homing.png)
-
-Driver off:
-
-![OLED disabled](../../../../assets/img/oled/oled-disabled.png)
+![OLED goto](../../../assets/img/oled/oled-goto.png)
 
 Soft limit:
 
-![OLED limit](../../../../assets/img/oled/oled-limit.png)
-
-Hard limit (home switch):
-
-![OLED hard limit](../../../../assets/img/oled/oled-hard-limit.png)
+![OLED limit](../../../assets/img/oled/oled-limit.png)
 
 ## Status LED (if present)
 
@@ -320,8 +291,8 @@ PWM RGB and optional NeoPixel (WS2812) show the **same** colors. Soft-limit blue
 | Off (brief) | MSM shutter pulse (`CTRL_CAMERA` high) |
 | Yellow | Speeding up or slowing down |
 | Green | Steady speed |
-| Base + ~30% blue | Near soft limit |
-| Base + 100% blue | At soft limit |
+| Base + ~30% blue | Near soft limit (rail end) |
+| Base + 100% blue | At soft limit (rail end) |
 | Base + ~10% blue | Loop running |
 | Red fast blink | Hard limit (home switch) |
 | Red blink | Homing |
