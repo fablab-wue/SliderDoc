@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Potentiometers";
+  --doc-path: ".\\SliderDoc\\components\\potentiometers.md";
+}
+</style>
+
 # Potentiometers
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
 Analogue panel controls on Pico ADC pins.
 
@@ -13,7 +21,7 @@ Analogue panel controls on Pico ADC pins.
 
 Typical **10 kΩ linear** pots (wiper → ADC; outer legs **3V3** and **AGND**):
 
-![Potentiometer wiring](../../assets/img/potentiometer_wiring.svg)
+![Potentiometer wiring](../assets/img/potentiometer_wiring.svg)
 
 **Status:** Working (default panel).
 

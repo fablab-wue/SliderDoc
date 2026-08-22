@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Configuration";
+  --doc-path: ".\\SliderDoc\\mc\\config.md";
+}
+</style>
+
 # Configuration
 
 Runtime **config** is held in RAM and persisted on LittleFS as `/mc.ini`.  
@@ -16,7 +24,7 @@ Legacy aliases on parse/`CS`/`CG`: `speed`→`init_speed`, `accel`→`init_accel
 | `CS key value` | Set key (silent on success; `!E:cfg …` on error); updates session when applicable |
 | `CG key` | Reply `CG:key=value` |
 | `CG` | Dump all keys, one `CG:…` line each |
-| `SS` / `SA` / `ST` / `SV` | Session set (see [PROTOCOL.md](PROTOCOL.md)) |
+| `SS` / `SA` / `ST` / `SV` | Session set (see [PROTOCOL.md](../contract/protocol.md)) |
 | `GS` / `GA` / `GT` / `GV` | Session get |
 
 Key names are matched case-insensitively.
@@ -47,7 +55,7 @@ Default is **3**.
 | `slider_min` | float units or `none` | 0 | Soft limit min (`none` / `-` disables) |
 | `slider_max` | float units or `none` | 600 | Soft limit max |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
-| `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](PROTOCOL.md#terminal-mode) |
+| `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](../contract/protocol.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
 | `WDT_use` | 0/1 | 1 | `1` = arm RP2040 WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
 | `axis2_use` | 0/1 | 0 | `1` = enable 2nd STEP/DIR axis (Pico / Pico W / RP2040-Zero) |
@@ -78,7 +86,7 @@ Default is **3**.
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
 | `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
-| `path_buffer_size` | int | 32000 | `PD` sample capacity per axis (1..32768); dual buffers when axis2 on; see [PROTOCOL.md](PROTOCOL.md#p--path-host-authored-motion-path) |
+| `path_buffer_size` | int | 32000 | `PD` sample capacity per axis (1..32768); dual buffers when axis2 on; see [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); session field set via `PS`; bare `PS` reloads this |
 
 ### Pin active levels

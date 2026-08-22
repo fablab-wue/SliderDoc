@@ -1,10 +1,18 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Switches for Homing";
+  --doc-path: ".\\SliderDoc\\components\\homing-switches.md";
+}
+</style>
+
 # Switches for Homing
 
 [← Components index](index.md)
 
 Hard-limit / home input on **SliderMC** **`PIN_SW_HOME`** (GP22). With `axis2_use=1`, axis 2 uses **`PIN_SW_HOME2`** (GP9) and matching `SW_HOME_*_2` / `home_*_2` config keys.
 
-SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../../architecture/overview.md)
+SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
 
 Optional hard limits (separate from home): `PIN_SW_LIMIT_L` / `PIN_SW_LIMIT_R` (GP26 / GP27) when `SW_LIMIT_L_use` / `SW_LIMIT_R_use` are enabled — see PINS.md.
 

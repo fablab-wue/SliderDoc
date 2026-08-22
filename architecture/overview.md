@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Architecture — UIC and SliderMC";
+  --doc-path: ".\\SliderDoc\\architecture\\overview.md";
+}
+</style>
+
 # Architecture — UIC and SliderMC
 
 JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated motion controller (SliderMC).
@@ -14,6 +22,7 @@ JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated moti
 - Forks may use ESP8266/ESP32, Raspberry Pi / Linux SBCs, or other DIY boards (large or touch displays) as long as they speak the SliderMC UART protocol — same motion board, replaceable face.
 - The UIC keeps **more free pins** (up to ~26 usable GPIOs on a Pico after UART) for inputs and outputs.
 - **Easier debugging:** USB per board; bring up motion and panel separately.
+- **Two operator models** on the same MC: JKSlider **A/B/C marks** vs B4Slider **A/B working window** — [marks-vs-working-window.md](marks-vs-working-window.md).
 
 ## Connected components
 
@@ -120,7 +129,7 @@ Default baud: **1 000 000**. Changeable in SliderMC source (`UART_BAUD` in `
 
 UART is **3.3 V** logic. Do **not** connect it directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
 
-**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# …` banner (bytes before that LF are discarded on both). The UIC retries `\n` on UART every 100 ms for up to 3 s; on timeout it prints an error and soft-continues. For USB-only bench, press Enter in the MC serial monitor. Details: [Technical Manual — Link](../../contract/link-and-handshake.md#communication-mc--uic) and [PROTOCOL.md](../contract/protocol.md#startup-banner).
+**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# …` banner (bytes before that LF are discarded on both). The UIC retries `\n` on UART every 100 ms for up to 3 s; on timeout it prints an error and soft-continues. For USB-only bench, press Enter in the MC serial monitor. Details: [Technical Manual — Link](../contract/link-and-handshake.md#communication-mc--uic) and [PROTOCOL.md](../contract/protocol.md#startup-banner).
 
 ### Power / VSYS
 
@@ -132,7 +141,7 @@ The two controllers can be **stacked** with jumper pins (e.g. through **GND** pa
 
 ### Remote panel (4-wire cable)
 
-Alternatively, design the **UIC as a handheld wired remote** and keep the **MC** next to the motor driver and power supply. The interconnect is only four wires — **5 V**, **GND**, **TX**, **RX** (UART crossed). Typical: buck to 5 V at the MC end, feed the UIC over the cable; keep motor **VM** local to the axis. Full wiring, power, and baud notes: [Technical Manual — Link](../../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
+Alternatively, design the **UIC as a handheld wired remote** and keep the **MC** next to the motor driver and power supply. The interconnect is only four wires — **5 V**, **GND**, **TX**, **RX** (UART crossed). Typical: buck to 5 V at the MC end, feed the UIC over the cable; keep motor **VM** local to the axis. Full wiring, power, and baud notes: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
 
 ### Housing
 

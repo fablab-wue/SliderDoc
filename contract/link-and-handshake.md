@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Link and handshake (MC ↔ UIC)";
+  --doc-path: ".\\SliderDoc\\contract\\link-and-handshake.md";
+}
+</style>
+
 # Link and handshake (MC ↔ UIC)
 
 ![JKSlider](../assets/img/jkslider-hero.png)
@@ -50,7 +58,7 @@ Keep **motor VM** and high current local to the MC / driver — never run motor 
 
 **Cable length and baud** — default **1 000 000** baud assumes a short, clean link. Longer remotes may need a shielded cable, a lower baud (`UART_BAUD` in SliderMC `include/pins.h`, matched in the UIC `MC_Client` UART), or a shorter run. Shared GND is mandatory at either length.
 
-Architecture overview: [../architecture/overview.md](../../architecture/overview.md#interconnect-and-housing).
+Architecture overview: [../architecture/overview.md](../architecture/overview.md#interconnect-and-housing).
 
 ### Session start (handshake)
 

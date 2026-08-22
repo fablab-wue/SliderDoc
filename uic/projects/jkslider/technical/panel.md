@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — Technical Manual: Panel";
+  --doc-path: ".\\SliderDoc\\uic\\projects\\jkslider\\technical\\panel.md";
+}
+</style>
+
 # JKSlider — Technical Manual: Panel
 
 ![JKSlider](../../../../assets/img/jkslider-hero.png)
@@ -119,7 +127,7 @@ UART to SliderMC is on **GP16 (TX) / GP17 (RX)** on this UIC — wire **crossed*
 
 #### Button mode
 
-![Pico pinout button mode](../panel-layouts/pico_pinout_button.png)
+![Pico pinout button mode](../../../../assets/img/pico_pinout_button.png)
 
 ```
 Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
@@ -155,9 +163,17 @@ Note: Do not use the RUN pin! Motion STEP/DIR/EN, SW_HOME, and DRV_ERROR live on
 
 Also: [../../../../assets/pico_pinout_button.txt](../../../../assets/pico_pinout_button.txt).
 
+#### RP2040-Zero UIC (button mode)
+
+Compact alternative to a full Pico. Same JKSlider app; **GPIO numbers differ** — overlay via `SliderPins.py` (`RP2040_ZERO_*` dicts in [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/SliderPins.example.py)). `JKS_INPUT_MODE = "button"` (no keypad matrix on this map). UART0 is **GP12/13** (not Pico GP16/17); OLED is **I2C1** on GP14/15 (`DSP_I2C_ID = 1`). DELAY / TIMELAPSE sit on underside SMD pads GP25 / GP24.
+
+![RP2040-Zero pinout button mode](../../../../assets/img/rp2040zero_pinout_button.png)
+
+Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py button` → [`rp2040zero_pinout_button.txt`](../../../../assets/rp2040zero_pinout_button.txt) + PNG.
+
 #### Keypad mode
 
-![Pico pinout keypad mode](../panel-layouts/pico_pinout_keypad.png)
+![Pico pinout keypad mode](../../../../assets/img/pico_pinout_keypad.png)
 
 ```
 Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
@@ -219,7 +235,7 @@ Buttons: active-low to GND, internal pull-ups. Config names: `PIN_BTN_*`.
 
 12 mm (1U) grid; 12 mm pots and buttons; 5 mm RGB LED. Clear edge-to-edge gaps; 1U margin to the plate edge (8U × 9U / 96 × 108 mm).
 
-![Recommended discrete button layout](../../../../assets/img/discrete_button_layout.png)
+![Recommended discrete button layout](../../../../assets/img/JKSlider_button_layout.png)
 
 | Silk | Function |
 |------|----------|

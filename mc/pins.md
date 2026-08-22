@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Pin map";
+  --doc-path: ".\\SliderDoc\\mc\\pins.md";
+}
+</style>
+
 # Pin map
 
 Pins are fixed in `include/pins.h` at compile time and cannot be changed by protocol commands.

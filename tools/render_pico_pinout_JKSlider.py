@@ -7,7 +7,9 @@
 
 from __future__ import annotations
 
+import shutil
 import struct
+import sys
 import zlib
 from pathlib import Path
 
@@ -15,6 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT
 OUT_TXT = ROOT / "assets"
 OUT_PNG = ROOT / "uic" / "projects" / "jkslider" / "panel-layouts"
+OUT_PNG_B4 = ROOT / "uic" / "projects" / "b4slider" / "panel-layouts"
+OUT_IMG = ROOT / "assets" / "img"
 
 # Left / right edge, top→bottom (USB at top). Official 40-pin header map.
 # (pad_name, JKSlider UIC label)
@@ -79,6 +83,21 @@ KEYPAD_LEFT_OVERRIDE = {
     "GP15": "free",
 }
 
+# B4Slider button panel (B4SliderConfig.py). SET occupies JKSlider's STOP GPIO.
+B4_LEFT_OVERRIDE = {
+    "GP5": "BTN_SET",
+    "GP8": "free",
+    "GP9": "free",
+    "GP10": "free",
+    "GP11": "free",
+    "GP12": "free",
+    "GP14": "free",
+    "GP15": "free",
+}
+B4_RIGHT_OVERRIDE = {
+    "GP28": "free",
+}
+
 # Group palette
 C_GND = (20, 20, 20)
 C_PWR_5V = (200, 40, 40)  # power 5V — pins 39/40
@@ -108,9 +127,17 @@ def _labels(mode: str):
     for gpio, lab in LEFT:
         if mode == "keypad" and gpio in KEYPAD_LEFT_OVERRIDE:
             left.append((gpio, KEYPAD_LEFT_OVERRIDE[gpio]))
+        elif mode == "b4" and gpio in B4_LEFT_OVERRIDE:
+            left.append((gpio, B4_LEFT_OVERRIDE[gpio]))
         else:
             left.append((gpio, lab))
-    return left, list(RIGHT)
+    right = []
+    for gpio, lab in RIGHT:
+        if mode == "b4" and gpio in B4_RIGHT_OVERRIDE:
+            right.append((gpio, B4_RIGHT_OVERRIDE[gpio]))
+        else:
+            right.append((gpio, lab))
+    return left, right
 
 
 def _color_for(label: str, gpio: str, pin_num: int | None = None):
@@ -145,10 +172,21 @@ def _color_for(label: str, gpio: str, pin_num: int | None = None):
 
 def render_ascii(mode: str) -> str:
     left, right = _labels(mode)
-    title = "BUTTON mode" if mode == "button" else "KEYPAD mode"
+    if mode == "keypad":
+        title = "KEYPAD mode"
+        product = "JKSlider UIC pinout"
+        defaults = "defaults in UIC_config.py + JKSliderConfig.py"
+    elif mode == "b4":
+        title = "BUTTON mode"
+        product = "B4Slider UIC pinout"
+        defaults = "defaults in UIC_config.py + B4SliderConfig.py"
+    else:
+        title = "BUTTON mode"
+        product = "JKSlider UIC pinout"
+        defaults = "defaults in UIC_config.py + JKSliderConfig.py"
     lines = [
-        "Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)",
-        title + "  |  defaults in UIC_config.py + JKSliderConfig.py",
+        "Raspberry Pi Pico — %s (top view, USB at top)" % product,
+        title + "  |  " + defaults,
         "",
         "        function         pin              pin        function",
         "                         +--- USB ---+",
@@ -164,11 +202,16 @@ def render_ascii(mode: str) -> str:
             "  %s %s %2d |o         o| %-2d %s %s"
             % (left_fun, left_gp, pn_l, pn_r, right_gp, right_fun)
         )
+    legend = (
+        "Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud."
+        if mode == "b4"
+        else "Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud."
+    )
     lines.extend(
         [
             "                         +-----------+",
             "",
-            "Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud.",
+            legend,
             "Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.",
         ]
     )
@@ -185,6 +228,14 @@ def render_ascii(mode: str) -> str:
                 "  KP_ROW4 (GP9, lower): OPTION, STOP, OPTION",
             ]
         )
+    elif mode == "b4":
+        lines.extend(
+            [
+                "B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION), SPEED pot,",
+                "  optional ACCEL pot (GP27, B4S_USE_ACCEL_POT). No keypad, FAST, A/B/C,",
+                "  DELAY, TIMELAPSE, or joystick. SET on GP5 (was STOP on JKSlider).",
+            ]
+        )
     else:
         lines.append(
             "Button mode: one GPIO per BTN_* (active-low). "
@@ -194,10 +245,16 @@ def render_ascii(mode: str) -> str:
         "GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). "
         "Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL."
     )
-    lines.append(
-        "Naming: BTN_* = electronics/pinout; User Manual uses plain names "
-        "(STOP, MOVE_L, …). Key silk: short labels (` > `, ` * `, …)."
-    )
+    if mode == "b4":
+        lines.append(
+            "Naming: BTN_* = electronics/pinout; User Manual uses plain names "
+            "(SET, MOVE_L, …). Key silk: ` S `, ` < `, ` > `, ` * `."
+        )
+    else:
+        lines.append(
+            "Naming: BTN_* = electronics/pinout; User Manual uses plain names "
+            "(STOP, MOVE_L, …). Key silk: short labels (` > `, ` * `, …)."
+        )
     return "\n".join(lines) + "\n"
 
 
@@ -457,7 +514,10 @@ def render_png(mode: str, path: Path):
             return C_GP
         return C_PINNUM
 
-    title = "Pico JKSlider UIC — %s mode" % ("BUTTON" if mode == "button" else "KEYPAD")
+    if mode == "b4":
+        title = "Pico B4Slider UIC — BUTTON mode"
+    else:
+        title = "Pico JKSlider UIC — %s mode" % ("BUTTON" if mode == "button" else "KEYPAD")
     text(title, margin, margin, text_c, 2)
     text(
         "Top view  USB at top  GP + function  Default wiring",
@@ -526,14 +586,37 @@ def render_png(mode: str, path: Path):
 
 
 def main():
-    OUT_PNG.mkdir(parents=True, exist_ok=True)
-    for mode in ("button", "keypad"):
-        ascii_path = OUT_TXT / ("pico_pinout_%s.txt" % mode)
-        png_path = OUT_PNG / ("pico_pinout_%s.png" % mode)
-        ascii_path.write_text(render_ascii(mode), encoding="utf-8")
-        render_png(mode, png_path)
+    modes = sys.argv[1:] or ["button", "keypad", "b4"]
+    unknown = [m for m in modes if m not in ("button", "keypad", "b4")]
+    if unknown:
+        print("unknown mode(s):", ", ".join(unknown), file=sys.stderr)
+        print("usage: python tools/render_pico_pinout_JKSlider.py [button] [keypad] [b4]", file=sys.stderr)
+        sys.exit(2)
+
+    if any(m in modes for m in ("button", "keypad")):
+        OUT_PNG.mkdir(parents=True, exist_ok=True)
+        for mode in ("button", "keypad"):
+            if mode not in modes:
+                continue
+            ascii_path = OUT_TXT / ("pico_pinout_%s.txt" % mode)
+            png_path = OUT_PNG / ("pico_pinout_%s.png" % mode)
+            ascii_path.write_text(render_ascii(mode), encoding="utf-8")
+            render_png(mode, png_path)
+            print("wrote", ascii_path)
+            print("wrote", png_path)
+
+    if "b4" in modes:
+        OUT_PNG_B4.mkdir(parents=True, exist_ok=True)
+        OUT_IMG.mkdir(parents=True, exist_ok=True)
+        ascii_path = OUT_TXT / "pico_pinout_B4.txt"
+        png_path = OUT_PNG_B4 / "pico_pinout_B4.png"
+        assets_png = OUT_IMG / "pico_pinout_B4.png"
+        ascii_path.write_text(render_ascii("b4"), encoding="utf-8")
+        render_png("b4", png_path)
+        shutil.copyfile(png_path, assets_png)
         print("wrote", ascii_path)
         print("wrote", png_path)
+        print("wrote", assets_png)
 
 
 if __name__ == "__main__":

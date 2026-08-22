@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "SliderMC communication protocol";
+  --doc-path: ".\\SliderDoc\\contract\\protocol.md";
+}
+</style>
+
 # SliderMC communication protocol
 
 ASCII line protocol for the SliderMC motor controller.  
@@ -147,7 +155,7 @@ API values use **mm**, **mm/s**, and **mm/s²** unless a config key says otherwi
 
 ## Commands
 
-Printable one-page overview: [command-cheatsheet.html](command-cheatsheet.html) / [command-cheatsheet.pdf](command-cheatsheet.pdf). Markdown with Call/Reply columns: [command-cheatsheet.md](command-cheatsheet.md) (regenerate with `python tools/render_command_cheatsheet.py`).
+Printable one-page overview: [command-cheatsheet.html](command-cheatsheet.html) / [command-cheatsheet.pdf](command-cheatsheet.pdf). Markdown with Call/Reply columns: [command-cheatsheet.md](command-cheatsheet2.md) (regenerate with `python tools/render_command_cheatsheet.py`).
 
 Descriptions below match the printable cheat sheet (`tools/render_command_cheatsheet.py`). Extra notes follow each group.
 
@@ -244,6 +252,8 @@ Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` �
 | `RB` | `Reboot` | — | Soft MCU reset (no power cycle): halt/EN off, then reboot. Next `IZ` → `soft`. |
 
 Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
+
+A UIC may shrink `slider_min` / `slider_max` as a working window — [marks vs working window](../architecture/marks-vs-working-window.md).
 
 ### W — Wait (silent)
 

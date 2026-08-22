@@ -1,6 +1,14 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider vs motorized camera sliders";
+  --doc-path: ".\\SliderDoc\\architecture\\compare.md";
+}
+</style>
+
 # JKSlider vs motorized camera sliders
 
-![JKSlider](../../assets/img/jkslider-hero.png)
+![JKSlider](../assets/img/jkslider-hero.png)
 
 Competitive scan of commercial and DIY motorized sliders vs **JKSlider V1** (UIC panel + SliderMC motion stack).
 

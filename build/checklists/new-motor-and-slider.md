@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Checklist — new motor / slider";
+  --doc-path: ".\\SliderDoc\\build\\checklists\\new-motor-and-slider.md";
+}
+</style>
+
 # Checklist — new motor / slider
 
 Use when changing mechanics, driver, or travel. Full detail: [bring-up.md](../../uic/projects/jkslider/technical/bring-up.md#checklist--new-motor--slider-slidermc).

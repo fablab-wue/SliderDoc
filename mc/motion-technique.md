@@ -1,8 +1,8 @@
-<link rel="stylesheet" type="text/css" href="SliderCtrl.css">
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
   --doc-title: "Motion technique notes";
-  --doc-path: ".\\SliderMC\\docs\\motion_technique.md";
+  --doc-path: ".\\SliderDoc\\mc\\motion-technique.md";
 }
 </style>
 

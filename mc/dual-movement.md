@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "About dual movement - 2 axis slider";
+  --doc-path: ".\\SliderDoc\\mc\\dual-movement.md";
+}
+</style>
+
 # About dual movement - 2 axis slider
 
 How SliderMC coordinates **two STEP/DIR axes** when `axis2_use=1`. Typical rig: **axis 1 = linear travel** (slider), **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is a **time-synced** dual move (both finish together), **not** a CNC-style diagonal feedrate.

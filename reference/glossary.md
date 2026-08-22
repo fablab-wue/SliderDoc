@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Glossary";
+  --doc-path: ".\\SliderDoc\\reference\\glossary.md";
+}
+</style>
+
 # Glossary
 
 Terms used in JKSlider manuals, config, and the MC_Client API.
@@ -7,7 +15,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | Acronym | Expansion | Meaning |
 |---------|-----------|---------|
 | **ADC** | Analogue-to-digital converter | Reads a continuous voltage as a number. On JKSlider, ADC channels sample the SPEED, ACCEL, and optional JOYSTICK pots so the firmware can map knob position to mm/s and mm/s². |
-| **API** | Application programming interface | The documented methods and config for writing your own code on top of `MC_Client` / `UIC_Base` (see [`../uic/api/overview.md`](../../uic/api/overview.md)). JKSlider is one application that uses this API. |
+| **API** | Application programming interface | The documented methods and config for writing your own code on top of `MC_Client` / `UIC_Base` (see [`../uic/api/overview.md`](../uic/api/overview.md)). JKSlider is one application that uses this API. |
 | **IA** | IsAxis | SliderMC query `IA` / `Axis` / `IsAxis` → `IA:1` or `IA:2` when optional 2nd STEP/DIR (`axis2_use`) is active. |
 | **axis2** | Optional 2nd STEP/DIR | Config `axis2_use=1` enables a second planner axis (typical **linear travel + pan**, time-synced dual `MT`/`M` — not CNC). Pico / Pico W / RP2040-Zero. On Pico, DBG GP10–13 are reclaimed; on Zero, DBG and axis2 coexist. UIC: `MC_Client.axis_count`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#optional-2nd-axis-axis2_use). |
 | **unit_name** | User-unit label | SliderMC config (`CG unit_name`); default `mm`. UIC readout for user units used with `steps_per_unit`. |
@@ -21,7 +29,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **GPIO** | General-purpose input/output | Pico pins used as digital I/O or ADC (buttons, DRV_STEP/DIR, DRV_ERROR, LED, etc.). Numbered as GPn in the Technical Manual pinouts. |
 | **I2C** | Inter-Integrated Circuit | Two-wire serial bus (SDA/SCL). Used for the optional 128×64 OLED when `DSP_ENABLED` is true (`DSP_I2C_*`). |
 | **LED** | Light-emitting diode | Status lighting: discrete RGB on GP2–GP4 and/or an optional NeoPixel. Colours mirror motion, delay, TL, limits, and DRV_ERROR (see User Manual). |
-| **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../../architecture/overview.md). |
+| **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../architecture/overview.md). |
 | **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_status_callback` (1-axis) / `set_status2_callback` (2-axis). |
 | **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional 2-axis: `axis_count` from CG `axis2_use`, dual `moveTo`/`home`, `set_status2_callback`. |
 | **MSM** | Stop–shoot–move | Stills timelapse: stand still → pulse `CTRL_CAMERA` → wait exposure → hop → settle → repeat. Default when `tl_mode`/`JKS_TL_MODE` is `"msm"` and TL ≠ 1. Toggle vs Cont with `T`+`D`+`*`. |
@@ -43,11 +51,20 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **TL** | Timelapse | Panel **TIMELAPSE** divider and yellow **TL** badge. ×1 is video (hold-high while moving / soft-paused); ≠1 selects MSM or Cont (`tl_mode`), toggled with `T`+`D`+`*`. |
 | **TMC** | Trinamic Motor Control | Family of silent / feature-rich stepper drivers (e.g. TMC2208/09, TMC5160) commonly wired as STEP/DIR (+ EN) to the Pico. |
 | **USB** | Universal Serial Bus | Used to flash MicroPython, run Thonny/`mpremote`, and optionally power the Pico during bring-up. Prefer a data-capable cable. |
-| **UIC** | UI controller | Panel Pico (or compact RP2040 board, e.g. RP2040-Zero) running MicroPython (`JKSlider` / `MC_Client` / `UIC_Base`): pots, buttons/keypad, OLED, RGB, camera, UART host to SliderMC. Preferred stack for this project; forks may use other hosts. See [`../architecture/overview.md`](../../architecture/overview.md). |
+| **UIC** | UI controller | Panel Pico (or compact RP2040 board, e.g. RP2040-Zero) running MicroPython (`JKSlider` / `MC_Client` / `UIC_Base`): pots, buttons/keypad, OLED, RGB, camera, UART host to SliderMC. Preferred stack for this project; forks may use other hosts. See [`../architecture/overview.md`](../architecture/overview.md). |
 | **UIC_Base** | UIC peripherals class | OLED / RGB / camera / WDT on the UIC (`UIC_base.py`); refreshed via `MC_Client` status callback. |
 | **WDT** | Watchdog timer | Hardware timer that resets the Pico if firmware stops feeding it. Fed from the I/O monitor; the onboard LED blinks at 1 Hz as a heartbeat when enabled. |
 
 Electronics and pinouts use the `BTN_*` prefix (e.g. `BTN_STOP`); the User Manual uses the short names below.
+
+## Travel / limits
+
+| Term | Meaning |
+|------|---------|
+| **Mark** | JKSlider PosA / PosB / PosC — a bookmark (waypoint). Goto goes there; MOVE can still leave the framed shot. Not a wall. |
+| **Working window** | B4Slider manuals say **A/B**. `soft_limit_L` / `soft_limit_R` — a wall **and** the MOVE target. See [marks vs working window](../architecture/marks-vs-working-window.md). |
+| **Soft limit** | MC planner clip `slider_min` / `slider_max`. Full rail unless the UIC shrinks it (B4 writes the working window into these keys). |
+| **Hard limit** | Hardware switch (`SW_HOME` / `SW_LIMIT_*`); red LED. Not the panel STOP key. |
 
 ## Panel controls
 

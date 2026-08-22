@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "RGB-LEDs";
+  --doc-path: ".\\SliderDoc\\components\\rgb-leds.md";
+}
+</style>
+
 # RGB-LEDs
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
 PWM status LED on GP2/3/4. Optional WS2812 NeoPixel mirrors the same colours ([User Manual — Status LED](../uic/projects/jkslider/user-manual.md#status-led-if-fitted)).
 
@@ -36,11 +44,11 @@ Target **≈ 5 mA** per channel from the Pico **3.3 V** GPIO.
 | LED_G | ≈ 2.8 V | 100 Ω | **100 Ω** (~5.0 mA) |
 | LED_B | ≈ 3.0 V | 60 Ω | **56 Ω** (~5.4 mA) |
 
-![Common-cathode RGB LED pinout and wiring](../../assets/img/rgb_led_wiring.svg)
+![Common-cathode RGB LED pinout and wiring](../assets/img/rgb_led_wiring.svg)
 
 Common-anode variant (`LED_ACTIVE_HIGH = False`): tie the common anode to **3V3**; GPIO sinks through the same resistor values.
 
-![Common-anode RGB LED wiring](../../assets/img/rgb_led_common_anode.svg)
+![Common-anode RGB LED wiring](../assets/img/rgb_led_common_anode.svg)
 
 **Config:**
 
@@ -61,6 +69,6 @@ PIN_NEOPIXEL = 18
 PIO_NEOPIXEL_SM_ID = 1
 ```
 
-![Optional WS2812 NeoPixel wiring](../../assets/img/neopixel_wiring.svg)
+![Optional WS2812 NeoPixel wiring](../assets/img/neopixel_wiring.svg)
 
 RGB on GP2/3/4 remains wired as above — NeoPixel is additional, not a replacement. Details: [Technical Manual — NeoPixel](../uic/projects/jkslider/technical/panel.md#wiring-schematics--optional-neopixel-ws2812).

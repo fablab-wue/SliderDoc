@@ -1,10 +1,18 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Stepper Motors with external Drivers";
+  --doc-path: ".\\SliderDoc\\components\\external-drivers.md";
+}
+</style>
+
 # Stepper Motors with external Drivers
 
 [← Components index](index.md)
 
 Standard NEMA17 (or similar) + separate STEP/DIR board. Wire STEP/DIR/EN to the **SliderMC** board — not the UIC. For a second motor when `axis2_use=1`, wire the second driver to the axis-2 pins for your board — see [pins.md](../mc/pins.md).
 
-SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../../architecture/overview.md)
+SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
 
 ### A4988 / DRV8825-class (carrier boards)
 
@@ -26,7 +34,7 @@ SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/
 
 Typical: SliderMC 3V3 → VIO; GP18/19/20 → STEP/DIR/EN; shared GND; VM from motor PSU. Set StealthChop/SpreadCycle per board straps. MS1/MS2 → GND for **8** microsteps.
 
-![TMC STEP/DIR wiring](../../assets/img/tmc_stepdir_wiring.svg)
+![TMC STEP/DIR wiring](../assets/img/tmc_stepdir_wiring.svg)
 
 *(Diagram labels “Pico” = **SliderMC** Pico.)*
 

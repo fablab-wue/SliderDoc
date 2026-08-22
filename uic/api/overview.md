@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "SliderCtrl API";
+  --doc-path: ".\\SliderDoc\\uic\\api\\overview.md";
+}
+</style>
+
 # SliderCtrl API
 
 Non-blocking millimetre motion API for the **UIC** Raspberry Pi Pico  
@@ -24,9 +32,9 @@ Shipped defaults: [`MC_config.py`](../MC_config.py) (link) and [`UIC_config.py`]
 | `B4SliderConfig.py` | B4Slider panel defaults (`B4S_*`) |
 | `B4Slider.py` | 4-button slider app (L/R/OPTION/SET + SPEED pot) |
 | `SliderPins.example.py` | Template for one full overlay file per slider HW |
-| `QD.py` | `QD` quadrature decoder + `Denoiser` — see [QD.md](QD.md) |
-| `SpaceBall.py` | Serial SpaceMouse / Spaceball / SpaceOrb UART reader — see [SpaceBall.md](SpaceBall.md) |
-| `MPU6050.py` | I2C MPU6050 accel/gyro + tilt/roll — see [MPU6050.md](MPU6050.md) |
+| `QD.py` | `QD` quadrature decoder + `Denoiser` — see [QD.md](../libraries/qd.md) |
+| `SpaceBall.py` | Serial SpaceMouse / Spaceball / SpaceOrb UART reader — see [SpaceBall.md](../libraries/spaceball.md) |
+| `MPU6050.py` | I2C MPU6050 accel/gyro + tilt/roll — see [MPU6050.md](../libraries/mpu6050.md) |
 
 Architecture (UIC ↔ SliderMC): [architecture/overview.md](../../architecture/overview.md).
 
@@ -54,7 +62,7 @@ mc.moveTo(100)
 await mc.wait()
 ```
 
-**`MC_MKS_Client`** implements the same **`MC_API`** names and drops in for `MC_Client` when the axis is MKS SERVO42D/57D over RS485 (no SliderMC). See [mks-servo-rs485.md](../uic/libraries/mks-servo-rs485.md).
+**`MC_MKS_Client`** implements the same **`MC_API`** names and drops in for `MC_Client` when the axis is MKS SERVO42D/57D over RS485 (no SliderMC). See [mks-servo-rs485.md](../libraries/mks-servo-rs485.md).
 
 ---
 
@@ -329,7 +337,7 @@ API RGB channels are **0…255**; docs often describe mixes as **percent**. Apps
 
 ### B4Slider (4-button app)
 
-Minimal panel: MOVE_L / MOVE_R / OPTION / SET + SPEED pot (optional ACCEL pot via `B4S_USE_ACCEL_POT`). Soft limits are the A/B working window. Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`.
+Minimal panel: MOVE_L / MOVE_R / OPTION / SET + SPEED pot (optional ACCEL pot via `B4S_USE_ACCEL_POT`). Soft limits are the A/B working window ([marks vs working window](../../architecture/marks-vs-working-window.md)). Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`.
 
 Homing / `home()` is **aborted** if the `DRV_ERROR` input becomes active (position is not forced to 0).
 
@@ -378,43 +386,43 @@ Example screens (`../../assets/img/oled/` — flat active-area mockups; regenera
 
 **Idle** — Ready:
 
-![OLED idle](../assets/img/oled/oled-idle.png)
+![OLED idle](../../assets/img/oled/oled-idle.png)
 
 **Delay + TL** — armed delay and timelapse divider:
 
-![OLED delay](../assets/img/oled/oled-delay.png)
+![OLED delay](../../assets/img/oled/oled-delay.png)
 
 **Wait** — delay countdown before motion:
 
-![OLED wait](../assets/img/oled/oled-wait.png)
+![OLED wait](../../assets/img/oled/oled-wait.png)
 
 **Moving** — cruise with `Near limit`:
 
-![OLED moving](../assets/img/oled/oled-moving.png)
+![OLED moving](../../assets/img/oled/oled-moving.png)
 
 **Goto** — remaining distance:
 
-![OLED goto](../assets/img/oled/oled-goto.png)
+![OLED goto](../../assets/img/oled/oled-goto.png)
 
 **Loop dwell**:
 
-![OLED loop](../assets/img/oled/oled-loop.png)
+![OLED loop](../../assets/img/oled/oled-loop.png)
 
 **Homing** — yellow `HOMING`:
 
-![OLED homing](../assets/img/oled/oled-homing.png)
+![OLED homing](../../assets/img/oled/oled-homing.png)
 
 **Driver off** — yellow `DISABLED`:
 
-![OLED disabled](../assets/img/oled/oled-disabled.png)
+![OLED disabled](../../assets/img/oled/oled-disabled.png)
 
 **Soft limit** — yellow `LIMIT`:
 
-![OLED limit](../assets/img/oled/oled-limit.png)
+![OLED limit](../../assets/img/oled/oled-limit.png)
 
 **Hard limit** — yellow `HARD LIMIT` (`SW_HOME`):
 
-![OLED hard limit](../assets/img/oled/oled-hard-limit.png)
+![OLED hard limit](../../assets/img/oled/oled-hard-limit.png)
 
 ### Continuous velocity — `move(speed)`
 
@@ -495,7 +503,7 @@ Example with peak \(a = 200\,\mathrm{mm/s^2}\), cruise \(\pm 50\,\mathrm{mm/s}\)
 | Cruise − | 1.89 → 2.60 s | −50 mm/s held |
 | Decel stop | 2.60 → 2.99 s | −50 → 0 (`stop()` / `move(0)`, no pause) |
 
-![Velocity vs time with DIR_CHANGE_PAUSE_S highlighted](../assets/img/dir_change_pause.png)
+![Velocity vs time with DIR_CHANGE_PAUSE_S highlighted](../../assets/img/dir_change_pause.png)
 
 *Sine / cosine velocity ramps; amber band = `DIR_CHANGE_PAUSE_S` (default 0.1 s) at zero before reversing. Regenerate with `python tools/render_dir_change_pause.py`.*
 
@@ -611,7 +619,7 @@ Mechanics (`steps_per_unit`), `max_speed` / `max_accel`, `unit_name`, `slider_mi
 | `JKS_SPEED_MAX_MM_S` | 100 | Panel ceiling: `mc.max_speed = min(MC max_speed, this)` after CG |
 | `JKS_ACCEL_MIN_MM_S2` / `JKS_ACCEL_MAX_MM_S2` | 50 / 500 | ACCEL pot floor; max clamps `mc.max_accel` |
 
-Panel behaviour flags use the `JKS_*` prefix, e.g. `JKS_MOVE_TAP_MS`, `JKS_SWAP_LR`, `JKS_TL_MODE` (`"msm"` / `"continuous"`), `JKS_LOOP_DWELL_MS`, `JKS_BOOT_TEXT`. See [../../uic/projects/jkslider/technical/config.md](../../../uic/projects/jkslider/technical/config.md).
+Panel behaviour flags use the `JKS_*` prefix, e.g. `JKS_MOVE_TAP_MS`, `JKS_SWAP_LR`, `JKS_TL_MODE` (`"msm"` / `"continuous"`), `JKS_LOOP_DWELL_MS`, `JKS_BOOT_TEXT`. See [../../uic/projects/jkslider/technical/config.md](../projects/jkslider/technical/config.md).
 
 ### One file per slider HW (`SliderPins.py`)
 

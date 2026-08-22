@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — set-ready motorized camera slider control";
+  --doc-path: ".\\SliderDoc\\architecture\\marketing.md";
+}
+</style>
+
 # JKSlider — set-ready motorized camera slider control
 
 ![JKSlider](../assets/img/jkslider-hero.png)
@@ -41,7 +49,7 @@ Different **faces** on the same motion stack — pick the UIC that fits your sho
 | **B4Slider** | Minimal 4-button remote — MOVE L/R, SET, OPTION, one SPEED pot; no OLED or timelapse | [user manual](../uic/projects/b4slider/user-manual.md) |
 | *More coming* | Custom rigs on `MC_Client` / UART | [project template](../uic/projects/_template/README.md) |
 
-**JKSlider** when you need the full shoot feature set. **B4Slider** when you want the smallest wired remote for slim or budget builds.
+**JKSlider** when you need the full shoot feature set (marks, timelapse, DELAY). **B4Slider** when you want the smallest wired remote — MOVE L/R **is** the A/B working window. Philosophy: [marks vs working window](marks-vs-working-window.md).
 
 Source: [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) (`JKSlider.py`, `B4Slider.py`).
 

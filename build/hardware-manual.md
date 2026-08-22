@@ -1,13 +1,21 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "JKSlider — Hardware Manual";
+  --doc-path: ".\\SliderDoc\\build\\hardware-manual.md";
+}
+</style>
+
 # JKSlider — Hardware Manual
 
-![JKSlider](../../assets/img/jkslider-hero.png)
+![JKSlider](../assets/img/jkslider-hero.png)
 
 **JKSlider V1 by JK**
 
 Mechanics, motors, mounting, and power — choosing parts for a motorized camera slider that JKSlider / SliderCtrl can drive.  
 Panel wiring and firmware config: [../uic/projects/jkslider/technical/README.md](../uic/projects/jkslider/technical/README.md) ([Bring-up](../uic/projects/jkslider/technical/bring-up.md), [Panel](../uic/projects/jkslider/technical/panel.md), [Motion](../uic/projects/jkslider/technical/motion-installer.md)).  
 On-set operation: [../uic/projects/jkslider/user-manual.md](../uic/projects/jkslider/user-manual.md).  
-Electronics architecture (UIC + SliderMC): [../architecture/overview.md](../../architecture/overview.md).
+Electronics architecture (UIC + SliderMC): [../architecture/overview.md](../architecture/overview.md).
 
 JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. Config `axis2_use=1` optionally enables a **second** STEP/DIR axis (e.g. pan) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
 

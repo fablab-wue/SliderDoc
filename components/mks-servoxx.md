@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "MKS SERVO42D / 57D (RS485 bus mode)";
+  --doc-path: ".\\SliderDoc\\components\\mks-servoxx.md";
+}
+</style>
+
 # MKS SERVO42D / 57D (RS485 bus mode)
 
 [← Components index](index.md)
 
-Drive the axis **directly from the UIC** over RS485 with [`MC_MKS_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_MKS_client.py) — **no SliderMC**, no STEP/DIR. Protocol map: [MKS_SERVO_RS485.md](../../uic/libraries/mks-servo-rs485.md).
+Drive the axis **directly from the UIC** over RS485 with [`MC_MKS_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_MKS_client.py) — **no SliderMC**, no STEP/DIR. Protocol map: [MKS_SERVO_RS485.md](../uic/libraries/mks-servo-rs485.md).
 
 For STEP/DIR closed-loop (SERVO42C + SliderMC), see [../components/integrated-drivers.md](../components/integrated-drivers.md) instead.
 

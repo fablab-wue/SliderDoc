@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>B4Slider Cheat Sheet</title>
+<style>
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 6.9pt;
+    line-height: 1.18;
+    color: #111;
+  }
+  body {
+    width: 194mm;
+    min-height: 281mm;
+    column-count: 2;
+    column-gap: 4.5mm;
+    column-fill: auto;
+  }
+  h1 {
+    column-span: all;
+    font-size: 12.5pt;
+    font-weight: 700;
+    margin: 0 0 1.5mm 0;
+    padding-bottom: 1mm;
+    border-bottom: 1.5pt solid #222;
+    letter-spacing: 0.02em;
+  }
+  h1 span.sub {
+    font-size: 7.5pt;
+    font-weight: 500;
+    color: #555;
+    margin-left: 0.4em;
+  }
+  .hero {
+    width: 58%;
+    height: auto;
+    display: block;
+    margin: 0 auto 1.2mm auto;
+    border-radius: 1mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .pinout {
+    width: 72%;
+    height: auto;
+    display: block;
+    margin: 1mm auto 0 auto;
+    border-radius: 1mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h2 {
+    font-size: 7.5pt;
+    font-weight: 700;
+    margin: 1.4mm 0 0.5mm 0;
+    padding: 0.35mm 1mm;
+    background: #c45a12;
+    color: #fff;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 0.8mm;
+  }
+  .block.col-break {
+    break-before: column;
+    -webkit-column-break-before: always;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+  th, td {
+    vertical-align: top;
+    text-align: left;
+    padding: 0.3mm 0.7mm;
+    border-bottom: 0.3pt solid #ccc;
+  }
+  th {
+    font-size: 6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #444;
+    border-bottom: 0.8pt solid #888;
+    background: #f3f3f3;
+  }
+  td.a { width: 36%; font-weight: 600; }
+  td.k { width: 28%; font-family: Consolas, "Courier New", monospace; font-size: 6.4pt; white-space: nowrap; }
+  td.d { width: 36%; color: #222; }
+  .note {
+    font-size: 6.2pt;
+    color: #444;
+    margin: 0.4mm 0 0 0;
+  }
+  ul {
+    margin: 0.3mm 0 0 3mm;
+    padding: 0;
+  }
+  li { margin: 0.15mm 0; font-size: 6.5pt; }
+  ul ul { margin: 0.2mm 0 0.4mm 3mm; }
+  .wf > li { font-weight: 600; margin-top: 0.5mm; }
+  .wf ul li { font-weight: 400; }
+  .led td.c { width: 34%; font-weight: 600; white-space: nowrap; }
+  .led td.m { width: 66%; }
+  .dot {
+    display: inline-block;
+    width: 2.2mm;
+    height: 2.2mm;
+    border-radius: 50%;
+    margin-right: 1.2mm;
+    vertical-align: -0.3mm;
+    border: 0.2pt solid rgba(0,0,0,0.25);
+  }
+  .dot.rainbow {
+    background: conic-gradient(red, orange, yellow, green, cyan, blue, magenta, red);
+    border: none;
+  }
+  .dot.off {
+    background: #222;
+  }
+  .dot.dim { opacity: 0.45; }
+  .dot.blink {
+    box-shadow: 0 0 0 0.55mm rgba(0,0,0,0.12);
+  }
+  footer {
+    column-span: all;
+    margin-top: 1.2mm;
+    padding-top: 1mm;
+    border-top: 1pt solid #222;
+    font-size: 7pt;
+  }
+  footer a { color: #0645ad; text-decoration: none; }
+  kbd {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 6.4pt;
+    background: #eee;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<h1>B4Slider Cheat Sheet <span class="sub">set card</span></h1>
+
+<img class="hero" src="../../../../assets/img/B4Slider_button_layout.svg" alt="Recommended B4Slider panel layout">
+
+<div class="block">
+<h2>Panel</h2>
+<p class="note">Silk: <kbd>S</kbd> SET · <kbd>&lt;</kbd> MOVE_L · <kbd>&gt;</kbd> MOVE_R · <kbd>*</kbd> OPTION. ACCEL pot is optional (<code>B4S_USE_ACCEL_POT</code>). Unlock at boot: press OPTION (rainbow LED).</p>
+</div>
+
+<div class="block">
+<h2>Move</h2>
+<table>
+  <tr><th>Action</th><th>Key</th><th>Description</th></tr>
+  <tr><td class="a">(MOVE_L / MOVE_R) tap ≤⅓s</td><td class="k"><kbd>&lt;</kbd> / <kbd>&gt;</kbd> tap</td><td class="d">Locked cruise toward that soft end at SPEED</td></tr>
+  <tr><td class="a">(MOVE_L / MOVE_R) hold &gt;⅓s</td><td class="k"><kbd>&lt;</kbd> / <kbd>&gt;</kbd> hold</td><td class="d">Hold-to-run; soft-stop on release</td></tr>
+  <tr><td class="a">Same MOVE tip while locked</td><td class="k"><kbd>&lt;</kbd> or <kbd>&gt;</kbd> tip</td><td class="d">Soft-stop cruise</td></tr>
+  <tr><td class="a">Opposite MOVE</td><td class="k"><kbd>&lt;</kbd> or <kbd>&gt;</kbd></td><td class="d">Reverse / retarget other soft end</td></tr>
+  <tr><td class="a">OPTION + (MOVE_L / MOVE_R)</td><td class="k"><kbd>*</kbd> + <kbd>&lt;</kbd> / <kbd>&gt;</kbd></td><td class="d">Same as MOVE at panel max speed</td></tr>
+  <tr><td class="a">OPTION hold while moving</td><td class="k"><kbd>*</kbd> hold</td><td class="d">Boost to max speed; release → SPEED pot</td></tr>
+  <tr><td class="a">SET while moving</td><td class="k"><kbd>S</kbd></td><td class="d">Soft-stop</td></tr>
+  <tr><td class="a">MOVE_L + MOVE_R</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd></td><td class="d">Halt; driver off until any key</td></tr>
+  <tr><td class="a">MOVE_L + MOVE_R hold ≥1s</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Swap left/right</td></tr>
+  <tr><td class="a">All four (L+R+OPTION+SET)</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> <kbd>*</kbd> <kbd>S</kbd></td><td class="d">Halt + reset like power-up</td></tr>
+</table>
+<p class="note">Tap vs hold: <code>B4S_MOVE_TAP_MS</code> (333 ms). OPTION before MOVE launches at max speed + max accel; OPTION after start boosts speed only.</p>
+</div>
+
+<div class="block">
+<h2>Soft limits (A / B window)</h2>
+<table>
+  <tr><th>Action</th><th>Key</th><th>Description</th></tr>
+  <tr><td class="a">SET + MOVE_L tap</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> tap</td><td class="d">Set soft_limit_L here</td></tr>
+  <tr><td class="a">SET + MOVE_R tap</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> tap</td><td class="d">Set soft_limit_R here</td></tr>
+  <tr><td class="a">SET + MOVE_L hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> hold ≥1s</td><td class="d">Reset L → slider min</td></tr>
+  <tr><td class="a">SET + MOVE_R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset R → slider max</td></tr>
+  <tr><td class="a">SET + L + R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset both ends</td></tr>
+</table>
+<p class="note">Travel only inside the working window. MOVE cruise targets those ends (A / B).</p>
+</div>
+
+<div class="block">
+<h2>SET / OPTION</h2>
+<table>
+  <tr><th>Action</th><th>Key</th><th>Description</th></tr>
+  <tr><td class="a">SET tap (idle)</td><td class="k"><kbd>S</kbd> tap</td><td class="d">Nothing</td></tr>
+  <tr><td class="a">SET hold ≥1s (idle)</td><td class="k"><kbd>S</kbd> hold ≥1s</td><td class="d">Accel preset L — no ACCEL pot</td></tr>
+  <tr><td class="a">SET hold ≥3s (idle)</td><td class="k"><kbd>S</kbd> hold ≥3s</td><td class="d">Accel preset H — no ACCEL pot</td></tr>
+  <tr><td class="a">SET hold ≥5s (idle)</td><td class="k"><kbd>S</kbd> hold ≥5s</td><td class="d">Accel learn from SPEED pot — no ACCEL pot</td></tr>
+  <tr><td class="a">OPTION + SET tap</td><td class="k"><kbd>*</kbd> <kbd>S</kbd> tap</td><td class="d">Disable driver</td></tr>
+  <tr><td class="a">OPTION + SET hold ≥1s</td><td class="k"><kbd>*</kbd> <kbd>S</kbd> hold ≥1s</td><td class="d">Toggle loop armed</td></tr>
+  <tr><td class="a">Any key while disabled</td><td class="k">—</td><td class="d">Re-enable driver</td></tr>
+</table>
+<p class="note">Loop arm does not start motion; next MOVE cruise ping-pongs until SET / same tip / halt.</p>
+</div>
+
+<div class="block">
+<h2>Pots</h2>
+<table>
+  <tr><th>Control</th><th>Description</th></tr>
+  <tr><td class="a">SPEED</td><td class="d">Left → slower floor; right → faster (finer at low end)</td></tr>
+  <tr><td class="a">ACCEL</td><td class="d">If <code>B4S_USE_ACCEL_POT=1</code>: left gentler / right snappier. SET accel holds off.</td></tr>
+</table>
+</div>
+
+<div class="block col-break">
+<h2>Workflows</h2>
+<ul class="wf">
+  <li>Normal moving
+    <ul>
+      <li>Unlock with OPTION if LED is rainbow</li>
+      <li>Dial SPEED (and ACCEL pot, or SET 1s/3s presets if no pot)</li>
+      <li>Tap MOVE to cruise to a soft end; hold MOVE to jog</li>
+      <li>Same tip stops; opposite reverses; SET stops; L+R halt</li>
+    </ul>
+  </li>
+  <li>Frame A / B
+    <ul>
+      <li>Jog to first pose; <kbd>S</kbd> <kbd>&lt;</kbd> tap → soft_limit_L</li>
+      <li>Jog to second pose; <kbd>S</kbd> <kbd>&gt;</kbd> tap → soft_limit_R</li>
+      <li>Rehearse: MOVE tap cruises to that end</li>
+      <li>Optional loop: idle <kbd>*</kbd> <kbd>S</kbd> hold ≥1s, then MOVE tap</li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<div class="block">
+<h2>Status LED</h2>
+<table class="led">
+  <tr><th>Colour</th><th>Meaning</th></tr>
+  <tr><td class="c"><span class="dot rainbow"></span>Rainbow</td><td class="m">Power-on / unlock</td></tr>
+  <tr><td class="c"><span class="dot dim" style="background:#f5f5f5; border-color:#999"></span>Dim white</td><td class="m">Idle, ready</td></tr>
+  <tr><td class="c"><span class="dot dim" style="background:#f5f5f5; border-color:#999"></span><span class="dot dim" style="background:#2563eb"></span>White ↔ blue</td><td class="m">Loop armed (idle)</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#ffd600"></span>Yellow</td><td class="m">Accel / decel</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#22c55e"></span>Green</td><td class="m">Steady speed</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#2563eb"></span>+30% / 100% blue</td><td class="m">Near / at soft end</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#3b82f6"></span>+10% blue</td><td class="m">Loop running</td></tr>
+  <tr><td class="c"><span class="dot dim" style="background:#ff8c00"></span>Dim orange</td><td class="m">Driver off</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red fast blink</td><td class="m">Hard limit</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red blink</td><td class="m">Homing</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#ef4444"></span>Red</td><td class="m">DRV_ERROR / E-stop</td></tr>
+  <tr><td class="c"><span class="dot" style="background:#f5f5f5; border-color:#999"></span>White blip</td><td class="m">Soft limit set / reset</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#f5f5f5; border-color:#999"></span>White flash /s</td><td class="m">SET hold second counter</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#7c3aed"></span>Violet ×1 / ×2 / ×3</td><td class="m">Accel preset L / H / learn</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red flash</td><td class="m">Halt / all-four reset</td></tr>
+</table>
+</div>
+
+<div class="block">
+<img class="pinout" src="../panel-layouts/pico_pinout_B4.png" alt="Pico pinout — B4Slider">
+<p class="note">UART to SliderMC @ 1 Mbaud (GP16/17 crossed). Handshake: UIC <code>\n</code> → MC welcome <code># …</code> banner.</p>
+</div>
+
+<footer>
+  <strong>B4Slider</strong> ·
+  <a href="https://github.com/fablab-wue/SliderCtrl">https://github.com/fablab-wue/SliderCtrl</a>
+  · Full detail: User Manual
+</footer>
+
+</body>
+</html>

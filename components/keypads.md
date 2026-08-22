@@ -1,8 +1,16 @@
+<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "KeyPads";
+  --doc-path: ".\\SliderDoc\\components\\keypads.md";
+}
+</style>
+
 # KeyPads
 
 [← Components index](index.md)
 
-**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../../architecture/overview.md).
+**UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
 4×3 matrix mode: `JKS_INPUT_MODE = "keypad"`. Rows use **High-Z idle scan** (no row diodes): idle rows are inputs; the scanned row is driven LOW; columns read with pull-ups. Discrete **STOP** on GP5 is ORed with matrix `0`. Discrete **OPTION** on GP13 is ORed with matrix `*`.
 
@@ -15,21 +23,21 @@
 
 Recommended silk (Technical Manual):
 
-![Recommended keypad map](../../assets/img/keypad_map.png)
+![Recommended keypad map](../assets/img/keypad_map.png)
 
 Discrete button / pot or rocker panel alternatives: [Distinct Buttons — recommended layouts](../components/buttons.md).
 
-![Keypad matrix wiring (High-Z row scan)](../../assets/img/keypad_matrix_wiring.svg)
+![Keypad matrix wiring (High-Z row scan)](../assets/img/keypad_matrix_wiring.svg)
 
 Ghosting / dual OPTION behaviour: [Technical Manual — Keypad ghosting](../uic/projects/jkslider/technical/panel.md#keypad-ghosting).
 
-![Pico pinout — keypad mode](../../assets/img/pico_pinout_keypad.png)
+![Pico pinout — keypad mode](../assets/img/pico_pinout_keypad.png)
 
 ### PCB 4×3 membrane keypad (9-pin header)
 
 **Status:** Working (layout and connector order match Technical Manual; qualify your exact seller SKU).
 
-![PCB keypad](../../assets/img/components/611EorUKOcL._AC_SL1000_.jpg)
+![PCB keypad](../assets/img/components/611EorUKOcL._AC_SL1000_.jpg)
 
 **Connector** (left → right, top view, keys facing you):
 

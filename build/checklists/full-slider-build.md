@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Checklist — full slider build";
+  --doc-path: ".\\SliderDoc\\build\\checklists\\full-slider-build.md";
+}
+</style>
+
 # Checklist — full slider build
 
 End-to-end order for a new JKSlider + SliderMC pair. Details: [jkslider/technical/README.md](../../uic/projects/jkslider/technical/README.md).

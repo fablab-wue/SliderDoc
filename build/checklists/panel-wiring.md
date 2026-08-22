@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="../../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "Checklist — panel wiring";
+  --doc-path: ".\\SliderDoc\\build\\checklists\\panel-wiring.md";
+}
+</style>
+
 # Checklist — panel wiring
 
 UIC GPIO checklist. Full pinouts: [jkslider/technical/panel.md](../../uic/projects/jkslider/technical/panel.md).
