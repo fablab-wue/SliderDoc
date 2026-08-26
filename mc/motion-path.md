@@ -12,7 +12,7 @@ A **Motion Path** is a host-authored motion profile: a PC application or other
 UIC pre-computes a sequence of tiny position deltas (already speed/accel
 limited) and streams it into SliderMC, which plays it back at a fixed,
 configurable time-slice. This is a second, deliberately simple "player"
-alongside the normal sine-ramp planner (`MT`/`M`/`ML`/`MR`/`MH`) — see
+alongside the normal sine-ramp planner (`MT`/`M`/`ML`/`MR`/`MJ`/`MH`) — see
 [MOTION.md](MOTION.md#path-playback-2nd-planner) for the internal architecture
 and [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) for the
 command reference. This document explains the feature end to end for
@@ -58,8 +58,8 @@ usual `!E:<code> <text>` form:
 
 - **Sample:** one signed 16-bit integer, unit **µm** (micrometres), range
   `-32768..32767` (≈ ±32.767 mm of delta-distance per slice). With
-  `axis2_use=1`, each `PD` can supply a second sample for axis 2; skip tokens
-  (`none`/`N`/`_`/`*`) become `0` µm on that axis.
+  `axis2_use=1`, each `PD` can supply a second sample for axis 2; skip token
+  `_` becomes `0` µm on that axis.
 - **`0` means stand still** for that slice — no STEP pulses are issued; the
   PIO naturally holds its output level for the slice duration.
 - **Buffer:** a flat array, not a ring buffer. `PD` always appends; `PG`
@@ -187,7 +187,7 @@ STEP FIFO until it ends. Allowed during playback:
 - `CG` / `ConfigGet`
 
 Everything else — including another `PG`, `PC`, `PS`, and all
-move/session-set commands (`MT`, `M`, `ML`, `MR`, `MH`, `SS`, `SA`, `SE`,
+move/session-set commands (`MT`, `M`, `ML`, `MR`, `MJ`, `MH`, `SS`, `SA`, `SE`,
 `ST`, `SV`, `SD`, `CS`) — is rejected until playback ends.
 
 ## Status reporting

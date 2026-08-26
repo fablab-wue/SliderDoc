@@ -57,14 +57,14 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 1. **One source of truth for STEP rate** — `planner_fill_fifo()` computes Hz from remaining distance + cruise/accel at issue time.
 2. **`pack_n`:** if `remaining_steps <= 0` return **0 before** any min-Hz shortcut (prevents Zielpunkt-Pendeln).
 3. **Position** advances when pulses are **committed to TX**; soft-stop waits for empty FIFO.
-4. **Live retarget** — `MT` / `SS` / `SA` update target/cruise/accel; next fill uses new remaining distance.
+4. **Live retarget** — `MT` / `MJ` / `SS` / `SA` update target/cruise/accel; next fill uses new remaining distance.
 5. **Reverse** — decelerate to 0 → `dir_change_pause_s` → accelerate the other way.
-6. **Soft limits** clamp remaining steps; illegal `MT` outside limits is rejected.
+6. **Soft limits** clamp remaining steps to the **session working window** (`SL`/`SR`); illegal `MT` outside the window is rejected.
 7. **Homing** — FSM via `MH` (`home_mode`, `home_speed`, `home_accel`, `home_move_out`); mode `0` = silent no-op.
 
 API units are user units (typically mm / mm/s / mm/s², or ° / °/s / °/s²); internals use steps via `steps_per_unit` (and `steps_per_unit_2` when axis2 is enabled). See [dual-movement.md](dual-movement.md) for dual-axis timing and units.
 
-With `axis2_use=1`, the planner maintains **two** independent axes, each with its own PIO state machine, position, soft limits, and homing FSM. Session `SS`/`SA` apply to both; dual-arg `MT`/`M` and mask args on `ML`/`MR`/`MH` select which axes move. See [dual-movement.md](dual-movement.md) and [protocol.md — Optional 2nd axis](../contract/protocol.md#optional-2nd-axis-axis2_use).
+With `axis2_use=1`, the planner maintains **two** independent axes, each with its own PIO state machine, position, soft limits, and homing FSM. Session `SS`/`SA` apply to both; dual-arg `MT`/`M` and mask args on `ML`/`MR`/`MH` select which axes move. `MJ` / `MoveJoy` holds a signed per-axis velocity as a percent of `SS` (independent, not dual-`MT` time-sync) — [motion-joy.md](motion-joy.md). See [dual-movement.md](dual-movement.md) and [protocol.md — Optional 2nd axis](../contract/protocol.md#optional-2nd-axis-axis2_use).
 
 Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.cpp`.
 
@@ -94,11 +94,18 @@ kept separate from the sine-ramp planner above. This is a **second planner**, no
   move — path-mode never invents its own stop/halt ramp.
 - **Gating:** while `PG` is active, all other move/session commands are
   rejected (`!E:busy`); only `MS`, `H`/`HT`, `PD` (live-move streaming), `PN`,
-  status queries, `Help`, and `CG` are allowed. Speed/accel limits are **not**
+  status queries, `Help`, and `CG` are allowed (`MJ` included in the busy
+  set). Speed/accel limits are **not**
   checked — the host is
   trusted to deliver an already-limited path, same stance as elsewhere.
 
 Files: `include/motion_path.h`, `src/motion/motion_path.cpp`.
+
+## Joystick hold (`MJ`)
+
+`MJ` / `MoveJoy` is a **velocity hold** for analogue sticks (typical 5–20 Hz, also acyclic): signed percent of session `SS`, clamped per axis to `max_speed` / `max_speed_2`. It is **not** a wrap of `ML`/`SS`/`MS`. First `MJ` enters joy-mode; `SS`/`SA` stay legal and rescale/re-ramp from the stored percentages. Other moves (`MT`, `ML`, `MS`, `PG`, …) end joy-mode.
+
+Integrator guide (command flow, snapshot rules, UIC skip-if-unchanged): [motion-joy.md](motion-joy.md). Hardware: [joysticks.md](../components/joysticks.md).
 
 ## Debug counters (`motion_diag`)
 
@@ -130,11 +137,11 @@ Enabled per side with `SW_LIMIT_L_use` / `SW_LIMIT_R_use` (GPIOs fixed in `pins.
 - Polled from `planner_tick` with **~20 ms** debounce (assert and release) to survive switch bounce.
 - On stable trip: shared **`planner_halt()`** — `pio_step_stop_hard()`, `enable=0`, cancel waits/chain, state letter `L`.
 - Toward-limit commands rejected until cleared; after `SE 1`, drive-out (opposite direction) is allowed; latch clears on stable release.
-- Soft limits (`slider_min` / `slider_max`) are separate and unchanged.
+- Soft limits / working window (`slider_min`/`max` envelope; `SL`/`SR` session): **separate**; see [working-window.md](working-window.md).
 
 ## Stop vs Halt
 
-- **`MS` / realtime `!`:** soft decelerate via stop-distance law; enable unchanged; normal jog/move workflow.
+- **`MS` / realtime `!`:** soft decelerate via stop-distance law; enable unchanged; normal jog/move workflow. Also **ends joy-mode** (`MJ`).
 - **`H` / `HT` / hard limit / `PIN_DRV_ERROR`:** `planner_halt()` — immediate FIFO abort, EN off, cancel waits/chain.
 
 ## `PIN_DRV_ERROR`
@@ -158,4 +165,5 @@ Mode 3/4: the reference limit does not raise a hard-limit fault during seek (it 
 - Real PIO + FIFO feed + sine seek planner with live retarget: **implemented**.
 - Hard limits L/R (debounced, immediate halt): **implemented**.
 - Homing cycle (`MH`): **implemented**.
+- Joystick hold (`MJ` / `MoveJoy`): **implemented**.
 - Stop vs Halt + `PIN_DRV_ERROR` poll/gate: **implemented**.

@@ -20,7 +20,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HTML_OUT = ROOT / "contract" / "command-cheatsheet.html"
 MD_OUT = ROOT / "contract" / "command-cheatsheet.md"
+MD2_OUT = ROOT / "contract" / "command-cheatsheet2.md"
 PDF_OUT = ROOT / "contract" / "command-cheatsheet.pdf"
+MD2_CSS = r"""<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
+<style>
+:root {
+  --doc-title: "SliderMC Command Cheat Sheet";
+  --doc-path: ".\\SliderDoc\\contract\\command-cheatsheet.md";
+}
+</style>
+
+"""
 FW_VERSION = "1.0"
 
 SILENT = "—"
@@ -35,14 +45,14 @@ GROUPS = [
                 "SetSpeed",
                 "SS [<v>]",
                 SILENT,
-                "Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill. Dual MT: axis1=session, axis2×ratio.",
+                "Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.",
             ),
             (
                 "SA",
                 "SetAccel",
                 "SA [<a>]",
                 SILENT,
-                "Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill. Dual MT: same ratio scaling as SS.",
+                "Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.",
             ),
             (
                 "SE",
@@ -72,6 +82,20 @@ GROUPS = [
                 SILENT,
                 "USB-only debug level 0..5; bare restores default; never on UIC UART.",
             ),
+            (
+                "SL",
+                "SetLeft",
+                "SL [<pos> [<pos2>]]",
+                SILENT,
+                "Session soft min (working window); bare→slider_min; none clears (→envelope if set); skip _; !E:limit past envelope.",
+            ),
+            (
+                "SR",
+                "SetRight",
+                "SR [<pos> [<pos2>]]",
+                SILENT,
+                "Session soft max; bare→slider_max; none clears; skip _; !E:limit if left>right.",
+            ),
         ],
     ),
     (
@@ -83,6 +107,20 @@ GROUPS = [
             ("GT", "GetTerminal", "GT", "GT:0|1", "Terminal Mode state."),
             ("GV", "GetVerbose", "GV", "GV:0|1", "Verbose push state."),
             ("GD", "GetDebug", "GD", "GD:<0..5>", "USB debug level."),
+            (
+                "GL",
+                "GetLeft",
+                "GL",
+                "GL:<pos> [<pos2>]",
+                "Session soft min; effective (session else envelope); - if both None; dual when axis2 on.",
+            ),
+            (
+                "GR",
+                "GetRight",
+                "GR",
+                "GR:<pos> [<pos2>]",
+                "Session soft max; same effective / - rules as GL.",
+            ),
         ],
     ),
     (
@@ -146,7 +184,7 @@ GROUPS = [
                 "MoveTo",
                 "MT <pos> [<pos2>]",
                 SILENT,
-                "Absolute user units; optional 2nd axis; skip none/N/_/*; needs SE; live-retarget. Dual: time-sync ratio.",
+                "Absolute user units; optional 2nd axis; skip _; needs SE; live-retarget. Dual: time-sync ratio.",
             ),
             (
                 "M",
@@ -170,6 +208,13 @@ GROUPS = [
                 "Jog +; mask same as ML; soft-stop MS/!.",
             ),
             (
+                "MJ",
+                "MoveJoy",
+                "MJ <pct> [<pct2>]",
+                SILENT,
+                "Joy speed % of SS, signed (− left / + right); 2-axis optional pct2 (omit=0); 0=soft-stop; SS/SA live; clamp max_speed[_2].",
+            ),
+            (
                 "MH",
                 "MoveHome",
                 "MH [1|2]",
@@ -181,7 +226,7 @@ GROUPS = [
                 "MoveStop",
                 "MS",
                 SILENT,
-                "Soft decelerate both axes; keeps enable; does not cancel waits. Dual: scaled accel kept.",
+                "Soft decelerate both axes; keeps enable; ends joy-mode; does not cancel waits. Dual: scaled accel kept.",
             ),
         ],
     ),
@@ -200,7 +245,7 @@ GROUPS = [
                 "PathData",
                 "PD <um> [<um2>]",
                 SILENT,
-                "Append signed µm sample(s); optional axis2; skip→0; OK while PG (live stream).",
+                "Append signed µm sample(s); optional axis2; skip _ →0; OK while PG (live stream).",
             ),
             (
                 "PG",
@@ -531,8 +576,9 @@ def build_html() -> str:
     )
     parts.append(
         '<div class="row"><strong>Halt vs Stop:</strong> '
-        "<code>MS</code>/<code>!</code> soft decel (enable kept); "
-        "<code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits.</div>"
+        "<code>MS</code>/<code>!</code> soft decel (enable kept, ends joy-mode); "
+        "<code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits. "
+        "<code>MJ</code>: skip if value unchanged.</div>"
     )
     parts.append("</footer>")
     parts.append("</div></body></html>")
@@ -549,7 +595,7 @@ def build_markdown() -> str:
         "# SliderMC Command Cheat Sheet",
         "",
         f"Firmware V{FW_VERSION}. Same groups as the [printable sheet](command-cheatsheet.html).",
-        "Canonical prose: [protocol.md](protocol.md). Dual-axis timing: [dual-movement.md](../mc/dual-movement.md).",
+        "Canonical prose: [protocol.md](protocol.md). Dual-axis timing: [dual-movement.md](../mc/dual-movement.md). Joystick: [motion-joy.md](../mc/motion-joy.md). Working window: [working-window.md](../mc/working-window.md).",
         "",
         "Regenerate: `python tools/render_command_cheatsheet.py`",
         "",
@@ -575,6 +621,12 @@ def build_markdown() -> str:
     )
     lines.append(
         "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`."
+    )
+    lines.append(
+        "- `MJ` / `MoveJoy`: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. See [motion-joy.md](../mc/motion-joy.md)."
+    )
+    lines.append(
+        "- Skip token `_` only (`MT`/`M`/`PD`/`SL`/`SR`). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
     )
     lines.append(
         "- Soft limits / units: see config keys `slider_min`/`max`, `steps_per_unit`, `unit_name`."
@@ -637,6 +689,8 @@ def main() -> int:
     md_text = build_markdown()
     MD_OUT.write_text(md_text, encoding="utf-8")
     print(f"Wrote {MD_OUT}")
+    MD2_OUT.write_text(MD2_CSS + md_text, encoding="utf-8")
+    print(f"Wrote {MD2_OUT}")
 
     if export_pdf(HTML_OUT, PDF_OUT):
         print(f"Wrote {PDF_OUT}")

@@ -1,11 +1,3 @@
-<link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
-<style>
-:root {
-  --doc-title: "SliderMC Command Cheat Sheet";
-  --doc-path: ".\\SliderDoc\\contract\\command-cheatsheet.md";
-}
-</style>
-
 # SliderMC Command Cheat Sheet
 
 Firmware V1.0. Same groups as the [printable sheet](command-cheatsheet.html).

@@ -48,12 +48,12 @@ Default is **3**.
 |-----|------|---------|---------|
 | `init_speed` | float mm/s | 50 | Cruise speed init (session via `SS`/`GS`); must be ≤ `max_speed` |
 | `init_accel` | float mm/s² | 200 | Peak sine-ramp acceleration init; must be ≤ `max_accel` |
-| `max_speed` | float mm/s | 100 | Speed ceiling (`SS` rejects above; planner also caps cruise) |
-| `max_accel` | float mm/s² | 300 | Accel ceiling (`SA` rejects above) |
+| `max_speed` | float mm/s | 100 | Speed ceiling (`SS` rejects above; planner also caps axis-1 cruise, including `MJ`) |
+| `max_accel` | float mm/s² | 300 | Accel ceiling (`SA` rejects above; planner caps axis-1 accel) |
 | `steps_per_unit` | float | 320 | Steps per user unit (mm, deg, …); legacy alias `steps_per_mm` |
 | `unit_name` | string | `mm` | UIC unit label (max 7 printable ASCII chars; no `#`) |
-| `slider_min` | float units or `none` | 0 | Soft limit min (`none` / `-` disables) |
-| `slider_max` | float units or `none` | 600 | Soft limit max |
+| `slider_min` | float units or `none` | 0 | Soft-limit **envelope** min (`none` / `-` disables); boot → session `SL`; homing |
+| `slider_max` | float units or `none` | 600 | Soft-limit **envelope** max; boot → session `SR` |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
 | `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](../contract/protocol.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
@@ -83,6 +83,8 @@ Default is **3**.
 | `SW_LIMIT_*_active_2` / `SW_LIMIT_*_use_2` | 0/1 | *(mirror)* | Axis-2 hard limits |
 | `home_mode_2` | 0..4 | 0 | Axis-2 homing mode |
 | `home_move_out_2` / `home_speed_2` / `home_accel_2` | float | *(mirror)* | Axis-2 homing parameters |
+| `max_speed_2` | float mm/s | *(same default as `max_speed`)* | Axis-2 speed ceiling (planner / `MJ`; `SS` still vs `max_speed`) |
+| `max_accel_2` | float mm/s² | *(same default as `max_accel`)* | Axis-2 accel ceiling |
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
 | `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
@@ -165,7 +167,7 @@ HOLD/else (c&0x30)==0     duty 16/64   ~1 Hz longer still
 
 ### Optional 2nd axis (`axis2_use`)
 
-`axis2_use=1` enables a second independent STEP/DIR planner axis on **Pico / Pico W / RP2040-Zero**. Session cruise/accel (`SS`/`SA`) are shared; mechanics, soft limits, pin polarities, and homing use the `*_2` keys. Query `IA` / `Axis` / `IsAxis` → `IA:2`. Welcome banner gains `- 2 Axis`. Position query `IP` returns two mm values. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md).
+`axis2_use=1` enables a second independent STEP/DIR planner axis on **Pico / Pico W / RP2040-Zero**. Session cruise/accel (`SS`/`SA`) are shared; mechanics, soft limits, pin polarities, homing, and **`max_speed_2` / `max_accel_2`** use the `*_2` keys. Query `IA` / `Axis` / `IsAxis` → `IA:2`. Welcome banner gains `- 2 Axis`. Position query `IP` returns two mm values. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md). Joystick: [motion-joy.md](motion-joy.md).
 
 `CS axis2_use` updates RAM/`mc.ini` immediately (`IA` / banner reflect the new value), but **PIO state machines and axis-2 GPIO take effect only after reboot** (`RB` / `Reboot`, or power-cycle). Dual `MT` before reboot can show targets while `pos2` stays at 0. Same pattern as `WDT_use` (see above).
 

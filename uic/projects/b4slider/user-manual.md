@@ -27,7 +27,7 @@ The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typic
 
 1. Power on — status LED does a rainbow while locked (if unlock is enabled).
 2. **Unlock** — press **OPTION** (` * `). (Disable with `B4S_BOOT_UNLOCK = False`.)
-3. Soft limits start at **full slider travel** (MC `slider_min` / `slider_max`). Nothing is remembered after power-off (no position file).
+3. Soft limits start at **full slider travel** (MC session window = `slider_min` / `slider_max`). The shot window lives on the MC (`SL` / `SR`) until reboot — nothing is written to `mc.ini`.
 4. Dial **SPEED**, then use MOVE / SET as below.
 
 **OPTION** is a modifier: hold it with another control. Alone it does nothing (except unlock at boot).

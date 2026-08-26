@@ -21,11 +21,11 @@ Both faces talk millimetres to SliderMC. Hardware and the planner always clip tr
 | Layer | What it is | Who |
 |-------|------------|-----|
 | **Hard limit** | Switch (`SW_HOME` / `SW_LIMIT_*`); red LED | Both apps |
-| **MC soft limit** | `slider_min` / `slider_max` — planner will not command past | Always on the MC. Full rail unless the UIC shrinks it |
+| **Envelope** | `slider_min` / `slider_max` — mechanical rail (homing, `CG`) | Installer / `CS` / `mc.ini` |
 | **Mark** | PosA / PosB / PosC — goto target, **not** a wall | JKSlider |
-| **Working window** (manuals: **A/B**) | `soft_limit_L` / `soft_limit_R` — a wall **and** the MOVE target | B4Slider |
+| **Working window** (manuals: **A/B**) | Session `SL` / `SR` (`GL` / `GR`) — wall **and** B4 MOVE target | B4Slider via `MC_Client.setSoftLimits` / `setLeft` |
 
-B4Slider implements the working window by **writing the UIC shot into those same MC soft limits**. JKSlider leaves MC limits at full rail (or installer setup) and stores marks in the app.
+B4Slider implements the working window with **session** `SL` / `SR` (not `CS`). Reboot restores the full envelope. JKSlider leaves the session at full rail and stores marks in the app. Integrator guide: [working-window.md](../mc/working-window.md).
 
 MOVE / FAST / joystick on JKSlider can still travel the full MC clip. Goto and loops **aim at** a mark. On B4Slider, MOVE_L/R cruise **to** the window ends; the carriage **cannot** leave until you reset a side (or both).
 

@@ -203,7 +203,7 @@ Sibling clone paths: `../assets/img/pico_pinout_mc.png`, `../mc/pins.md`.
 
 - ASCII lines @ **1 000 000** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
 - **Startup:** a `\n` on UIC UART or USB unlocks the MC; MC replies with welcome `# …` banner; UIC then sends `SV 1`.
-- Commands: `MT`, `M`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, …
+- Commands: `MT`, `M`, `ML`, `MR`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
 - Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]`
 - Errors: `!E:<code> <text>`
 

@@ -29,6 +29,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **GPIO** | General-purpose input/output | Pico pins used as digital I/O or ADC (buttons, DRV_STEP/DIR, DRV_ERROR, LED, etc.). Numbered as GPn in the Technical Manual pinouts. |
 | **I2C** | Inter-Integrated Circuit | Two-wire serial bus (SDA/SCL). Used for the optional 128×64 OLED when `DSP_ENABLED` is true (`DSP_I2C_*`). |
 | **LED** | Light-emitting diode | Status lighting: discrete RGB on GP2–GP4 and/or an optional NeoPixel. Colours mirror motion, delay, TL, limits, and DRV_ERROR (see User Manual). |
+| **MJ** | MoveJoy | SliderMC joystick velocity hold: signed percent of session `SS` (optional 2nd axis). Skip unchanged values on the UIC. See [motion-joy.md](../mc/motion-joy.md). |
 | **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../architecture/overview.md). |
 | **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_status_callback` (1-axis) / `set_status2_callback` (2-axis). |
 | **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional 2-axis: `axis_count` from CG `axis2_use`, dual `moveTo`/`home`, `set_status2_callback`. |
@@ -62,8 +63,8 @@ Electronics and pinouts use the `BTN_*` prefix (e.g. `BTN_STOP`); the User Manua
 | Term | Meaning |
 |------|---------|
 | **Mark** | JKSlider PosA / PosB / PosC — a bookmark (waypoint). Goto goes there; MOVE can still leave the framed shot. Not a wall. |
-| **Working window** | B4Slider manuals say **A/B**. `soft_limit_L` / `soft_limit_R` — a wall **and** the MOVE target. See [marks vs working window](../architecture/marks-vs-working-window.md). |
-| **Soft limit** | MC planner clip `slider_min` / `slider_max`. Full rail unless the UIC shrinks it (B4 writes the working window into these keys). |
+| **Working window** | B4Slider manuals say **A/B**. Session `SL`/`SR` on SliderMC — a wall **and** the MOVE target. See [working-window.md](../mc/working-window.md). |
+| **Soft limit / envelope** | Persisted `slider_min` / `slider_max` (rail). Boot copies into the session window; do not shrink with `CS` for a shot. |
 | **Hard limit** | Hardware switch (`SW_HOME` / `SW_LIMIT_*`); red LED. Not the panel STOP key. |
 
 ## Panel controls

@@ -12,6 +12,8 @@ C++ / FreeRTOS motor controller for RP2040 (STEP/DIR axis; optional 2nd STEP/DIR
 | [pins.md](pins.md) | Fixed GPIO map |
 | [motion.md](motion.md) | Planner, PIO STEP, tasks |
 | [motion-path.md](motion-path.md) | Host-authored path playback (`PD`/`PG`) |
+| [motion-joy.md](motion-joy.md) | Joystick velocity hold (`MJ` / `MoveJoy`) |
+| [working-window.md](working-window.md) | Session soft limits (`SL` / `SR` / `GL` / `GR`) |
 | [motion-technique.md](motion-technique.md) | Motion technique notes |
 
 **Code repo:** [SliderMC](https://github.com/fablab-wue/SliderMC)

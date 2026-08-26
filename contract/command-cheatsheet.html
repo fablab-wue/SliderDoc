@@ -139,12 +139,14 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">SS</td><td class="ln">SetSpeed</td><td class="ds">Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill. Dual MT: axis1=session, axis2×ratio.</td></tr>
-<tr><td class="sh">SA</td><td class="ln">SetAccel</td><td class="ds">Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill. Dual MT: same ratio scaling as SS.</td></tr>
+<tr><td class="sh">SS</td><td class="ln">SetSpeed</td><td class="ds">Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.</td></tr>
+<tr><td class="sh">SA</td><td class="ln">SetAccel</td><td class="ds">Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
 <tr><td class="sh">SE</td><td class="ln">SetEnable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop.</td></tr>
 <tr><td class="sh">ST</td><td class="ln">SetTerminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).</td></tr>
 <tr><td class="sh">SV</td><td class="ln">SetVerbose</td><td class="ds">Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).</td></tr>
 <tr><td class="sh">SD</td><td class="ln">SetDebug</td><td class="ds">USB-only debug level 0..5; bare restores default; never on UIC UART.</td></tr>
+<tr><td class="sh">SL</td><td class="ln">SetLeft</td><td class="ds">Session soft min (working window); bare→slider_min; none clears (→envelope if set); skip _; !E:limit past envelope.</td></tr>
+<tr><td class="sh">SR</td><td class="ln">SetRight</td><td class="ds">Session soft max; bare→slider_max; none clears; skip _; !E:limit if left&gt;right.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>G — Get (session)</h2>
@@ -158,6 +160,8 @@ code {
 <tr><td class="sh">GT</td><td class="ln">GetTerminal</td><td class="ds">Terminal Mode state.</td></tr>
 <tr><td class="sh">GV</td><td class="ln">GetVerbose</td><td class="ds">Verbose push state.</td></tr>
 <tr><td class="sh">GD</td><td class="ln">GetDebug</td><td class="ds">USB debug level.</td></tr>
+<tr><td class="sh">GL</td><td class="ln">GetLeft</td><td class="ds">Session soft min; effective (session else envelope); - if both None; dual when axis2 on.</td></tr>
+<tr><td class="sh">GR</td><td class="ln">GetRight</td><td class="ds">Session soft max; same effective / - rules as GL.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>I — Is / status</h2>
@@ -184,12 +188,13 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">MT</td><td class="ln">MoveTo</td><td class="ds">Absolute user units; optional 2nd axis; skip none/N/_/*; needs SE; live-retarget. Dual: time-sync ratio.</td></tr>
+<tr><td class="sh">MT</td><td class="ln">MoveTo</td><td class="ds">Absolute user units; optional 2nd axis; skip _; needs SE; live-retarget. Dual: time-sync ratio.</td></tr>
 <tr><td class="sh">M</td><td class="ln">Move</td><td class="ds">Relative move (alias MoveBy); same dual/skip rules as MT.</td></tr>
 <tr><td class="sh">ML</td><td class="ln">MoveLeft</td><td class="ds">Jog −; mask 0=both, 1=axis1, 2=axis2 when axis2 on; soft-stop MS/!.</td></tr>
 <tr><td class="sh">MR</td><td class="ln">MoveRight</td><td class="ds">Jog +; mask same as ML; soft-stop MS/!.</td></tr>
+<tr><td class="sh">MJ</td><td class="ln">MoveJoy</td><td class="ds">Joy speed % of SS, signed (− left / + right); 2-axis optional pct2 (omit=0); 0=soft-stop; SS/SA live; clamp max_speed[_2].</td></tr>
 <tr><td class="sh">MH</td><td class="ln">MoveHome</td><td class="ds">Homing; axis 1 (default) or 2; no-op if home_mode=0; cancel MS/H.</td></tr>
-<tr><td class="sh">MS</td><td class="ln">MoveStop</td><td class="ds">Soft decelerate both axes; keeps enable; does not cancel waits. Dual: scaled accel kept.</td></tr>
+<tr><td class="sh">MS</td><td class="ln">MoveStop</td><td class="ds">Soft decelerate both axes; keeps enable; ends joy-mode; does not cancel waits. Dual: scaled accel kept.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>P — Path</h2>
@@ -198,7 +203,7 @@ code {
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">PC</td><td class="ln">PathClear</td><td class="ds">Clear path buffer (count→0); !E:busy while PG active.</td></tr>
-<tr><td class="sh">PD</td><td class="ln">PathData</td><td class="ds">Append signed µm sample(s); optional axis2; skip→0; OK while PG (live stream).</td></tr>
+<tr><td class="sh">PD</td><td class="ln">PathData</td><td class="ds">Append signed µm sample(s); optional axis2; skip _ →0; OK while PG (live stream).</td></tr>
 <tr><td class="sh">PG</td><td class="ln">PathGo</td><td class="ds">Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/H ends path.</td></tr>
 <tr><td class="sh">PN</td><td class="ln">PathNumber</td><td class="ds">Samples in buffer; allowed during PG.</td></tr>
 <tr><td class="sh">PS</td><td class="ln">PathSlice</td><td class="ds">Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.</td></tr>
@@ -259,6 +264,6 @@ code {
 <div class="row"><strong>Wire:</strong> one command per line (<code>\n</code>); chain with <code>;</code>; <code>#</code> comment to EOL (comment-only lines ignored); bare bool setters toggle; motion/settings silent on success; errors <code>!E:code message</code>.</div>
 <div class="row"><strong>Realtime</strong> (no newline): <code>?</code> status · <code>!</code> soft stop · <code>Ctrl-X</code> (0x18) soft reset.</div>
 <div class="row"><strong>Status</strong> (<code>#X …</code>): <code>I</code> idle · <code>A</code> accel · <code>M</code> cruise · <code>B</code> decel · <code>H</code> homing · <code>P</code> path · <code>L</code> hard-limit · <code>D</code> disabled · <code>E</code> error. Moving: <code>#M/#A/#B pos speed accel [target]</code>.</div>
-<div class="row"><strong>Halt vs Stop:</strong> <code>MS</code>/<code>!</code> soft decel (enable kept); <code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits.</div>
+<div class="row"><strong>Halt vs Stop:</strong> <code>MS</code>/<code>!</code> soft decel (enable kept, ends joy-mode); <code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits. <code>MJ</code>: skip if value unchanged.</div>
 </footer>
 </div></body></html>

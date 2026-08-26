@@ -22,6 +22,8 @@ Optional centre-return analogue axis on ADC2.
 
 Wire one axis like a pot (3V3 — wiper — AGND). Centre = mid ADC; recalibrate when idle with **OPTION + A + B + C** (see User Manual).
 
+**MC protocol:** stream `MJ` (percent of session `SS`) from the UIC — see [Joystick control](../mc/motion-joy.md). Skip unchanged values to keep UART load down.
+
 **Status:** Working when enabled; leave `None` if unused.
 
 ```python

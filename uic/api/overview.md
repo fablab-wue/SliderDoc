@@ -72,7 +72,7 @@ Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 1 000 000 
 
 **Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `axis2_use=1` then reboot. `mc.axis_count` / `getAxisCount()` come from CG `axis2_use` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Shipping JKSlider / B4Slider keep `set_status_callback` (axis 1). Custom 2-axis UIs use `set_status2_callback` and optional `pos2`. Wire: [protocol.md — Optional 2nd axis](../../contract/protocol.md#optional-2nd-axis-axis2_use).
 
-Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `M`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, …; status `#…`; errors `!E:`; replies `TAG:value`).
+Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `M`, `ML`, `MR`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
 
 ```python
 from MC_client import MC_Client
@@ -159,7 +159,7 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 |--------|-------------|
 | `moveTo(position, position2=None)` | Absolute move (mm). 2-axis: `moveTo(pos, pos2)` → `MT pos pos2` (time-synced); `moveTo(None, pos2)` → `MT _ pos2`. 1-axis ignores `position2`. Live-retargetable. |
 | `moveBy(dist, dist2=None)` | Relative move (mm). Same skip/`pos2` rules as `moveTo` (`M`). Live-retargetable. |
-| `move(speed)` | Continuous velocity mode (mm/s). No jog mask — both axes when `axis_count==2`. See below. |
+| `move(speed)` | Continuous velocity mode (mm/s). No jog mask — both axes when `axis_count==2`. See below. Analogue stick on SliderMC should stream protocol `MJ` instead — [motion-joy.md](../../mc/motion-joy.md). |
 | `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` → `MH n`. Axis 2 is a no-op if `axis_count==1`. Returns the asyncio task. |
 | `stop()` | Decelerate to standstill using `setAcceleration()`. Non-blocking. |
 | `halt()` | Emergency halt (`H`) — hard abort, enable off. Non-blocking. |
@@ -172,7 +172,9 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `setSpeed(mm_per_sec)` | Cruise speed for later moves (mm/s). On `MC_Client`. |
 | `setMaxSpeed(mm_per_sec)` | Persistent MC `max_speed` via `CS` (planner ceiling). |
 | `setAcceleration(accel)` | Peak acceleration for motion ramps (mm/s²). |
-| `setSoftLimits(min_limit, max_limit)` | Soft limits in mm; either side may be `None` to disable. Also call `ui.set_soft_limits`. |
+| `setSoftLimits(min_limit, max_limit)` | Session working window via `SL`/`SR` (not `CS`). `None` → `SL none` / `SR none` (effective = envelope when set). Also call `ui.set_soft_limits`. See [working-window.md](../../mc/working-window.md). |
+| `setLeft(pos=None, pos2=None)` / `setRight(...)` | `SL` / `SR` (bare = reset that side). |
+| `getLeft()` / `getRight()` | Cached session window ends. |
 | `setOledText(text)` | Application string for the lower OLED band (small font). `""` / `None` clears. On `UIC_Base`. |
 | `setOledUnit("mm"\|"inch")` | OLED Pos/Spd/Acc display unit only (API remains mm). |
 | `getOledUnit()` | `"mm"` or `"inch"`. |
@@ -449,6 +451,9 @@ await mc.wait()
 - `move(0)` and `stop()` decelerate with `setAcceleration()`; `halt()` uses `DRV_ERROR_DECEL_MM_S2`.
 - Calling `moveTo` / `moveBy` while in velocity mode switches to position seek
   (keeps current speed). `home()` cancels velocity mode.
+- Panel joystick: send `MJ <pct> [<pct2>]` (percent of session `SS`). Do not wrap
+  `move()` / `setSpeed()` / `stop()` for the stick. Skip the packet when the
+  value has not changed.
 
 ### Position moves — live retargeting
 

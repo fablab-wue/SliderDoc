@@ -163,14 +163,16 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
-| `SS` | `SetSpeed` | `v` or bare | Set cruise speed mm/s (≤ `max_speed`); bare reloads `init_speed`; applies live to the next fill. |
-| `SA` | `SetAccel` | `a` or bare | Set accel mm/s² (≤ `max_accel`); bare reloads `init_accel`; applies live to the next fill. |
+| `SS` | `SetSpeed` | `v` or bare | Set cruise speed mm/s (≤ `max_speed`); bare reloads `init_speed`; applies live to the next fill (including joy-mode `MJ`). |
+| `SA` | `SetAccel` | `a` or bare | Set accel mm/s² (≤ `max_accel`); bare reloads `init_accel`; applies live to the next fill (including joy-mode `MJ`). |
 | `SE` | `SetEnable` | `0\|1` or bare | Driver enable 0\|1; bare toggles; required before motion; off stops hard. |
 | `ST` | `SetTerminal` | `0\|1` or bare | Terminal Mode 0\|1; bare toggles; local echo + UART command sniff to USB. |
 | `SV` | `SetVerbose` | `0\|1` or bare | Verbose status push 0\|1; bare toggles; ~3 Hz `#…` status lines when on. |
 | `SD` | `SetDebug` | `0..5` or bare | USB-only debug level 0..5; bare restores default; never sent on UIC UART. |
+| `SL` | `SetLeft` | `[pos [pos2]]` or bare | Session working-window **min**; bare → `slider_min` / `_2`; `none` clears that side (effective → envelope if set); skip `_`. |
+| `SR` | `SetRight` | `[pos [pos2]]` or bare | Session working-window **max**; bare → `slider_max` / `_2`; `none` clears that side; skip `_`. |
 
-`SetMaxSpeed` / max accel / soft limits are not session commands — use `CS max_speed` / `CS max_accel` / `CS slider_min` / `CS slider_max`.
+`SetMaxSpeed` / max accel / **envelope** soft travel are not session commands — use `CS max_speed` / `CS max_accel` / `CS slider_min` / `CS slider_max`. The live working window is `SL` / `SR` — [working-window.md](../mc/working-window.md).
 
 ### G — Get (session)
 
@@ -182,6 +184,8 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 | `GT` | `GetTerminal` | — | Reply `GT:0\|1` — Terminal Mode state. |
 | `GV` | `GetVerbose` | — | Reply `GV:0\|1` — verbose push state. |
 | `GD` | `GetDebug` | — | Reply `GD:<0..5>` — USB debug level. |
+| `GL` | `GetLeft` | — | Reply effective left (`GL:<pos>` or dual); session None + envelope set → envelope; both None → `-`. |
+| `GR` | `GetRight` | — | Reply effective right (same dual / `-` rules as `GL`). |
 
 ### I — Is / Info
 
@@ -206,16 +210,19 @@ Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
-| `MT` | `MoveTo` | `x [y]` | Absolute mm; optional 2nd arg = axis2 when enabled; skip tokens idle that axis; needs enable; live-retargets. |
+| `MT` | `MoveTo` | `x [y]` | Absolute mm; optional 2nd arg = axis2 when enabled; skip `_` idles that axis; needs enable; live-retargets. |
 | `M` | `Move` / `MoveBy` | `x [y]` | Relative mm (alias `MoveBy`); dual-arg same as `MT` when axis2 on. |
 | `ML` | `MoveLeft` | `[0\|1\|2]` | Continuous jog negative; optional mask (axis2 on): `0`=both, `1`=axis1, `2`=axis2; soft-stop with `MS` or `!`. |
 | `MR` | `MoveRight` | `[0\|1\|2]` | Continuous jog positive; mask same as `ML`. |
+| `MJ` | `MoveJoy` | `pct [pct2]` | Joystick velocity hold: signed % of session `SS` (− left / + right); optional 2nd axis; omit `pct2` → `0` (soft-stop that axis); `0` = soft-stop; `SS`/`SA` stay live; clamp to `max_speed` / `max_speed_2`. |
 | `MH` | `MoveHome` | `[1\|2]` | Homing cycle; optional axis `1` (default) or `2` when axis2 on; no-op if that axis `home_mode` is `0`; needs `SE 1`; cancel with `MS`/`H`. |
-| `MS` | `MoveStop` | — | Soft decelerate to stop; keeps enable; does not cancel waits. |
+| `MS` | `MoveStop` | — | Soft decelerate to stop; keeps enable; ends joy-mode; does not cancel waits. |
 
-**Skip tokens** (case-insensitive `none`/`N`, or exact `_`/`*`): on `MT`/`M` leave that axis idle; on `PD` become `0` µm. Bare `-` is **not** a skip (parses as a number).
+**Skip token** (exact `_` only): on `MT`/`M`/`SL`/`SR` leave that axis unchanged; on `PD` become `0` µm. `none` / `N` / `*` are **not** skips (`!E:parse` on `MT`/`M`/`PD`). On `SL`/`SR` only, `none` clears that session side (see [working-window.md](../mc/working-window.md)). `MJ` does **not** accept skip tokens (`!E:parse`). Bare `-` is **not** a skip (parses as a number).
 
 `MH` / `MoveHome` failures: `!E:home cfg`, `!E:home travel`, `!E:home hard`. Soft-cancel with `MS`; emergency abort with `H`/`HT`/`Halt`.
+
+**`MJ` / `MoveJoy`** is a velocity hold for analogue sticks (typically 5–20 Hz, also acyclic). First `MJ` enters joy-mode; `MT`/`M`/`ML`/`MR`/`MH`/`MS`/`!`/`HT`/`PG` end it. `SS`/`SA` do **not** end joy-mode — they rescale/re-ramp from the last percentages. Soft/hard rails stop like other moves (soft rail is silent; no `!E` spam while the stick stays deflected). It is recommended for the sender (UIC) not to send an `MJ` command if the value has not changed, to reduce the payload on the serial link. Integrator guide: [motion-joy.md](../mc/motion-joy.md).
 
 ### P — Path (host-authored motion path)
 
@@ -224,7 +231,7 @@ A 2nd, simpler planner for a host-authored motion path: fixed-size time slices, 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `PC` | `PathClear` | — | Clear the path buffer (path count → 0); rejected with `!E:busy` while `PG` is active. |
-| `PD` | `PathData` | `um [um2]` | Append signed 16-bit µm sample(s) (-32768..32767); with axis2 on, optional 2nd sample for axis2 (skip → `0`; single arg → `(a, 0)`); increments path count; `!E:parse` / `!E:full`. Allowed while `PG` is active (live-move streaming). |
+| `PD` | `PathData` | `um [um2]` | Append signed 16-bit µm sample(s) (-32768..32767); with axis2 on, optional 2nd sample for axis2 (skip `_` → `0`; single arg → `(a, 0)`); increments path count; `!E:parse` / `!E:full`. Allowed while `PG` is active (live-move streaming). |
 | `PG` | `PathGo` | — | Play the path buffer from sample 0 until path count is reached (then auto soft-stop) or `MS`/`H` is received; needs enable; `!E:disabled` / `!E:empty` / `!E:busy`. May be sent while `PD` is still being streamed in (live move). |
 | `PN` | `PathNumber` | — | Reply `PN:<count>` — number of samples currently in the buffer; allowed even while path-mode is active. |
 | `PS` | `PathSlice` | `us` or bare | Set the time-slice length in µs (≥1000); bare reloads `init_path_slice_us`; `!E:parse` below minimum, `!E:busy` while active. |
@@ -251,9 +258,9 @@ Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` �
 | `CG` | `ConfigGet` | `key` or bare | Get key → `CG:key=value`; bare dumps all keys. |
 | `RB` | `Reboot` | — | Soft MCU reset (no power cycle): halt/EN off, then reboot. Next `IZ` → `soft`. |
 
-Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
+Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `max_speed_2`, `max_accel_2`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
 
-A UIC may shrink `slider_min` / `slider_max` as a working window — [marks vs working window](../architecture/marks-vs-working-window.md).
+A UIC may shrink travel with session `SL` / `SR` (working window) — not by rewriting `slider_min` / `slider_max`. See [working-window.md](../mc/working-window.md) and [marks vs working window](../architecture/marks-vs-working-window.md).
 
 ### W — Wait (silent)
 
@@ -311,7 +318,7 @@ Allowed while error active: `IE`, `IA`/`Axis`/`IsAxis`, `ID`, `IZ`, `IX`/`Pinout
 | Pico / Pico W | Yes — `CS axis2_use 1` enables dual STEP/DIR (DBG GP10–13 reclaimed) |
 | RP2040-Zero | Yes — dual STEP/DIR; DBG GP18–23 remain usable with axis2 |
 
-When enabled: dual planner axes, dual path buffers, `IA` replies `IA:2`. `IX` / `VG` list axis-2 pins only while enabled. See [pins.md](../mc/pins.md).
+When enabled: dual planner axes, dual path buffers, `IA` replies `IA:2`. Dual-arg `MT`/`M`/`PD` and `MJ <pct> [<pct2>]` apply. `IX` / `VG` list axis-2 pins only while enabled. See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives axes independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
 
 **Reboot required for HW:** `CS axis2_use` updates config/`IA` immediately, but the second STEP PIO SM and axis-2 pins are initialized only at boot. After changing `axis2_use`, send `RB` / `Reboot` (or power-cycle) before dual-axis motion. Narrative guide: [About dual movement](../mc/dual-movement.md). See also [config.md](../mc/config.md#optional-2nd-axis-axis2_use).
 
@@ -431,4 +438,19 @@ After ~1 s delay, `GS` runs.
 ```text
 SV 1
 #I 100
+```
+
+Joystick hold (see [motion-joy.md](../mc/motion-joy.md)). UIC should **not** resend `MJ` if the value is unchanged:
+
+```text
+SE 1
+SS 30
+MJ 5
+MJ 10
+MJ 100
+SS 50
+MJ 100
+MJ 50
+MJ 0
+MS
 ```

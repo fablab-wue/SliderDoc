@@ -354,7 +354,7 @@ Linear potentiometers (pots) (typically 10 kΩ). Wiper → ADC; outer legs **3V3
 
 ![Potentiometer wiring](../../../../assets/img/potentiometer_wiring.svg)
 
-Joystick: single-axis pot or one axis of a joystick module wired the same way. Centre = mid ADC; calibrate with OPTION+A+B+C when idle (see User Manual).
+Joystick: single-axis pot or one axis of a joystick module wired the same way. Centre = mid ADC; calibrate with OPTION+A+B+C when idle (see User Manual). MC side: stream `MJ` (percent of session `SS`) — [Joystick control](../../../../mc/motion-joy.md); skip unchanged values.
 
 Note: For reducing ESD problems add a capacitor (100 nF) to GND and a capacitor (100 nF) to 3V3 for each pot on the Pico side.
 
