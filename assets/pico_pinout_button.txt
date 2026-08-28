@@ -1,7 +1,7 @@
 Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
 BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
 
-        function         pin              pin        function
+  function         pin                         pin      function
                               +--- USB ---+
   DSP_I2C_SDA      GP0      1 |o         o| 40 VBUS     VBUS
   DSP_I2C_SCL      GP1      2 |o         o| 39 VSYS     VSYS

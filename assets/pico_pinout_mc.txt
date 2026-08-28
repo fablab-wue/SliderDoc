@@ -1,8 +1,8 @@
 Raspberry Pi Pico — SliderMC pinout (top view, USB at top)
 Defaults in include/pins.h + data/mc.ini
 
-        function         pin              pin        function
-                         +--- USB ---+
+function           pin                         pin      function
+                              +--- USB ---+
   free             GP0      1 |o         o| 40 VBUS     VBUS
   free             GP1      2 |o         o| 39 VSYS     VSYS
   GND              GND      3 |o         o| 38 GND      GND
@@ -23,7 +23,7 @@ Defaults in include/pins.h + data/mc.ini
   GND              GND     18 |o         o| 23 GND      GND
   DBG_IRQ          GP14    19 |o         o| 22 GP17     UART_RX
   DBG_UNDERRUN     GP15    20 |o         o| 21 GP16     UART_TX
-                         +-----------+
+                              +-----------+
 
 Legend: EXT_0…3 on GP2–5 (X0…X3); UART 1 Mbaud GP16/17; motor DRV on GP18–20.
 axis2_use=1: GP6/7/9 + GP10–13 (LIMIT_*/HOME2 / DRV_*2); DBG GP10–13 off then.

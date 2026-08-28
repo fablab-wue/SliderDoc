@@ -25,6 +25,17 @@ JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated moti
 - **Two operator models** on the same MC: JKSlider **A/B/C marks** vs B4Slider **A/B working window** — [marks-vs-working-window.md](marks-vs-working-window.md).
 - **Command chains** (`;` on one line) retarget speed/accel and fire cues **during** a move without stopping — [command-chains.md](command-chains.md).
 
+## Terminology: the important distinction
+
+The project intentionally keeps these terms separate:
+
+- **Hard limit** = physical end-stop or safety switch. This is the rail hardware level.
+- **Envelope** = configured rail travel (`slider_min` / `slider_max`). This is the installer's fixed mechanical span.
+- **Working window** = session soft ends (`SL` / `SR`) that clip B4Slider travel during a shot.
+- **Mark** = JKSlider waypoint (PosA / PosB / PosC). It is a remembered pose, not a wall.
+
+The naming overlap is real: both faces use “A/B”, but **JKSlider A/B/C are marks**, while **B4Slider A/B are the working window**. They are not the same concept even though the labels look similar.
+
 ## Connected components
 
 What may attach to each board (same ownership as the overview diagram):
