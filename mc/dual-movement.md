@@ -117,7 +117,7 @@ Full tables: [config.md](config.md).
 1. **Skip token:** `MT _ 45` for pan-only; `MT 200` stays axis1-only.
 2. **Jog masks:** `ML` / `MR` with `0|1|2` — which axes jog (`0` = both when axis2 is on).
 3. **Joystick:** `MJ pct [pct2]` — independent signed % of `SS` per axis (omit `pct2` → axis 2 = 0). Not dual-`MT` time-sync. See [motion-joy.md](motion-joy.md).
-4. **Prefer pan on axis 2** — keeps linear “mm” on axis 1 (`IP` first field / UIC habit).
+4. **Prefer pan on axis 2** — keeps linear “mm” on axis 1 (`IP` first field / UIC habit). `WP` / `WaitPos` is axis 1 only (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md).
 5. **`max_speed` / `max_speed_2` clamp:** if `|d2| ≫ |d1|`, scaled `v2` may hit `max_speed_2` and **lose** perfect time sync — shorten the axis2 move, raise the cap, or move axes sequentially. Mid-move `SS`/`SA` stay time-synced while coordination is active (same clamp still applies).
 6. **Path mode (`PG`):** dual `PD` is **slice-timed**, not the same as dual-`MT` distance scaling. See [motion-path.md](motion-path.md).
 7. **UIC:** JKSlider / B4Slider UIs are still mostly 1-axis; dual `MT` is driven by hosts/scripts. Use `CG unit_name` for the display unit.

@@ -1,13 +1,13 @@
-Waveshare RP2040-Zero — JKSlider UIC pinout (USB at top)
+Waveshare RP2040-Zero — SliderMC pinout (USB at top)
 Defaults in include/pins.h (BOARD_RP2040_ZERO)
 
-  function       pad                    pad    function
+    function     pad                  pad    function
                         +---- USB ----+
   5V             5V     |o           o| GP0    DRV_STEP
   GND            GND    |o           o| GP1    DRV_DIR
   3V3            3V3    |o           o| GP2    DRV_EN
   LED            GP29   |o           o| GP3    DRV_ERROR
-  free           GP28   |o           o| GP4    SW_HOME*
+  BUZZER*        GP28   |o           o| GP4    SW_HOME*
   EXT_0          GP27   |o           o| GP5    DRV_STEP2
   EXT_1          GP26   |o           o| GP6    DRV_DIR2
   EXT_2          GP15   |o           o| GP7    DRV_ERROR2

@@ -50,6 +50,7 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`pico_pinout_mc.t
 | `PIN_LED` | `LED_BUILTIN` (GP25) | Status / heartbeat LED (onboard) |
 | `PIN_SW_LIMIT_L` | 26 | Hard limit left (if `SW_LIMIT_L_use=1`) |
 | `PIN_SW_LIMIT_R` | 27 | Hard limit right (if `SW_LIMIT_R_use=1`) |
+| `PIN_BUZZER` | 28 | Optional piezo (`Z` / `Buzzer`); gated by `BUZZER_use` (default off) |
 
 When `axis2_use=1`, HW debug on GP10–13 is **not driven** (`PIN_DBG_OVERLAPS_AXIS2`). GP14–15 DBG remain available.
 
@@ -66,7 +67,7 @@ Same header pin map as classic Pico, except the status LED:
 | *(all other pins)* | *(same as Pico)* | Same as table above |
 | `PIN_LED` | **28** | External status / heartbeat LED |
 
-The Pico W onboard LED is on the CYW43 WiFi chip — do not drive `LED_BUILTIN` under FreeRTOS. Use env `picow` and wire an external LED to **GP28**.
+The Pico W onboard LED is on the CYW43 WiFi chip — do not drive `LED_BUILTIN` under FreeRTOS. Use env `picow` and wire an external LED to **GP28**. That aliases `PIN_BUZZER`; firmware will **not** pulse the buzzer on Pico W (heartbeat LED wins). Use a different compile-time GPIO if a piezo is needed.
 
 ---
 
@@ -100,6 +101,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`rp2040zero
 | `PIN_SW_LIMIT_L2` | 25 | Hard limit left axis2 |
 | `PIN_EXT_1` | 26 | Extender output 1 (`X1`) |
 | `PIN_EXT_0` | 27 | Extender output 0 (`X0`) |
+| `PIN_BUZZER` | 28 | Optional piezo (`Z`; `BUZZER_use`) |
 | `PIN_LED` | 29 | External status / heartbeat LED |
 
 **`axis2_use` is supported on Zero.** DBG GPIOs do not overlap axis2 (`PIN_DBG_OVERLAPS_AXIS2=0`).
@@ -112,6 +114,7 @@ GPIO numbers are fixed in `pins.h` (not changeable via protocol).
 Active levels for all pins except UART are config keys (`DRV_STEP_active`, `SW_HOME_active`, …): `0` = low-active, `1` = high-active.  
 Hard-limit **usage** is gated by `SW_LIMIT_L_use` / `SW_LIMIT_R_use` (default off).  
 Home-switch **usage** is gated by `SW_HOME_use` (homing input only, no halt).  
+Optional **buzzer** is gated by `BUZZER_use` (default off); `Z` pulses `PIN_BUZZER` (GP28) ~0.1 s. On Pico W GP28 is `PIN_LED`, so the buzzer is not claimed.  
 `PIN_DRV_ERROR` is always polled (`DRV_ERROR_active`); assert → emergency halt + command gate. See [CONFIG.md](CONFIG.md) / [MOTION.md](MOTION.md).
 
 `PIN_EXT_0`…`3` are always outputs. Polarity via `EXT_n_active`; boot level is **inactive**. Logical on/off: `X0`…`X3` / `Ext0`…`Ext3`. **`X4`…`X9` are rejected.**

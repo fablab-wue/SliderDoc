@@ -69,7 +69,7 @@ LEFT = [
     ("GND", "GND"),
     ("3V3", "3V3"),
     ("GP29", "LED"),
-    ("GP28", "free"),
+    ("GP28", "BUZZER*"),
     ("GP27", "EXT_0"),
     ("GP26", "EXT_1"),
     ("GP15", "EXT_2"),

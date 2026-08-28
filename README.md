@@ -47,7 +47,7 @@ How this compares to commercial motorized sliders: [architecture/compare.md](arc
 
 | Section | Contents |
 |---------|----------|
-| [architecture/](architecture/README.md) | System split, philosophy, compare, marketing |
+| [architecture/](architecture/README.md) | System split, command chains, compare, marketing |
 | [contract/](contract/README.md) | UART protocol, link/handshake, MC command cheat sheet |
 | [uic/](uic/README.md) | API, libraries, JKSlider / B4Slider / template projects |
 | [mc/](mc/README.md) | Build, config, pins, motion firmware |

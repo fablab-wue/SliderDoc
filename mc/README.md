@@ -18,4 +18,4 @@ C++ / FreeRTOS motor controller for RP2040 (STEP/DIR axis; optional 2nd STEP/DIR
 
 **Code repo:** [SliderMC](https://github.com/fablab-wue/SliderMC)
 
-**Related:** [contract/protocol.md](../contract/protocol.md) · [UIC](../uic/README.md)
+**Related:** [contract/protocol.md](../contract/protocol.md) · [command chains](../architecture/command-chains.md) · [UIC](../uic/README.md)

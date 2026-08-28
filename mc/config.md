@@ -70,6 +70,7 @@ Default is **3**.
 | `SW_LIMIT_R_active` | 0/1 | 0 | Right hard-limit active level |
 | `SW_LIMIT_L_use` | 0/1 | 0 | `1` = enable left hard limit on `PIN_SW_LIMIT_L` |
 | `SW_LIMIT_R_use` | 0/1 | 0 | `1` = enable right hard limit on `PIN_SW_LIMIT_R` |
+| `BUZZER_use` | 0/1 | 0 | `1` = enable `PIN_BUZZER` (GP28) for `Z`; skipped if that GPIO is `PIN_LED` (Pico W) |
 | `EXT_0_active` … `EXT_3_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default); four extenders (`X0`…`X3`) |
 | `home_mode` | 0..4 | 0 | Homing reference mode (see below) |
 | `home_move_out` | float mm | 3 | Extra travel after leaving reference switch |

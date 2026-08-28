@@ -23,6 +23,7 @@ JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated moti
 - The UIC keeps **more free pins** (up to ~26 usable GPIOs on a Pico after UART) for inputs and outputs.
 - **Easier debugging:** USB per board; bring up motion and panel separately.
 - **Two operator models** on the same MC: JKSlider **A/B/C marks** vs B4Slider **A/B working window** — [marks-vs-working-window.md](marks-vs-working-window.md).
+- **Command chains** (`;` on one line) retarget speed/accel and fire cues **during** a move without stopping — [command-chains.md](command-chains.md).
 
 ## Connected components
 
@@ -46,7 +47,7 @@ What may attach to each board (same ownership as the overview diagram):
 - Motor / STEP·DIR driver (integrated or external); optional **2nd** STEP·DIR when `axis2_use=1` — typical **linear travel (axis 1) + pan (axis 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
 - Home switch (`SW_HOME`; optional `SW_HOME2` with axis2)
 - Hard limit switch(es) (`SW_LIMIT_*`; optional `*_2` with axis2)
-- Ext outputs (`EXT_0`…`EXT_3`)
+- Ext outputs (`EXT_0`…`EXT_3`); optional piezo (`PIN_BUZZER` / `Z`)
 - `DRV_ERROR` / E-stop interlock
 - USB debug (host PC)
 - UART to UIC
@@ -56,7 +57,7 @@ What may attach to each board (same ownership as the overview diagram):
 | Side | Responsibility |
 |------|----------------|
 | **Must not run on MC** | Display I2C, button/keypad scan, ADC pots, NeoPixel / UI LED effects, WLAN, camera shutter timing |
-| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, `DRV_ERROR`, EXT |
+| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, `DRV_ERROR`, EXT, optional buzzer |
 | **Contract** | UIC talks **millimetres** over UART; MC owns steps and ramps |
 
 ## Software stacks

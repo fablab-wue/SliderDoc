@@ -152,7 +152,7 @@ GROUPS = [
                 "IR:0|1",
                 "1 only if idle, not homing, enabled, and not waiting.",
             ),
-            ("IW", "IsWaiting", "IW", "IW:0|1", "1 if any W / WM / WH wait is active."),
+            ("IW", "IsWaiting", "IW", "IW:0|1", "1 if any W / WM / WH / WP / WC / WnC wait is active."),
             (
                 "ID",
                 "IsDiag",
@@ -280,6 +280,13 @@ GROUPS = [
                 SILENT,
                 "Ext out n logical 0|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected.",
             ),
+            (
+                "Z",
+                "Buzzer",
+                "Z",
+                SILENT,
+                "Pulse PIN_BUZZER ~0.1 s; not a wait. No-op if BUZZER_use=0. OK during EMO/path.",
+            ),
         ],
     ),
     (
@@ -338,6 +345,27 @@ GROUPS = [
                 "WH [<timeout_s>]",
                 SILENT,
                 "Pause until homing ends; timeout same as WM.",
+            ),
+            (
+                "WP",
+                "WaitPos",
+                "WP <pos> [<timeout_s>]",
+                SILENT,
+                "Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout.",
+            ),
+            (
+                "WC",
+                "WaitCruise",
+                "WC [<timeout_s>]",
+                SILENT,
+                "Wait until cruise (status M) or idle; optional timeout → !E:timeout.",
+            ),
+            (
+                "WnC",
+                "WaitNotCruise",
+                "WnC [<timeout_s>]",
+                SILENT,
+                "Wait until not cruise M; idle/A/B→immediate; timeout same as WM.",
             ),
         ],
     ),
@@ -620,7 +648,7 @@ def build_markdown() -> str:
         "- Chain with `;`. Realtime (no newline): `?` status, `!` soft stop, `Ctrl-X` soft reset."
     )
     lines.append(
-        "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`."
+        "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`/`Z`/`X0-3`."
     )
     lines.append(
         "- `MJ` / `MoveJoy`: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. See [motion-joy.md](../mc/motion-joy.md)."

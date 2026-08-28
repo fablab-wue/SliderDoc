@@ -9,7 +9,7 @@ Defaults in include/pins.h + data/mc.ini
   EXT_0            GP2      4 |o         o| 37 3V3_EN   3V3_EN
   EXT_1            GP3      5 |o         o| 36 3V3      3V3 OUT
   EXT_2            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
-  EXT_3            GP5      7 |o         o| 34 GP28     free
+  EXT_3            GP5      7 |o         o| 34 GP28     BUZZER*
   GND              GND      8 |o         o| 33 AGND     ADC GND
   SW_LIMIT_R2*     GP6      9 |o         o| 32 GP27     SW_LIMIT_R*
   SW_LIMIT_L2*     GP7     10 |o         o| 31 GP26     SW_LIMIT_L*

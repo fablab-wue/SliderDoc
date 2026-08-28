@@ -46,7 +46,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | `IA` | `IsAxis` | `IA` | `IA:1\|2` | Active axis count (config_axis2_enabled). |
 | `IT` | `IsTarget` | `IT` | `IT:<pos>\|-` | Axis-1 seek target, or - if none / soft-stop. |
 | `IR` | `IsReady` | `IR` | `IR:0\|1` | 1 only if idle, not homing, enabled, and not waiting. |
-| `IW` | `IsWaiting` | `IW` | `IW:0\|1` | 1 if any W / WM / WH wait is active. |
+| `IW` | `IsWaiting` | `IW` | `IW:0\|1` | 1 if any W / WM / WH / WP / WC / WnC wait is active. |
 | `ID` | `IsDiag` | `ID` | `ID:underrun=N peak_hz=… overshoot=… fifo_min=…` | Motion diag counters (FIFO underrun, peak STEP Hz, …). |
 | `IZ` | `IsReset` | `IZ` | `IZ:<reason>` | Last chip reset: power\|wdt\|run\|soft\|debug\|brownout\|… |
 | `IX` | `Pinout` | `IX` | `(multi-line table)` | ASCII GP / name / desc (≤80 cols). Axis-2 rows only if axis2 on. |
@@ -78,6 +78,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Short | Long | Call | Reply | Description |
 |-------|------|------|-------|-------------|
 | `X0–3` | `Ext0–3` | `Xn [0\|1]` | `—` | Ext out n logical 0\|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected. |
+| `Z` | `Buzzer` | `Z` | `—` | Pulse PIN_BUZZER ~0.1 s; not a wait. No-op if BUZZER_use=0. OK during EMO/path. |
 
 ## C — Config
 
@@ -95,6 +96,9 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | `W` | `Wait` | `W [<sec>]` | `—` | Delay then continue ; chain; bare→1 s; never !E:timeout. |
 | `WM` | `WaitMoving` | `WM [<timeout_s>]` | `—` | Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain. |
 | `WH` | `WaitHoming` | `WH [<timeout_s>]` | `—` | Pause until homing ends; timeout same as WM. |
+| `WP` | `WaitPos` | `WP <pos> [<timeout_s>]` | `—` | Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout. |
+| `WC` | `WaitCruise` | `WC [<timeout_s>]` | `—` | Wait until cruise (status M) or idle; optional timeout → !E:timeout. |
+| `WnC` | `WaitNotCruise` | `WnC [<timeout_s>]` | `—` | Wait until not cruise M; idle/A/B→immediate; timeout same as WM. |
 
 ## V — Version
 
@@ -115,7 +119,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 ## Notes
 
 - Chain with `;`. Realtime (no newline): `?` status, `!` soft stop, `Ctrl-X` soft reset.
-- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`.
+- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`/`Z`/`X0-3`.
 - `MJ` / `MoveJoy`: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. See [motion-joy.md](../mc/motion-joy.md).
 - Skip token `_` only (`MT`/`M`/`PD`/`SL`/`SR`). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md).
 - Soft limits / units: see config keys `slider_min`/`max`, `steps_per_unit`, `unit_name`.

@@ -105,7 +105,7 @@ Hosts can treat the banner like GRBL’s welcome string: init finished, ready fo
 
 | Class | Rule | Example |
 |-------|------|---------|
-| Motion / set / wait success | Silent | `MT 100`, `SS 50`, `WM`, `W` |
+| Motion / set / wait success | Silent | `MT 100`, `SS 50`, `WM`, `WP 50`, `W`, `Z` |
 | Error | `!E:<code> <text>` | `!E:soft soft max`, `!E:timeout` |
 | Get / Is / Version | `<SHORT>:<value>` | `IM:1`, `GS:50.00`, `VF:1.0` |
 | Config get | `CG:<key>=<value>` | `CG:init_speed=50` |
@@ -199,10 +199,10 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 | `IA` | `IsAxis` / `Axis` | — | Reply `IA:1` or `IA:2` — active axis count (`config_axis2_enabled()`). |
 | `IT` | `IsTarget` | — | Reply `IT:<mm>\|-` — axis-1 seek target, or `-` if none. |
 | `IR` | `IsReady` | — | Reply `IR:1` only if idle, not homing, enabled, and not waiting. |
-| `IW` | `IsWaiting` | — | Reply `IW:1` if any `W` / `WM` / `WH` wait is active. |
+| `IW` | `IsWaiting` | — | Reply `IW:1` if any `W` / `WM` / `WH` / `WP` / `WC` / `WnC` wait is active. |
 | `ID` | `IsDiag` | — | Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level. |
 | `IZ` | `IsReset` | — | Reply last chip reset cause (`power\|wdt\|run\|soft\|debug\|brownout\|…`). |
-| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
+| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; `PIN_BUZZER` when `BUZZER_use=1`; Pico omits overlapping DBG while axis2 is on. |
 
 Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 
@@ -238,16 +238,20 @@ A 2nd, simpler planner for a host-authored motion path: fixed-size time slices, 
 
 A sample value of `0` means the axis stands still for that slice. Distance→steps and slice-time→PIO-cycles both use an error-diffusion accumulator so rounding never biases total distance or total playback time. `steps_per_unit` and PIO limits apply as usual; speed/accel limits are **not** checked — the host is expected to deliver an already speed/accel-limited path.
 
-While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `PD`/`PathData` (live-move streaming), `PN`/`PathNumber`, all `I*`/`G*`/`V*` queries, `IX`/`Pinout`, `Help`/`HL`/`$`, `CG`/`ConfigGet`. The buffer is retained after playback ends (naturally or via `MS`/`H`), so `PG` can replay the same data.
+While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `PD`/`PathData` (live-move streaming), `PN`/`PathNumber`, all `I*`/`G*`/`V*` queries, `IX`/`Pinout`, `Help`/`HL`/`$`, `CG`/`ConfigGet`, `Z`/`Buzzer`, `X0`…`X3`. The buffer is retained after playback ends (naturally or via `MS`/`H`), so `PG` can replay the same data.
 
 Verbose / `?` while in path-mode (state letter `P`) use the same layouts as other moving states (`#P …` with live pos/speed; accel is typically `0` for constant-rate slices).
+
 ### X — Extender outputs (silent)
 
 | Short | Long | Args | Description |
 |-------|------|------|-------------|
 | `X0`…`X3` | `Ext0`…`Ext3` | `0` \| `1` or bare | Ext out n logical 0\|1; bare toggles; glued `X00`≡`X0 0`; ok during EMO. |
+| `Z` | `Buzzer` | — | Pulse `PIN_BUZZER` high ~0.1 s (non-blocking). Not a wait (`IW` unchanged). No-op if `BUZZER_use=0` or the pin aliases `PIN_LED`. OK during EMO / path. |
 
 Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` ≡ `X1 0`. Levels use `EXT_n_active`. Reset to inactive on reboot. **`X4`…`X9` / `Ext4`…`Ext9` are rejected** (`!E:parse`) — `PIN_EXT_COUNT` is 4.
+
+`Z` does not pause motion or the `;` chain. Re-issue restarts the 100 ms. Enable the pin with `CS BUZZER_use 1` (default 0). See [pins.md](../mc/pins.md).
 
 ### C — Config (persistent)
 
@@ -258,7 +262,7 @@ Glued args work like other commands: `X00` ≡ `X0 0`, `X01` ≡ `X0 1`, `X10` �
 | `CG` | `ConfigGet` | `key` or bare | Get key → `CG:key=value`; bare dumps all keys. |
 | `RB` | `Reboot` | — | Soft MCU reset (no power cycle): halt/EN off, then reboot. Next `IZ` → `soft`. |
 
-Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `max_speed_2`, `max_accel_2`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
+Important keys: `init_speed`, `init_accel`, `max_speed`, `max_accel`, `max_speed_2`, `max_accel_2`, `steps_per_unit`, `unit_name`, `slider_min`, `slider_max`, `axis2_use`, `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin `*_active` levels (incl. `EXT_0_active`…`EXT_3_active`), `BUZZER_use`, `home_mode` / `home_move_out` / `home_speed` / `home_accel`, matching `*_2` keys when using axis2, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Legacy aliases `steps_per_mm` / `steps_per_mm_2` still work on `CS`/`CG`. See [config.md](../mc/config.md).
 
 A UIC may shrink travel with session `SL` / `SR` (working window) — not by rewriting `slider_min` / `slider_max`. See [working-window.md](../mc/working-window.md) and [marks vs working window](../architecture/marks-vs-working-window.md).
 
@@ -269,12 +273,20 @@ A UIC may shrink travel with session `SL` / `SR` (working window) — not by rew
 | `W` | `Wait` | `[sec]` | Delay sec then continue `;` chain; bare → 1 s; never `!E:timeout`. |
 | `WM` | `WaitMoving` | `[timeout_s]` | Pause chain until move ends; optional timeout cancels remaining chain. |
 | `WH` | `WaitHoming` | `[timeout_s]` | Pause chain until homing ends; optional timeout cancels remaining chain. |
+| `WP` | `WaitPos` | `pos [timeout_s]` | Pause until axis-1 position is reached or overstepped; idle → return immediately. |
+| `WC` | `WaitCruise` | `[timeout_s]` | Pause until status letter `M` (cruise) or idle. |
+| `WnC` | `WaitNotCruise` | `[timeout_s]` | Pause until status is not `M`; idle / `A` / `B` → return immediately. |
 
-- `WM` / `WH` optional timeout in **seconds** (float): `WM100`, `WM 100`, `WH 5.5`.
-- No timeout arg on `WM`/`WH` = wait indefinitely until the condition clears.
+- Optional timeout in **seconds** (float): `WM100`, `WM 100`, `WP 250 5`, `WC 10`, `WnC 3`.
+- No timeout arg = wait indefinitely until the condition clears (`W` is always a delay).
 - Success: **silent** (no `OK`); `;` chain continues with the following commands.
-- **`WM`/`WH` timeout:** `!E:timeout` and **cancel all following commands** on that chain. Motion is not stopped by the timeout alone.
+- **Timeout** (`WM` / `WH` / `WP` / `WC` / `WnC`): `!E:timeout` and **cancel all following commands** on that chain. Motion is not stopped by the timeout alone.
 - **`W` delay expiry:** resumes the chain silently (never `!E:timeout`).
+- **`WP`:** axis 1 only. Second number is timeout, not axis-2 pos. Moving `+` → done when `pos >=` mark; moving `−` → `pos <=` mark. Idle / ~0 velocity → return immediately. Bare `WP` → `!E:parse`.
+- **`WC`:** wait until cruise (`M`); also completes if not moving. While already braking (`B`), waits until idle (or timeout).
+- **`WnC`:** wait while cruising; already not `M` → return immediately.
+
+In-move scripting (live `SS`/`SA` at waypoints, extender cues): [command chains](../architecture/command-chains.md).
 
 ### V — Version
 
@@ -290,8 +302,8 @@ A UIC may shrink travel with session `SL` / `SR` (working window) — not by rew
 |-------|------|------|-------------|
 | `H` / `HT` | `Halt` | — | Immediate STEP abort; enable off; cancel waits and remaining `;` chain. |
 | `RB` | `Reboot` | — | Soft MCU reset (no power cycle); EN off first. Allowed during EMO / path. |
-| `VG` | `VersionGPIO` | — | List `PIN_*=GPIO` lines (machine-readable). Axis-2 pins only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
-| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; Pico omits overlapping DBG while axis2 is on. |
+| `VG` | `VersionGPIO` | — | List `PIN_*=GPIO` lines (machine-readable). Axis-2 pins only when `axis2_use=1`; `PIN_BUZZER` when `BUZZER_use=1`; Pico omits overlapping DBG while axis2 is on. |
+| `IX` | `Pinout` | — | ASCII table of GP / name / desc. Axis-2 rows only when `axis2_use=1`; `PIN_BUZZER` when `BUZZER_use=1`; Pico omits overlapping DBG while axis2 is on. |
 | `$` / `HL` | `Help` | — | ASCII table of all commands (≤80 columns). |
 
 ### Stop vs Halt
@@ -307,7 +319,7 @@ Hard-limit trips and `PIN_DRV_ERROR` use the same internal halt path as `H`/`HT`
 
 Polled with ~20 ms debounce (including **already asserted at power-up**). While asserted: `IE:1`, state letter `E`, halt applied, most commands rejected with `!E:emo active`.
 
-Allowed while error active: `IE`, `IA`/`Axis`/`IsAxis`, `ID`, `IZ`, `IX`/`Pinout`, `VA`/`VF`/`VP`, `VG`, `Help`/`HL`/`$`, `CS`/`CR`/`CG`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `X0`…`X3` / `Ext0`…`Ext3`, realtime `?` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
+Allowed while error active: `IE`, `IA`/`Axis`/`IsAxis`, `ID`, `IZ`, `IX`/`Pinout`, `VA`/`VF`/`VP`, `VG`, `Help`/`HL`/`$`, `CS`/`CR`/`CG`, `H`/`HT`/`Halt`, `RB`/`Reboot`, `X0`…`X3` / `Ext0`…`Ext3`, `Z`/`Buzzer`, realtime `?` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
 
 ---
 
@@ -318,7 +330,7 @@ Allowed while error active: `IE`, `IA`/`Axis`/`IsAxis`, `ID`, `IZ`, `IX`/`Pinout
 | Pico / Pico W | Yes — `CS axis2_use 1` enables dual STEP/DIR (DBG GP10–13 reclaimed) |
 | RP2040-Zero | Yes — dual STEP/DIR; DBG GP18–23 remain usable with axis2 |
 
-When enabled: dual planner axes, dual path buffers, `IA` replies `IA:2`. Dual-arg `MT`/`M`/`PD` and `MJ <pct> [<pct2>]` apply. `IX` / `VG` list axis-2 pins only while enabled. See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives axes independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
+When enabled: dual planner axes, dual path buffers, `IA` replies `IA:2`. Dual-arg `MT`/`M`/`PD` and `MJ <pct> [<pct2>]` apply. `WP` still uses **axis 1 only** (optional 2nd number is timeout). `IX` / `VG` list axis-2 pins only while enabled. See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives axes independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
 
 **Reboot required for HW:** `CS axis2_use` updates config/`IA` immediately, but the second STEP PIO SM and axis-2 pins are initialized only at boot. After changing `axis2_use`, send `RB` / `Reboot` (or power-cycle) before dual-axis motion. Narrative guide: [About dual movement](../mc/dual-movement.md). See also [config.md](../mc/config.md#optional-2nd-axis-axis2_use).
 
@@ -387,7 +399,7 @@ Same format as verbose push (one immediate `#…` line).
 | `busy` | Illegal during homing/alarm |
 | `cfg` | Unknown config key or bad value |
 | `home` | Homing rejected/aborted (`cfg`, `travel`, `hard`) |
-| `timeout` | `WM` / `WH` timed out; remainder of `;` chain canceled |
+| `timeout` | `WM` / `WH` / `WP` / `WC` / `WnC` timed out; remainder of `;` chain canceled |
 
 Format: `!E:<code> <short text>`
 
@@ -429,6 +441,14 @@ W;GS
 ```
 
 After ~1 s delay, `GS` runs.
+
+```text
+SS20;MT300;WP100;SS50;WP200;SS20;WM
+SA100;MT300;WC;SA5;WM
+MT 500; WP 250; X1 1; WM
+```
+
+In-move retarget and cues (no stop between marks): [command chains](../architecture/command-chains.md).
 
 ```text
 ?

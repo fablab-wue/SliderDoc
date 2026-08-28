@@ -177,7 +177,7 @@ code {
 <tr><td class="sh">IA</td><td class="ln">IsAxis</td><td class="ds">Active axis count (config_axis2_enabled).</td></tr>
 <tr><td class="sh">IT</td><td class="ln">IsTarget</td><td class="ds">Axis-1 seek target, or - if none / soft-stop.</td></tr>
 <tr><td class="sh">IR</td><td class="ln">IsReady</td><td class="ds">1 only if idle, not homing, enabled, and not waiting.</td></tr>
-<tr><td class="sh">IW</td><td class="ln">IsWaiting</td><td class="ds">1 if any W / WM / WH wait is active.</td></tr>
+<tr><td class="sh">IW</td><td class="ln">IsWaiting</td><td class="ds">1 if any W / WM / WH / WP / WC / WnC wait is active.</td></tr>
 <tr><td class="sh">ID</td><td class="ln">IsDiag</td><td class="ds">Motion diag counters (FIFO underrun, peak STEP Hz, …).</td></tr>
 <tr><td class="sh">IZ</td><td class="ln">IsReset</td><td class="ds">Last chip reset: power|wdt|run|soft|debug|brownout|…</td></tr>
 <tr><td class="sh">IX</td><td class="ln">Pinout</td><td class="ds">ASCII GP / name / desc (≤80 cols). Axis-2 rows only if axis2 on.</td></tr>
@@ -217,6 +217,7 @@ code {
 <thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">X0–3</td><td class="ln">Ext0–3</td><td class="ds">Ext out n logical 0|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected.</td></tr>
+<tr><td class="sh">Z</td><td class="ln">Buzzer</td><td class="ds">Pulse PIN_BUZZER ~0.1 s; not a wait. No-op if BUZZER_use=0. OK during EMO/path.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>C — Config</h2>
@@ -238,6 +239,9 @@ code {
 <tr><td class="sh">W</td><td class="ln">Wait</td><td class="ds">Delay then continue ; chain; bare→1 s; never !E:timeout.</td></tr>
 <tr><td class="sh">WM</td><td class="ln">WaitMoving</td><td class="ds">Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.</td></tr>
 <tr><td class="sh">WH</td><td class="ln">WaitHoming</td><td class="ds">Pause until homing ends; timeout same as WM.</td></tr>
+<tr><td class="sh">WP</td><td class="ln">WaitPos</td><td class="ds">Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout.</td></tr>
+<tr><td class="sh">WC</td><td class="ln">WaitCruise</td><td class="ds">Wait until cruise (status M) or idle; optional timeout → !E:timeout.</td></tr>
+<tr><td class="sh">WnC</td><td class="ln">WaitNotCruise</td><td class="ds">Wait until not cruise M; idle/A/B→immediate; timeout same as WM.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>V — Version</h2>

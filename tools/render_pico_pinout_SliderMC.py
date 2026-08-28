@@ -62,7 +62,7 @@ RIGHT = [
     ("3V3_EN", "3V3_EN"),
     ("3V3", "3V3 OUT"),
     ("ADC_VREF", "ADC_VREF"),
-    ("GP28", "free"),
+    ("GP28", "BUZZER*"),
     ("AGND", "ADC GND"),
     ("GP27", "SW_LIMIT_R*"),
     ("GP26", "SW_LIMIT_L*"),

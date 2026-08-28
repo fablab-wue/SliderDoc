@@ -243,6 +243,8 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_CTRL
     if lab.startswith("LED_") or lab in ("LED", "PIN_LED") or "NEOPIXEL" in lab:
         return C_LED
+    if lab in ("BUZZER", "PIN_BUZZER"):
+        return C_EXT
     if lab in ("FREE", "(FREE)") or "(FREE)" in lab or lab == "RGB_UNUSED":
         return C_FREE
     return C_FREE
