@@ -30,7 +30,7 @@
 - earlephilhower core, FreeRTOS enabled via `PIO_FRAMEWORK_ARDUINO_ENABLE_FREERTOS`.
 - PlatformIO toolbar: **Build** / **Upload** / **Monitor** (select the env matching your hardware).
 - USB CDC carries the ASCII CLI (same protocol as UART).
-- UIC UART is **1 000 000** baud on `PIN_UART_TX` / `PIN_UART_RX` (see PINS.md).
+- UIC UART is **115 200** baud on `PIN_UART_TX` / `PIN_UART_RX` (see PINS.md).
 - Close the serial monitor (or SliderCLI) before **Upload** — the 1200 baud reset needs the CDC COM port free.
 
 ### Windows upload: picotool / `upload_port` error

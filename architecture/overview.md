@@ -136,7 +136,9 @@ Both Picos use **GP16 = UART TX** and **GP17 = UART RX**. Board-to-board wiring 
 | `UIC_RX` (GP17) | `MC_TX` (GP16) |
 | UIC GND | MC GND |
 
-Default baud: **1 000 000**. Changeable in SliderMC source (`UART_BAUD` in `include/pins.h`); the UIC client (`MC_Client` / `MC_config.UART_BAUD`) must use the same rate.
+Default baud: **115 200**. Changeable in SliderMC source (`UART_BAUD` in `include/pins.h`); the UIC client (`MC_Client` / `MC_config.UART_BAUD`) must use the same rate.
+
+**Why 115 200 (not 1 Mbaud):** more reliable on longer cables and with RS-232 level shifters (MAX232 / MAX3232 cannot run 1 Mbaud); typical traffic still uses well under 10% of line capacity.
 
 
 UART is **3.3 V** logic. Do **not** connect it directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
@@ -187,7 +189,7 @@ flowchart LR
     Panel --> UiBase
     McClient -->|"status_callback"| UiBase
   end
-  subgraph link [UART_1Mbaud]
+  subgraph link [UART_115200]
     TXRX["GP16_TX_GP17_RX"]
   end
   subgraph mc [SliderMC]
@@ -213,7 +215,7 @@ Sibling clone paths: `../assets/img/pico_pinout_mc.png`, `../mc/pins.md`.
 
 ## Wire protocol (summary)
 
-- ASCII lines @ **1 000 000** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
+- ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
 - **Startup:** a `\n` on UIC UART or USB unlocks the MC; MC replies with welcome `# …` banner; UIC then sends `SV 1`.
 - Commands: `MT`, `M`, `ML`, `MR`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
 - Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]`

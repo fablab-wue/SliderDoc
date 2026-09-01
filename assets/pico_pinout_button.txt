@@ -25,7 +25,7 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
   BTN_TIMELAPSE    GP15    20 |o         o| 21 GP16     UART_TX
                               +-----------+
 
-Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud.
+Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud.
 Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.
 Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = "button".
 GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL.

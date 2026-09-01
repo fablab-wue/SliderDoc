@@ -54,7 +54,7 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`pico_pinout_mc.t
 
 When `axis2_use=1`, HW debug on GP10–13 is **not driven** (`PIN_DBG_OVERLAPS_AXIS2`). GP14–15 DBG remain available.
 
-UART baud rate: **1 000 000**. GP16/GP17 are **UART0** (`Serial1` via `PIN_UART_SERIAL`).
+UART baud rate: **115 200**. GP16/GP17 are **UART0** (`Serial1` via `PIN_UART_SERIAL`).
 
 ---
 

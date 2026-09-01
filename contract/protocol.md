@@ -41,7 +41,7 @@ SliderMC is a **named ASCII CLI** (expert-friendly, UIC-friendly), not a G-code 
 - One command per line, or several separated by `;`.
 - Values may be whitespace-separated or glued to the verb (`MT100` / `MT 100`). Multiple values are whitespace-separated.
 - Backspace (`0x08` / `0x7F`) edits the current line when typing.
-- UART (1 Mbaud) and USB CDC share the same parser.
+- UART (115200 baud) and USB CDC share the same parser.
 - **Debug text is USB-only** — never sent on the UIC UART.
 - **Empty line:** ignored (does **not** stop motion).
 - **Comments:** `#` starts a Python-style comment to end of line; that text is ignored. A line that is only a comment (or whitespace + comment) is ignored with **no** error. Inline comments work (`mt100 # go home`). Pasted verbose/status lines that begin with `#` (`#M …`, `#A …`, `#I …`, startup banner) are likewise ignored when replayed into the CLI.

@@ -34,7 +34,7 @@ Bottom-side SMD pads (top→bottom):
   GP18   free
   GP17   free
 
-Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 1 Mbaud.
+Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.
 OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.
 CTRL_CAMERA on GP29. DELAY / TIMELAPSE on underside GP25 / GP24.
 Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = "button".

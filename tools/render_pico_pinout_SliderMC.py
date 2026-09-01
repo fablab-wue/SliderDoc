@@ -112,7 +112,7 @@ def render_ascii() -> str:
         [
             "                         +-----------+",
             "",
-            "Legend: EXT_0…3 on GP2–5 (X0…X3); UART 1 Mbaud GP16/17; motor DRV on GP18–20.",
+            "Legend: EXT_0…3 on GP2–5 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.",
             "axis2_use=1: GP6/7/9 + GP10–13 (LIMIT_*/HOME2 / DRV_*2); DBG GP10–13 off then.",
             "SW_* / LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
             "GP14–15 DBG_* (DEBUG_HW); GP0/1/8/23–25/28 free. Pin names match IX / VG.",

@@ -24,7 +24,7 @@ One consolidated view of the whole stack — details live in each repo README an
 - **Construction kit** — JKSlider / B4Slider panel apps, **`MC_Client`** / **`UIC_Base`**, SliderMC motion; build sliders, mini-dollies, rotating heads, turntables, **slider + pan**, or other STEP/DIR rigs  
 - **Optional 2-axis** — typical **linear travel + pan** (or tilt/turn), **time-synced** dual moves (not CNC); SliderMC `axis2_use`; `MC_Client` dual `moveTo` / `home`. Shipping panels stay 1-axis. [dual-movement.md](mc/dual-movement.md) · [UIC API](uic/api/overview.md)  
 - **Production moves** — marks A/B/C, pair loops, DELAY, timelapse dividers, pause/resume, live retarget, camera trigger  
-- **Dedicated motion MCU** — PIO step timing isolated from MicroPython UIC; crossed UART contract at 1 Mbaud  
+- **Dedicated motion MCU** — PIO step timing isolated from MicroPython UIC; crossed UART contract at 115200 baud  
 - **Open firmware, open docs** — MIT licensed; Thonny / REPL and USB CLI; edit pins, fork panels, script moves  
 - **DIY mechanics** — rail, motor, driver, and housing up to the builder; upcycle linear units and off-the-shelf STEP/DIR drivers  
 

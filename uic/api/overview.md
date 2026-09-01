@@ -68,7 +68,7 @@ await mc.wait()
 
 ## Class `MC_Client` (UART to SliderMC)
 
-Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 1 000 000 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
+Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 115 200 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
 
 **Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `axis2_use=1` then reboot. `mc.axis_count` / `getAxisCount()` come from CG `axis2_use` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Shipping JKSlider / B4Slider keep `set_status_callback` (axis 1). Custom 2-axis UIs use `set_status2_callback` and optional `pos2`. Wire: [protocol.md — Optional 2nd axis](../../contract/protocol.md#optional-2nd-axis-axis2_use).
 
@@ -77,7 +77,7 @@ Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `M`, `ML`
 ```python
 from MC_client import MC_Client
 
-mc = MC_Client()                       # UART0, GP16/17, 1 Mbaud
+mc = MC_Client()                       # UART0, GP16/17, 115200 baud
 await mc.start()                       # unlock MC with \n, wait for `# …`, then SV 1 + CG
 mc.setSpeed(40)
 mc.enable(True)
@@ -582,7 +582,7 @@ Shipped defaults live in `MC_config.py` / `UIC_config.py` / `JKSliderConfig.py`.
 | Symbol | Default | Meaning |
 |--------|---------|---------|
 | `PIN_UART_TX` / `PIN_UART_RX` | 16 / 17 | UART to SliderMC |
-| `UART_BAUD` | 1_000_000 | Must match SliderMC |
+| `UART_BAUD` | 115_200 | Must match SliderMC |
 | `MIN_SPEED_MM_S` | 0.006 | UIC command floor (mm/s) |
 | `SOFT_LIMIT_WARN_MM` | 10.0 | Near-limit distance for `isNearSoftLimit` |
 | `LED_ACCEL_SPEED_EPS_MM_S` | 3.0 | Accel/decel detect when MC letter is not A/B |
@@ -638,7 +638,7 @@ Copy [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/mai
 
 | Signal | Board | Purpose |
 |--------|-------|---------|
-| UART TX/RX GP16/17 | UIC + MC | 1 Mbaud link |
+| UART TX/RX GP16/17 | UIC + MC | 115200 baud link |
 | `CTRL_CAMERA` | UIC | Shutter / intervalometer (`PIN_CTRL_CAMERA`, default GP22) |
 | `LED_R` / `LED_G` / `LED_B` | UIC | RGB status |
 | `NEOPIXEL` | UIC | Optional WS2812 |

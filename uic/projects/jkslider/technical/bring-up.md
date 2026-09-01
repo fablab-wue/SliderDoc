@@ -154,7 +154,7 @@ JKSlider.run()
 | Shell shows errors about missing module | That `.py` file is not on the Pico — upload it |
 | Want to stop a running slider from PC | Click Thonny’s red stop button, or unplug USB briefly |
 | Files on Pico vs PC mixed up | Always check **which side** you saved to (Pico vs computer) |
-| `SliderMC banner timeout … continuing without MC` | UART **crossed** (UIC TX→MC RX, UIC RX→MC TX)? Shared **GND**? Both at **1 000 000** baud? SliderMC firmware flashed and powered? Panel continues without motion until the link works |
+| `SliderMC banner timeout … continuing without MC` | UART **crossed** (UIC TX→MC RX, UIC RX→MC TX)? Shared **GND**? Both at **115 200** baud? SliderMC firmware flashed and powered? Panel continues without motion until the link works |
 
 ---
 

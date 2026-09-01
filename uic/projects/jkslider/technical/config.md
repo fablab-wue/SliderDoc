@@ -23,7 +23,7 @@ Typical UIC defaults for the **SliderMC split** (edit via `SliderPins.py`):
 
 | GPIO | Signal |
 |------|--------|
-| GP16 / 17 | UART_TX / UART_RX to SliderMC @ 1 Mbaud |
+| GP16 / 17 | UART_TX / UART_RX to SliderMC @ 115200 baud |
 | GP22 | CTRL_CAMERA shutter / intervalometer |
 | GP18–21 | free (optional NeoPixel / future IO) |
 | GP2 / 3 / 4 | LED_R / LED_G / LED_B |

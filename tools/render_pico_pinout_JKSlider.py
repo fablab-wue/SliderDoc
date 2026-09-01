@@ -3,7 +3,7 @@
 #   python docs/render_pico_pinout.py
 #
 # Top view, USB at top. UIC panel pins from JKSliderConfig / SliderConfig;
-# motion runs on SliderMC (UART GP16/17 @ 1 Mbaud).
+# motion runs on SliderMC (UART GP16/17 @ 115200 baud).
 
 from __future__ import annotations
 
@@ -203,9 +203,9 @@ def render_ascii(mode: str) -> str:
             % (left_fun, left_gp, pn_l, pn_r, right_gp, right_fun)
         )
     legend = (
-        "Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud."
+        "Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud."
         if mode == "b4"
-        else "Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud."
+        else "Legend: pots on ADC pins GP26–28; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud."
     )
     lines.extend(
         [

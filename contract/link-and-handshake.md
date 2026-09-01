@@ -29,7 +29,7 @@ Wire and bring up the UART link before expecting motion from the panel. Full arc
 | UIC GP17 (`UART_RX`) | MC GP16 (`UART_TX`) |
 | UIC GND | MC GND |
 
-Default baud **1 000 000**. To change it, edit SliderMC `UART_BAUD` in `include/pins.h` (see [PINS.md](../mc/pins.md)) and match the UIC (`MC_Client` UART). UART is **3.3 V** — do not connect directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
+Default baud **115 200**. To change it, edit SliderMC `UART_BAUD` in `include/pins.h` (see [PINS.md](../mc/pins.md)) and match the UIC (`MC_Client` UART). UART is **3.3 V** — do not connect directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
 
 **Power** — UIC and MC may share **`VSYS`** (+ GND). Example: plug USB into the UIC for debugging; feed the MC from UIC `VSYS` so the motion Pico needs no separate logic supply. Motor VM stays on the driver / motor PSU.
 
@@ -56,7 +56,7 @@ The split lets the **UIC** be a **handheld wired remote** while the **MC** sits 
 
 Keep **motor VM** and high current local to the MC / driver — never run motor power through the remote cable. Bench USB on the UIC (MC fed from UIC `VSYS`) remains valid for debugging; the remote layout simply reverses the usual “who supplies 5 V” direction so the handheld panel does not need its own battery.
 
-**Cable length and baud** — default **1 000 000** baud assumes a short, clean link. Longer remotes may need a shielded cable, a lower baud (`UART_BAUD` in SliderMC `include/pins.h`, matched in the UIC `MC_Client` UART), or a shorter run. Shared GND is mandatory at either length.
+**Cable length and baud** — default **115 200** baud tolerates longer handheld cables and RS-232 level shifters (MAX232 / MAX3232). For very noisy runs, use a shielded cable, shared GND, or a lower baud (`UART_BAUD` in SliderMC `include/pins.h`, matched in the UIC `MC_Client` UART).
 
 Architecture overview: [../architecture/overview.md](../architecture/overview.md#interconnect-and-housing).
 

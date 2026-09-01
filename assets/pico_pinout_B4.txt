@@ -25,7 +25,7 @@ BUTTON mode  |  defaults in UIC_config.py + B4SliderConfig.py
   free             GP15    20 |o         o| 21 GP16     UART_TX
                               +-----------+
 
-Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 1 Mbaud.
+Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud.
 Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.
 B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION), SPEED pot,
   optional ACCEL pot (GP27, B4S_USE_ACCEL_POT). No keypad, FAST, A/B/C,

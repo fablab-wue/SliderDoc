@@ -16,7 +16,7 @@ Highest priority: smooth, jerk-limited STEP generation. Protocol and UI traffic 
 |------|----------|------|
 | `feed` (MotionFeed) | Highest | Sole owner of `planner_fill_fifo()` (or `motion_path_fill_fifo()` while path-mode is active). Waits on the TX-not-full IRQ **only while the FIFO is full**; otherwise sleeps 1 ms, so it can never spin and starve `plan`/`proto` |
 | `plan` (Planner) | High | Switches, DIR pause, settle, underrun check, status (~200 Hz) — does **not** fill FIFO |
-| `proto` (Protocol) | Medium | USB CDC + UART 1 Mbaud RX/TX, verbose push, LED heartbeat (~67 Hz state patterns) / WDT |
+| `proto` (Protocol) | Medium | USB CDC + UART 115200 baud RX/TX, verbose push, LED heartbeat (~67 Hz state patterns) / WDT |
 | `loop` | Idle | Idle delay only |
 
 ## PIO STEP

@@ -35,7 +35,7 @@ Bottom-side SMD pads (top→bottom):
   GP17   DRV_EN2
 
 Legend: motor DRV on GP0–3; axis2 STEP/DIR/ERR/HOME on GP5–8; EN2 on GP17.
-EXT_0…3 on GP27/26/15/14 (X0…X3); UART 1 Mbaud GP12/13; axis2_use supported.
+EXT_0…3 on GP27/26/15/14 (X0…X3); UART 115200 baud GP12/13; axis2_use supported.
 SW_* / LIMIT_* off until CS …_use=1. LIMIT2 on GP24/25; DBG GP18–23 (OK with axis2).
 GP29 status LED; GP11/16/28 free; GP16 = onboard RGB unused.
 Pin names match IX / VG (axis2 rows only when axis2_use=1).

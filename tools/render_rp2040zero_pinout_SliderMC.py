@@ -195,7 +195,7 @@ def _layout(mode: str):
                 'BUTTON mode  |  overlay in SliderPins.py (RP2040-Zero keys)',
             ),
             "ascii_notes": [
-                "Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 1 Mbaud.",
+                "Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
                 "CTRL_CAMERA on GP29. DELAY / TIMELAPSE on underside GP25 / GP24.",
                 "Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = \"button\".",
@@ -220,7 +220,7 @@ def _layout(mode: str):
         ),
         "ascii_notes": [
             "Legend: motor DRV on GP0–3; axis2 STEP/DIR/ERR/HOME on GP5–8; EN2 on GP17.",
-            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 1 Mbaud GP12/13; axis2_use supported.",
+            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 115200 baud GP12/13; axis2_use supported.",
             "SW_* / LIMIT_* off until CS …_use=1. LIMIT2 on GP24/25; DBG GP18–23 (OK with axis2).",
             "GP29 status LED; GP11/16/28 free; GP16 = onboard RGB unused.",
             "Pin names match IX / VG (axis2 rows only when axis2_use=1).",
