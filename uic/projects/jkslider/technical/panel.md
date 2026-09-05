@@ -158,7 +158,7 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
                          +-----------+
 ```
 
-Note: Do not use the RUN pin! Motion STEP/DIR/EN, SW_HOME, and DRV_ERROR live on the **SliderMC** Pico.  
+Note: Do not use the RUN pin! Motion STEP/DIR/EN, SW_LIMIT_*, and DRV_ERROR live on the **SliderMC** Pico.  
 `GP16`/`GP17` are this board’s UART TX/RX — connect **crossed** to the MC (see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)).
 
 Also: [../../../../assets/pico_pinout_button.txt](../../../../assets/pico_pinout_button.txt).
@@ -167,9 +167,9 @@ Also: [../../../../assets/pico_pinout_button.txt](../../../../assets/pico_pinout
 
 Compact alternative to a full Pico. Same JKSlider app; **GPIO numbers differ** — overlay via `SliderPins.py` (`RP2040_ZERO_*` dicts in [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/SliderPins.example.py)). `JKS_INPUT_MODE = "button"` (no keypad matrix on this map). UART0 is **GP12/13** (not Pico GP16/17); OLED is **I2C1** on GP14/15 (`DSP_I2C_ID = 1`). DELAY / TIMELAPSE sit on underside SMD pads GP25 / GP24.
 
-![RP2040-Zero pinout button mode](../../../../assets/img/rp2040zero_pinout_button.png)
+![RP2040-Zero pinout button mode](../../../../assets/img/JKSlider_rp2040zero_pinout_button.png)
 
-Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py button` → [`rp2040zero_pinout_button.txt`](../../../../assets/rp2040zero_pinout_button.txt) + PNG.
+Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py button` → [`JKSlider_rp2040zero_pinout_button.txt`](../../../../assets/JKSlider_rp2040zero_pinout_button.txt) + PNG.
 
 #### Keypad mode
 

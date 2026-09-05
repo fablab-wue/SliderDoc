@@ -86,8 +86,8 @@ KEYPAD_LEFT_OVERRIDE = {
 # B4Slider button panel (B4SliderConfig.py). SET occupies JKSlider's STOP GPIO.
 B4_LEFT_OVERRIDE = {
     "GP5": "BTN_SET",
-    "GP8": "free",
-    "GP9": "free",
+  "GP8": "BTN_MOVE_L2",
+  "GP9": "BTN_MOVE_R2",
     "GP10": "free",
     "GP11": "free",
     "GP12": "free",
@@ -212,7 +212,7 @@ def render_ascii(mode: str) -> str:
             "                         +-----------+",
             "",
             legend,
-            "Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.",
+            "Motion STEP/DIR/EN, SW_LIMIT_*, DRV_ERROR live on the SliderMC Pico — not on this UIC.",
         ]
     )
     if mode == "keypad":
@@ -231,9 +231,11 @@ def render_ascii(mode: str) -> str:
     elif mode == "b4":
         lines.extend(
             [
-                "B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION), SPEED pot,",
-                "  optional ACCEL pot (GP27, B4S_USE_ACCEL_POT). No keypad, FAST, A/B/C,",
-                "  DELAY, TIMELAPSE, or joystick. SET on GP5 (was STOP on JKSlider).",
+                "B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION) on 1-axis;",
+                "  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC axis2_use=1.",
+                "  SPEED pot, optional ACCEL pot (GP27, B4S_USE_ACCEL_POT).",
+                "  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, or joystick.",
+                "  SET on GP5 (was STOP on JKSlider).",
             ]
         )
     else:

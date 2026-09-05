@@ -63,8 +63,6 @@ Default is **3**.
 | `DRV_STEP_active` | 0/1 | 1 | STEP active level (PIO program) |
 | `DRV_DIR_active` | 0/1 | 1 | `1` = DIR high means +mm |
 | `DRV_EN_active` | 0/1 | 0 | EN active level (`0` = low-active) |
-| `SW_HOME_active` | 0/1 | 0 | Home switch active level |
-| `SW_HOME_use` | 0/1 | 0 | `1` = enable `PIN_SW_HOME` for homing only (no halt) |
 | `DRV_ERROR_active` | 0/1 | 0 | Driver error input active level |
 | `SW_LIMIT_L_active` | 0/1 | 0 | Left hard-limit active level |
 | `SW_LIMIT_R_active` | 0/1 | 0 | Right hard-limit active level |
@@ -80,7 +78,6 @@ Default is **3**.
 | `slider_min_2` | float mm or `none` | *(mirror)* | Axis-2 soft min |
 | `slider_max_2` | float mm or `none` | *(mirror)* | Axis-2 soft max |
 | `DRV_STEP_active_2` … `DRV_ERROR_active_2` | 0/1 | *(mirror)* | Axis-2 driver pin polarities |
-| `SW_HOME_active_2` / `SW_HOME_use_2` | 0/1 | *(mirror)* | Axis-2 home switch |
 | `SW_LIMIT_*_active_2` / `SW_LIMIT_*_use_2` | 0/1 | *(mirror)* | Axis-2 hard limits |
 | `home_mode_2` | 0..4 | 0 | Axis-2 homing mode |
 | `home_move_out_2` / `home_speed_2` / `home_accel_2` | float | *(mirror)* | Axis-2 homing parameters |
@@ -152,19 +149,21 @@ HOLD/else (c&0x30)==0     duty 16/64   ~1 Hz longer still
 ```
 
 
-### Homing (`SW_HOME_use` / `home_mode`)
+### Homing (`home_mode`)
 
-`SW_HOME_use=1` enables debounced polling of `PIN_SW_HOME` for the homing cycle only. Outside `MH`, the home switch is ignored (no halt, no motion block).
+There is no dedicated home-switch pin. Homing uses a hard limit (modes 1/2) or driver stall / `DRV_ERROR` (modes 3/4). `home_mode=0` plus `SP` declares origin without a switch.
 
 | Value | Behavior |
 |-------|----------|
-| `0` | No homing. `MH` returns silently (no motion) |
-| `1` | `PIN_SW_HOME` as left reference (needs `SW_HOME_use=1`) |
-| `2` | `PIN_SW_HOME` as right reference (needs `SW_HOME_use=1`) |
-| `3` | `PIN_SW_LIMIT_L` as reference (needs `SW_LIMIT_L_use=1`) |
-| `4` | `PIN_SW_LIMIT_R` as reference (needs `SW_LIMIT_R_use=1`) |
+| `0` | No homing. `MH` returns silently. Use `SP` to declare “here is zero.” |
+| `1` | Seek `SW_LIMIT_L` (needs `SW_LIMIT_L_use=1`); finish at `slider_min` |
+| `2` | Seek `SW_LIMIT_R` (needs `SW_LIMIT_R_use=1`); finish at `slider_max` |
+| `3` | Seek left until `DRV_ERROR`; EN pulse; wait clear; drive out; finish at `slider_min` |
+| `4` | Seek right until `DRV_ERROR`; same stall cycle; finish at `slider_max` |
 
-`MH` / `MoveHome` requires `SE 1`. Optional axis arg `1` (default) or `2` when `axis2_use=1`. Cycle: optional drive-out of an existing hard limit → seek toward reference at `home_speed` / `home_accel` → reverse off the switch plus `home_move_out` → set position to `slider_min` (modes 1/3) or `slider_max` (2/4). Seek is capped at 110% of `(slider_max − slider_min)`. Abort: `MS`/`Halt` (silent), `!E:home travel`, or `!E:home hard` (modes 1/2). See [MOTION.md](MOTION.md).
+Old ini files that still contain `SW_HOME_*` keys remap stale `home_mode` `3→1` and `4→2` on load (those used to mean LIMIT home). `CS home_mode 3` / `4` now means stall-home.
+
+`MH` / `MoveHome` requires `SE 1`. Optional axis arg `1` (default) or `2` when `axis2_use=1`. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out`. Seek is capped at 110% of `(slider_max − slider_min)`. Abort: `MS`/`Halt` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
 
 ### Optional 2nd axis (`axis2_use`)
 

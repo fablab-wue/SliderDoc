@@ -60,7 +60,7 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 4. **Live retarget** — `MT` / `MJ` / `SS` / `SA` update target/cruise/accel; next fill uses new remaining distance.
 5. **Reverse** — decelerate to 0 → `dir_change_pause_s` → accelerate the other way.
 6. **Soft limits** clamp remaining steps to the **session working window** (`SL`/`SR`); illegal `MT` outside the window is rejected.
-7. **Homing** — FSM via `MH` (`home_mode`, `home_speed`, `home_accel`, `home_move_out`); mode `0` = silent no-op.
+7. **Homing** — FSM via `MH` (`home_mode`, `home_speed`, `home_accel`, `home_move_out`); mode `0` = silent no-op (`SP` declares origin).
 
 API units are user units (typically mm / mm/s / mm/s², or ° / °/s / °/s²); internals use steps via `steps_per_unit` (and `steps_per_unit_2` when axis2 is enabled). See [dual-movement.md](dual-movement.md) for dual-axis timing and units.
 
@@ -150,15 +150,29 @@ Always sampled (polarity `DRV_ERROR_active`), ~20 ms debounce. Works if already 
 
 ## Homing
 
-Requires `enable=1` and a valid `home_mode` plus matching `*_use` flag. `IH` / `IsHoming` is 1 for the whole cycle.
+Requires `enable=1` and a valid `home_mode` (limit modes also need that side’s `SW_LIMIT_*_use`). `IH` / `IsHoming` is 1 for the whole cycle. `home_mode=0`: `MH` is a silent no-op — use `SP` to declare origin.
 
-1. If sitting on a hard limit that is not already the reference: drive out until released (`ClearHard`).
-2. If already on the reference: skip seek and start backoff.
-3. **Seek** toward the reference (modes 1/3 −, 2/4 +) at `home_speed` / `home_accel`. Soft limits do not clamp. Max travel `1.1 × (slider_max − slider_min)` → `!E:home travel`.
+**Limit-home (1/2)**
+
+1. If sitting on the opposite hard limit: drive out until released (`ClearHard`).
+2. If already on the reference limit: skip seek and start backoff.
+3. **Seek** toward the reference (1 −, 2 +) at `home_speed` / `home_accel`. Soft limits do not clamp. Max travel `1.1 × (slider_max − slider_min)` → `!E:home travel`.
 4. On reference assert: reverse (**Backoff**), leave the switch, then continue `home_move_out` mm.
-5. Set machine position to `slider_min` (1/3) or `slider_max` (2/4); clear `homing`.
+5. Set machine position to `slider_min` (1) or `slider_max` (2); clear `homing`.
 
-Mode 3/4: the reference limit does not raise a hard-limit fault during seek (it ends seek). Modes 1/2: hitting L/R hard limit aborts with `!E:home hard` (and `planner_halt`). `MS` soft-cancels; `H`/`HT` emergency-halts. Outside the cycle, `PIN_SW_HOME` never halts motion.
+The reference limit does not raise a hard-limit fault during seek (it ends seek). Hitting the **other** limit aborts with `!E:home hard`.
+
+**Stall-home (3/4)**
+
+1. Seek left (3) or right (4) until debounced `DRV_ERROR`. This is **not** the normal EMO path — motion is not protocol-gated.
+2. Stop stepping. Pulse `DRV_EN` off then on (~200 ms) so latched DIAG / Protect can clear.
+3. Wait until `DRV_ERROR` is stably deasserted (~20 ms debounce). Timeout → `!E:home stall`.
+4. Drive out `home_move_out` (DIAG ignored for a short window after re-enable).
+5. Set pose to `slider_min` (3) or `slider_max` (4).
+
+A real EMO still applies if `DRV_ERROR` asserts while **not** in this stall seek/reset, or if the line stays asserted after the EN pulse times out. Hitting a hard limit during stall-home aborts (`!E:home hard`). `MS` soft-cancels; `H`/`HT` emergency-halts.
+
+Use stall-home only on drivers that expose a stall line on `DRV_ERROR` (TMC2209 DIAG; MKS SERVO57D `OUT_1`). TMC2208, SERVO42C, and SERVO42D STEP/DIR have no usable stall pin — use modes 1/2 or `SP`. See [homing-switches.md](../components/homing-switches.md) and [integrated-drivers.md](../components/integrated-drivers.md).
 
 ## Current milestone
 

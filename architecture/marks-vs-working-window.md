@@ -20,7 +20,7 @@ Both faces talk millimetres to SliderMC. Hardware and the planner always clip tr
 
 | Layer | What it is | Who |
 |-------|------------|-----|
-| **Hard limit** | Switch (`SW_HOME` / `SW_LIMIT_*`); red LED | Both apps |
+| **Hard limit** | Switch (`SW_LIMIT_*`); red LED | Both apps |
 | **Envelope** | `slider_min` / `slider_max` — mechanical rail (homing, `CG`) | Installer / `CS` / `mc.ini` |
 | **Mark** | PosA / PosB / PosC — goto target, **not** a wall | JKSlider |
 | **Working window** (manuals: **A/B**) | Session `SL` / `SR` (`GL` / `GR`) — wall **and** B4 MOVE target | B4Slider via `MC_Client.setSoftLimits` / `setLeft` |

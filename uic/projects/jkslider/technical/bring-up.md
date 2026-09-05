@@ -191,10 +191,10 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 
 ### D. Driver and switch logic (must match your electronics)
 
-- [ ] `PIN_DRV_STEP` / `PIN_DRV_DIR` / `PIN_DRV_EN` / `PIN_SW_HOME` / `PIN_DRV_ERROR` — on the **SliderMC** Pico (see [PINS.md](../../../../mc/pins.md)); not on the UIC.
+- [ ] `PIN_DRV_STEP` / `PIN_DRV_DIR` / `PIN_DRV_EN` / `PIN_SW_LIMIT_*` / `PIN_DRV_ERROR` — on the **SliderMC** Pico (see [PINS.md](../../../../mc/pins.md)); not on the UIC.
 - [ ] `EN_ACTIVE_LOW` — `True` for most A4988 / DRV8825 / TMC boards (enable when pin is low).
 - [ ] `DIR_POSITIVE_HIGH` — if “right” on the panel moves the wrong way, flip this to `True`/`False` (or swap A/B motor wires once mechanics are fixed).
-- [ ] `SW_HOME_ACTIVE_HIGH` / `SW_HOME_PULL` — match your home switch (many are to GND with pull-up → active low).
+- [ ] `SW_LIMIT_L_use` / `SW_LIMIT_R_use` / `*_active` — match your limit switches (many are to GND with pull-up → active low). Set `home_mode` 1 or 2 to home on that limit.
 - [ ] `DRV_ERROR_ACTIVE_HIGH` / `DRV_ERROR_PULL` — match your E-stop wiring (or leave unused pin safe).
 - [ ] LED pins / `LED_ACTIVE_HIGH` if you fit an RGB LED (UIC `UIC_config.py`).
 - [ ] OLED: `DSP_ENABLED = True` only if wired; set `DSP_DRIVER` / `DSP_ROTATE_180` and SDA/SCL if not using the defaults.

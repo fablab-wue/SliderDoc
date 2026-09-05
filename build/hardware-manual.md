@@ -141,7 +141,7 @@ Firmware supports what you wire:
 
 | Hardware | Role |
 |----------|------|
-| **SW_HOME** | Homing reference + hard limit into `HOME_DIRECTION` |
+| **SW_LIMIT_L / R** | Hard limits; also the homing reference when `home_mode` is 1/2 |
 | **Soft limits** | Software travel (set after measuring real stroke) |
 | **DRV_ERROR / e-stop** | Hardware interlock (`PIN_DRV_ERROR`) → halt + disable; also driver alarm/stall |
 | **Panel STOP** | Operator stop / halt / disable |
@@ -178,7 +178,7 @@ Suggestions beyond the sections above — useful checklist when you design a kit
 |-----------------|-------------------|
 | Pitch / belt / microsteps | `steps_per_unit` (and related keys) in **SliderMC** config |
 | Travel | MC `slider_min` / `slider_max` (UIC reads via `CG`) |
-| Home end | `HOME_DIRECTION`, `PIN_SW_HOME`, switch polarity (MC) |
+| Home end | `home_mode`, `SW_LIMIT_*_use` / polarity, or `SP` if no switch (MC) |
 | Speed / torque feel | driver current, MC `max_speed` / `max_accel`, ACCEL pot range |
 | Quiet vs aggressive stop | driver mode, MC halt / DRV_ERROR decel |
 | Panel layout | button vs keypad — Technical Manual |

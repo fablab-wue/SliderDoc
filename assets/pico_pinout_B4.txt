@@ -1,8 +1,8 @@
 Raspberry Pi Pico — B4Slider UIC pinout (top view, USB at top)
 BUTTON mode  |  defaults in UIC_config.py + B4SliderConfig.py
 
-  function         pin                         pin      function
-                              +--- USB ---+
+        function         pin              pin        function
+                         +--- USB ---+
   DSP_I2C_SDA      GP0      1 |o         o| 40 VBUS     VBUS
   DSP_I2C_SCL      GP1      2 |o         o| 39 VSYS     VSYS
   GND              GND      3 |o         o| 38 GND      GND
@@ -13,8 +13,8 @@ BUTTON mode  |  defaults in UIC_config.py + B4SliderConfig.py
   GND              GND      8 |o         o| 33 AGND     ADC GND
   BTN_MOVE_L       GP6      9 |o         o| 32 GP27     POT_ACCEL
   BTN_MOVE_R       GP7     10 |o         o| 31 GP26     POT_SPEED
-  free             GP8     11 |o         o| 30 RUN      RUN
-  free             GP9     12 |o         o| 29 GP22     CTRL_CAMERA
+  BTN_MOVE_L2      GP8     11 |o         o| 30 RUN      RUN
+  BTN_MOVE_R2      GP9     12 |o         o| 29 GP22     CTRL_CAMERA
   GND              GND     13 |o         o| 28 GND      GND
   free             GP10    14 |o         o| 27 GP21     free
   free             GP11    15 |o         o| 26 GP20     free
@@ -23,12 +23,14 @@ BUTTON mode  |  defaults in UIC_config.py + B4SliderConfig.py
   GND              GND     18 |o         o| 23 GND      GND
   free             GP14    19 |o         o| 22 GP17     UART_RX
   free             GP15    20 |o         o| 21 GP16     UART_TX
-                              +-----------+
+                         +-----------+
 
 Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud.
-Motion STEP/DIR/EN, SW_HOME, DRV_ERROR live on the SliderMC Pico — not on this UIC.
-B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION), SPEED pot,
-  optional ACCEL pot (GP27, B4S_USE_ACCEL_POT). No keypad, FAST, A/B/C,
-  DELAY, TIMELAPSE, or joystick. SET on GP5 (was STOP on JKSlider).
+Motion STEP/DIR/EN, SW_LIMIT_*, DRV_ERROR live on the SliderMC Pico — not on this UIC.
+B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION) on 1-axis;
+  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC axis2_use=1.
+  SPEED pot, optional ACCEL pot (GP27, B4S_USE_ACCEL_POT).
+  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, or joystick.
+  SET on GP5 (was STOP on JKSlider).
 GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL.
 Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …). Key silk: ` S `, ` < `, ` > `, ` * `.

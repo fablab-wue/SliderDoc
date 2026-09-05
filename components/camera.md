@@ -10,7 +10,7 @@
 
 [← Components index](index.md)
 
-**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22). SliderMC uses GP22 for `SW_HOME`. Overview: [ARCHITECTURE.md](../architecture/overview.md).
+**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22). SliderMC GP22 is unused (free). Overview: [ARCHITECTURE.md](../architecture/overview.md).
 
 Shutter / intervalometer output for timelapse and video move modes.
 

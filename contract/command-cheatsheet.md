@@ -20,6 +20,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | `SD` | `SetDebug` | `SD [0..5]` | `—` | USB-only debug level 0..5; bare restores default; never on UIC UART. |
 | `SL` | `SetLeft` | `SL [<pos> [<pos2>]]` | `—` | Session soft min (working window); bare→slider_min; none clears (→envelope if set); skip _; !E:limit past envelope. |
 | `SR` | `SetRight` | `SR [<pos> [<pos2>]]` | `—` | Session soft max; bare→slider_max; none clears; skip _; !E:limit if left>right. |
+| `SP` | `SetPosition` | `SP [<pos> [<pos2>]]` | `—` | Set reported pose (no motion); idle only; bare/0 = here is zero; skip _. |
 
 ## G — Get (session)
 

@@ -1,7 +1,7 @@
 Waveshare RP2040-Zero — JKSlider UIC pinout (USB at top)
-BUTTON mode  |  overlay in SliderPins.py (RP2040-Zero keys)
+BUTTON mode  |  overlay in SliderPins.py (RP2040_ZERO_JKSlider)
 
-  function       pad                    pad    function
+    function     pad                  pad    function
                         +---- USB ----+
   5V             5V     |o           o| GP0    BTN_STOP
   GND            GND    |o           o| GP1    BTN_MOVE_L

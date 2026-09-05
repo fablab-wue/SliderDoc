@@ -8,7 +8,7 @@ Render and simulation scripts (maintainer-facing). Run from repository root unle
 | [render_command_cheatsheet.py](render_command_cheatsheet.py) | `contract/command-cheatsheet.html` (+ `.md`, optional PDF) |
 | [render_pico_pinout_JKSlider.py](render_pico_pinout_JKSlider.py) | JKSlider `panel-layouts/*.png`, `assets/pico_pinout_{button,keypad}.txt`; `b4` → `uic/projects/b4slider/panel-layouts/pico_pinout_B4.png`, `assets/pico_pinout_B4.txt` |
 | [render_pico_pinout_SliderMC.py](render_pico_pinout_SliderMC.py) | `assets/img/pico_pinout_mc.png`, `assets/pico_pinout_mc.txt` |
-| [render_rp2040zero_pinout_SliderMC.py](render_rp2040zero_pinout_SliderMC.py) | `assets/img/rp2040zero_pinout_mc.png`, `assets/rp2040zero_pinout_mc.txt`; `button` → `rp2040zero_pinout_button.png` / `.txt` |
+| [render_rp2040zero_pinout_SliderMC.py](render_rp2040zero_pinout_SliderMC.py) | `assets/img/rp2040zero_pinout_mc.png`, `assets/rp2040zero_pinout_mc.txt`; `button` → `JKSlider_rp2040zero_pinout_button.*`; `b4` → `B4Slider_rp2040zero_pinout_button.*` |
 | [render_dir_change_pause.py](render_dir_change_pause.py) | `assets/img/dir_change_pause.png` |
 | [render_sine_ramp_fifo.py](render_sine_ramp_fifo.py) | `assets/img/sine_ramp_300mm_s.svg` |
 | [sim_sine_ramp_fifo.py](sim_sine_ramp_fifo.py) | FIFO ramp SVGs under `assets/img/` |

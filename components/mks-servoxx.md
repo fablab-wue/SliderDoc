@@ -79,7 +79,7 @@ from UIC_base import UIC_Base
 
 mc = MC_MKS_Client()
 ui = UIC_Base()
-mc.set_status_callback(ui.on_status)
+mc.set_axis_status_callback(ui.on_axis_status)
 await mc.start()
 ```
 

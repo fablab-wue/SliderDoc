@@ -134,3 +134,25 @@ DRV_ERROR_active=0
 ```
 
 `steps_per_unit = (200 × MStep) / mm_per_rev`. Enable with `SE 1`, then test small moves (`MT 10`).
+
+The 42C main header has **no ALM pin**. Do **not** use SliderMC `home_mode` 3/4 (stall-home) on 42C — prefer LIMIT 1/2 or `SP`. If you wire an alarm to `DRV_ERROR`, treat it as EMO only.
+
+### MKS SERVO42D / 57D (STEP/DIR on SliderMC)
+
+These motors can run as a normal pulse axis on SliderMC (STP/DIR/EN + COM). They can also run RS485 with no SliderMC — that path is [mks-servoxx.md](mks-servoxx.md).
+
+Power from the motor supply (typically 12–24 V). Share signal ground. For 3.3 V STEP/DIR, set **COM** to 3.3 V per the MKS pulse-interface note.
+
+| SliderMC net | SERVO42D / 57D |
+|--------------|----------------|
+| `DRV_STEP` | **Stp** |
+| `DRV_DIR` | **Dir** |
+| `DRV_EN` | **En** |
+| GND | **Gnd** |
+| `DRV_ERROR` | **57D `OUT_1`** only (stall: 0 = protected, 1 = unprotected) |
+
+**42D** has no `OUT_1`. Stall (“Wrong”) still latches; clear via screen, UART `3D`, or EN invalid — SliderMC cannot see it. Use `home_mode` 1/2 (`IN_1` / `LIMIT_REMAP`) or `SP`. Do **not** use 3/4.
+
+**57D:** enable **Protect** on the motor menu, wire `OUT_1` → `DRV_ERROR` with `DRV_ERROR_active=0`, set `home_mode` 3 or 4. Firmware pulses EN (MKS pulse-mode clear), waits for `OUT_1` high, then drives out. See [homing-switches.md](homing-switches.md).
+
+Menu: **Mode `CR_vFOC`** (pulse), **En `L`** to match `DRV_EN_active=0`, **Protect** on for stall-home. Do not use 3/4 on `MC_MKS_Client` (RS485).

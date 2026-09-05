@@ -20,7 +20,7 @@ Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED
 
 The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_status_callback`, first position). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
+The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_axis_status_callback`, axis 1). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
 
 ## Getting started
 

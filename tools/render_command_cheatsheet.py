@@ -96,6 +96,13 @@ GROUPS = [
                 SILENT,
                 "Session soft max; bare→slider_max; none clears; skip _; !E:limit if left>right.",
             ),
+            (
+                "SP",
+                "SetPosition",
+                "SP [<pos> [<pos2>]]",
+                SILENT,
+                "Set reported pose (no motion); idle only; bare/0 = here is zero; skip _.",
+            ),
         ],
     ),
     (

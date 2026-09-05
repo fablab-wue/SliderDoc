@@ -52,7 +52,7 @@ from UIC_base import UIC_Base
 
 mc = MC_Client()
 ui = UIC_Base()
-mc.set_status_callback(ui.on_status)
+mc.set_axis_status_callback(ui.on_axis_status)
 await mc.start()
 await ui.start()
 ui.set_soft_limits(mc.slider_min, mc.slider_max)
@@ -70,7 +70,7 @@ await mc.wait()
 
 Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 115 200 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
 
-**Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `axis2_use=1` then reboot. `mc.axis_count` / `getAxisCount()` come from CG `axis2_use` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Shipping JKSlider / B4Slider keep `set_status_callback` (axis 1). Custom 2-axis UIs use `set_status2_callback` and optional `pos2`. Wire: [protocol.md — Optional 2nd axis](../../contract/protocol.md#optional-2nd-axis-axis2_use).
+**Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `axis2_use=1` then reboot. `mc.axis_count` / `getAxisCount()` come from CG `axis2_use` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema for axis 2. Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Optional 2nd axis](../../contract/protocol.md#optional-2nd-axis-axis2_use).
 
 Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `M`, `ML`, `MR`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
 
@@ -84,7 +84,7 @@ mc.enable(True)
 mc.moveTo(100)
 await mc.wait()
 # 2-axis example (axis_count == 2):
-# mc.set_status2_callback(on_dual)
+# mc.set_axis_status_callback(on_axis)  # cb(axis, state, pos, speed, accel, dest)
 # mc.moveTo(100, 45)                   # MT 100 45  (time-synced)
 # mc.moveTo(None, 45)                  # MT _ 45
 # mc.home(2)
@@ -95,14 +95,13 @@ await mc.wait()
 | `await start(banner_timeout_s=3.0)` | Sends `\n` every 100 ms until welcome `# …` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG. Banner may include a device `name` and/or `- 2 Axis` when SliderMC `axis2_use=1`. |
 | `await send(command, arg=None, arg2=None, wait_answer=False, timeout_s=1.0)` | Raw MC line. 2-axis: `arg is None` with `arg2` set sends skip `_` for axis 1. 1-axis ignores `arg2` and never emits `_`. With `wait_answer` returns the raw `TAG:` payload string (spaces kept). Pass `wait_answer` as a **keyword** — a 3rd positional is `arg2`, not `wait_answer`. |
 | `await query(command, arg=None, arg2=None, timeout_s=1.0)` | `send(..., wait_answer=True)`. `IP` may return `"100 20"` — use `_split_nums(answer)` or `getPosition()` / `getPosition2()` (cache). Do not `float(query("IP"))` in 2-axis mode. |
-| `set_status_callback` | 5-arg: `cb(state, pos, speed, accel, target)` — axis 1. JKSlider / B4Slider / `UIC_Base.on_status`. `None` unregisters. Independent of `set_status2_callback`. |
-| `set_status2_callback` | 9-arg: `cb(state, pos, pos2, speed, speed2, accel, accel2, target, target2)`. Axis-2 fields are `None` on 1-axis HW. `None` unregisters. |
+| `set_axis_status_callback` | 6-arg: `cb(axis, state, pos, speed, accel, dest)` — `axis` is 1 or 2. Dual lines fire **axis 2 then axis 1**. `UIC_Base.on_axis_status` uses axis 1. `None` unregisters. |
 | `set_error_callback` / `set_answer_callback` | Assignable hooks from the RX task (composition) |
 | `moveTo` / `moveBy` / `move` / `home` / `stop` / `halt` / `wait` | Map to MC motion commands; getters prefer cached `#` status |
 
-Verbose **parse** follows CG `axis2_use` (wire format). Callback **arity** follows which hook you registered, not `axis2_use` — a 1-axis `set_status_callback` stays 5-arg on a 2-axis MC.
+Verbose **parse** splits on ` | ` (each side is the 1-axis schema). A line with ` | ` is dual even before `fetchConfig`. `set_axis_status_callback` fires once per group (axis 2 first, then axis 1).
 
-`setPosition` is not supported on the MC wire protocol (`NotImplementedError`).
+`setPosition(mm, mm2=None)` sends `SP` (redefine reported pose; idle only). Omitted / `0` is “here is zero.”
 
 ---
 
@@ -137,7 +136,7 @@ Wiring and menu: [../../components/mks-servoxx.md](../../components/mks-servoxx.
 
 Local OLED, RGB/NeoPixel, camera shutter, and WDT on the UIC. **Not** a subclass of `MC_Client`.
 
-- Register `mc.set_status_callback(ui.on_status)` so verbose MC `#…` lines refresh OLED/LED.
+- Register `mc.set_axis_status_callback(ui.on_axis_status)` so verbose MC `#…` lines refresh OLED/LED (axis 1).
 - `await ui.start()` starts the UI loop (LED / camera / WDT).
 - App may call `ui.set_soft_limits(...)` and `ui.set_commanded(speed=..., accel=...)` so idle OLED Spd/Acc and soft-limit LED warn stay in sync.
 - `PIN_CTRL_CAMERA` defaults to GP22 (skipped only if it equals UART TX/RX).
@@ -219,7 +218,7 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `getSpeed2()` | Axis-2 actual speed from verbose cache. |
 | `getTarget()` | Axis-1 target, or `None` when idle. |
 | `getTarget2()` | Axis-2 target, or `None` when idle. |
-| `setPosition(position_mm)` | Not supported on SliderMC (`NotImplementedError`). |
+| `setPosition(position_mm=0, position2=None)` | `SP` — redefine reported pose (idle only). Bare/`0` = here is zero. |
 
 ### Helpers
 
@@ -343,7 +342,7 @@ Minimal panel: MOVE_L / MOVE_R / OPTION / SET + SPEED pot (optional ACCEL pot vi
 
 Homing / `home()` is **aborted** if the `DRV_ERROR` input becomes active (position is not forced to 0).
 
-Outside of homing, `SW_HOME` is a **hard limit**: motion into the switch (`HOME_DIRECTION`) stops **immediately**; further into-switch `move` / `moveTo` commands are ignored; motion out of the switch is allowed.
+Outside of homing, `SW_LIMIT_L` / `SW_LIMIT_R` are hard limits: motion into an asserted switch stops immediately; further into-switch `move` / `moveTo` commands are ignored; motion away is allowed.
 
 ### Optional OLED (128×64 I2C)
 
@@ -422,7 +421,7 @@ Example screens (`../../assets/img/oled/` — flat active-area mockups; regenera
 
 ![OLED limit](../../assets/img/oled/oled-limit.png)
 
-**Hard limit** — yellow `HARD LIMIT` (`SW_HOME`):
+**Hard limit** — yellow `HARD LIMIT` (`SW_LIMIT_*`):
 
 ![OLED hard limit](../../assets/img/oled/oled-hard-limit.png)
 
@@ -646,9 +645,8 @@ Copy [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/mai
 | `POT_SPEED` / `POT_ACCEL` / `POT_JOYSTICK` | UIC | Panel pots |
 | Onboard LED | UIC | 1 Hz watchdog heartbeat |
 | `DRV_STEP` / `DRV_DIR` / `DRV_EN` | MC | STEP/DIR/EN (GP18/19/20) |
-| `SW_HOME` | MC | Homing reference (GP22) |
-| `DRV_ERROR` | MC | Driver alarm / E-stop (GP21) |
-| `SW_LIMIT_L` / `SW_LIMIT_R` | MC | Optional hard limits (GP26/27) |
+| `SW_LIMIT_L` / `SW_LIMIT_R` | MC | Hard limits / home reference (Pico GP26/27) |
+| `DRV_ERROR` | MC | Driver alarm / E-stop / stall-home (GP21) |
 | `EXT_0`…`EXT_3` | MC | General-purpose outputs |
 
 Full MC map: [PINS.md](../../mc/pins.md).
@@ -659,7 +657,7 @@ Full MC map: [PINS.md](../../mc/pins.md).
 
 | Condition | Behaviour |
 |-----------|-----------|
-| `setPosition` while moving / on MC | Raises `RuntimeError` / `NotImplementedError` |
+| `setPosition` while moving / homing / path | MC `!E:busy` |
 | Target outside soft limits | Clamped silently |
 | `move` / `moveTo` into active hard limit | Ignored (out of switch allowed) |
 | Homing switch never hit | Stops after a travel-based step budget |

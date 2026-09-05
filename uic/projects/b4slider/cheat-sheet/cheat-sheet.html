@@ -148,17 +148,21 @@
     padding: 0 1px;
     border-radius: 2px;
   }
+  em.axis2, td em, .note em, li em {
+    font-style: italic;
+    color: #1d4ed8;
+  }
 </style>
 </head>
 <body>
 
-<h1>B4Slider Cheat Sheet <span class="sub">set card</span></h1>
+<h1>B4Slider Cheat Sheet <span class="sub">set card · <em class="axis2">italic</em> = 2nd axis (pan)</span></h1>
 
-<img class="hero" src="../../../../assets/img/B4Slider_button_layout.svg" alt="Recommended B4Slider panel layout">
+<img class="hero" src="../../../../assets/img/B4Slider_button_layout_2axis.svg" alt="Recommended B4Slider 2-axis panel layout">
 
 <div class="block">
 <h2>Panel</h2>
-<p class="note">Silk: <kbd>S</kbd> SET · <kbd>&lt;</kbd> MOVE_L · <kbd>&gt;</kbd> MOVE_R · <kbd>*</kbd> OPTION. ACCEL pot is optional (<code>B4S_USE_ACCEL_POT</code>). Unlock at boot: press OPTION (rainbow LED).</p>
+<p class="note">Silk: <kbd>S</kbd> SET · <kbd>&lt;</kbd> MOVE_L · <kbd>&gt;</kbd> MOVE_R · <kbd>*</kbd> OPTION. <em class="axis2">2-axis: <kbd>&lt;2</kbd> MOVE_L2 · <kbd>&gt;2</kbd> MOVE_R2 below OPTION (GP8/GP9).</em> ACCEL pot optional. Unlock: OPTION (rainbow LED). Homing: axis 1 then <em class="axis2">axis 2</em> at boot.</p>
 </div>
 
 <div class="block">
@@ -175,8 +179,13 @@
   <tr><td class="a">MOVE_L + MOVE_R</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd></td><td class="d">Halt; driver off until any key</td></tr>
   <tr><td class="a">MOVE_L + MOVE_R hold ≥1s</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Swap left/right</td></tr>
   <tr><td class="a">All four (L+R+OPTION+SET)</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> <kbd>*</kbd> <kbd>S</kbd></td><td class="d">Halt + reset like power-up</td></tr>
+  <tr><td class="a"><em>MOVE_L2 / MOVE_R2</em> tap ≤⅓s</td><td class="k"><em><kbd>&lt;2</kbd> / <kbd>&gt;2</kbd> tap</em></td><td class="d"><em>Locked cruise on pan axis</em></td></tr>
+  <tr><td class="a"><em>MOVE_L + MOVE_L2</em> tap</td><td class="k"><em><kbd>&lt;</kbd>+<kbd>&lt;2</kbd> tap</em></td><td class="d"><em>Dual cruise — time-sync after pan A+B set</em></td></tr>
+  <tr><td class="a"><em>MOVE_L + MOVE_L2</em> hold &gt;⅓s</td><td class="k"><em>both held</em></td><td class="d"><em>Dual hold; release either stops both</em></td></tr>
+  <tr><td class="a"><em>MOVE_L2 + MOVE_R2</em></td><td class="k"><em><kbd>&lt;2</kbd> <kbd>&gt;2</kbd></em></td><td class="d"><em>Halt</em></td></tr>
+  <tr><td class="a"><em>MOVE_L2 + MOVE_R2</em> hold ≥1s</td><td class="k"><em><kbd>&lt;2</kbd> <kbd>&gt;2</kbd> hold ≥1s</em></td><td class="d"><em>Swap pan L/R</em></td></tr>
 </table>
-<p class="note">Tap vs hold: <code>B4S_MOVE_TAP_MS</code> (333 ms). OPTION before MOVE launches at max speed + max accel; OPTION after start boosts speed only.</p>
+<p class="note">Tap vs hold: <code>B4S_MOVE_TAP_MS</code> (333 ms). <em>Dual chord: timer starts when 2nd button joins — first button alone does not move while assembling L+L2.</em> OPTION before MOVE = max speed + max accel; OPTION during move = speed boost only.</p>
 </div>
 
 <div class="block">
@@ -188,8 +197,11 @@
   <tr><td class="a">SET + MOVE_L hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> hold ≥1s</td><td class="d">Reset L → slider min</td></tr>
   <tr><td class="a">SET + MOVE_R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset R → slider max</td></tr>
   <tr><td class="a">SET + L + R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset both ends</td></tr>
+  <tr><td class="a"><em>SET + MOVE_L2</em> tap</td><td class="k"><em><kbd>S</kbd> <kbd>&lt;2</kbd> tap</em></td><td class="d"><em>Set pan soft_limit_L2</em></td></tr>
+  <tr><td class="a"><em>SET + MOVE_R2</em> tap</td><td class="k"><em><kbd>S</kbd> <kbd>&gt;2</kbd> tap</em></td><td class="d"><em>Set pan soft_limit_R2</em></td></tr>
+  <tr><td class="a"><em>SET + L2 + R2</em> hold ≥1s</td><td class="k"><em><kbd>S</kbd> <kbd>&lt;2</kbd> <kbd>&gt;2</kbd> hold ≥1s</em></td><td class="d"><em>Reset both pan ends</em></td></tr>
 </table>
-<p class="note">Travel only inside the working window. MOVE cruise targets those ends (A / B).</p>
+<p class="note">Travel only inside the working window. <em>Mark both pan limits → dual L+L2 / R+R2 finish together; before that, both axes run at pot speed.</em></p>
 </div>
 
 <div class="block">
@@ -235,6 +247,13 @@
       <li>Optional loop: idle <kbd>*</kbd> <kbd>S</kbd> hold ≥1s, then MOVE tap</li>
     </ul>
   </li>
+  <li><em>Pan A / B (2-axis)</em>
+    <ul>
+      <li><em><kbd>S</kbd> <kbd>&lt;2</kbd> tap → pan soft_limit_L2; <kbd>S</kbd> <kbd>&gt;2</kbd> tap → soft_limit_R2</em></li>
+      <li><em>LED +blue idle = dual chords time-sync</em></li>
+      <li><em><kbd>&lt;</kbd>+<kbd>&lt;2</kbd> tap = coordinated travel + pan</em></li>
+    </ul>
+  </li>
 </ul>
 </div>
 
@@ -249,6 +268,7 @@
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span>Green</td><td class="m">Steady speed</td></tr>
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#2563eb"></span>+30% / 100% blue</td><td class="m">Near / at soft end</td></tr>
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#3b82f6"></span>+10% blue</td><td class="m">Loop running</td></tr>
+  <tr><td class="c"><span class="dot dim" style="background:#f5f5f5; border-color:#999"></span><span class="dot dim" style="background:#3b82f6"></span><em>+10% blue idle</em></td><td class="m"><em>Pan window set — dual sync armed</em></td></tr>
   <tr><td class="c"><span class="dot dim" style="background:#ff8c00"></span>Dim orange</td><td class="m">Driver off</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red fast blink</td><td class="m">Hard limit</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red blink</td><td class="m">Homing</td></tr>
@@ -262,7 +282,7 @@
 
 <div class="block">
 <img class="pinout" src="../panel-layouts/pico_pinout_B4.png" alt="Pico pinout — B4Slider">
-<p class="note">UART to SliderMC @ 115 200 baud (GP16/17 crossed). Handshake: UIC <code>\n</code> → MC welcome <code># …</code> banner.</p>
+<p class="note">UART to SliderMC @ 115 200 baud (GP16/17 crossed). <em>GP8/GP9 = MOVE_L2/R2 when axis2 on.</em> Handshake: UIC <code>\n</code> → MC welcome <code># …</code> banner.</p>
 </div>
 
 <footer>

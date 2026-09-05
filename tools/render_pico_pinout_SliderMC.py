@@ -44,15 +44,15 @@ LEFT = [
     ("GP6", "SW_LIMIT_R2*"),
     ("GP7", "SW_LIMIT_L2*"),
     ("GP8", "free"),
-    ("GP9", "SW_HOME2*"),
+    ("GP9", "free"),
     ("GND", "GND"),
     ("GP10", "DRV_ERROR2"),
     ("GP11", "DRV_EN2"),
     ("GP12", "DRV_DIR2"),
     ("GP13", "DRV_STEP2"),
     ("GND", "GND"),
-    ("GP14", "DBG_IRQ"),
-    ("GP15", "DBG_UNDERRUN"),
+    ("GP14", "free"),
+    ("GP15", "free"),
 ]
 
 RIGHT = [
@@ -67,7 +67,7 @@ RIGHT = [
     ("GP27", "SW_LIMIT_R*"),
     ("GP26", "SW_LIMIT_L*"),
     ("RUN", "RUN"),
-    ("GP22", "SW_HOME*"),
+    ("GP22", "free"),
     ("GND", "GND"),
     ("GP21", "DRV_ERROR"),
     ("GP20", "DRV_EN"),
@@ -113,9 +113,9 @@ def render_ascii() -> str:
             "                         +-----------+",
             "",
             "Legend: EXT_0…3 on GP2–5 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.",
-            "axis2_use=1: GP6/7/9 + GP10–13 (LIMIT_*/HOME2 / DRV_*2); DBG GP10–13 off then.",
-            "SW_* / LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
-            "GP14–15 DBG_* (DEBUG_HW); GP0/1/8/23–25/28 free. Pin names match IX / VG.",
+            "axis2_use=1: GP6/7 + GP10–13 (LIMIT_*2 / DRV_*2).",
+            "SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
+            "GP0/1/8/9/14/15/22–25 free (GP28 buzzer). Pin names match IX / VG.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -147,7 +147,6 @@ def render_png(path: Path):
         ("DRV_*", C_DRV),
         ("UART_*", C_UART),
         ("SW_*", C_SW),
-        ("DBG_*", C_DBG),
         ("free", C_FREE),
         ("GND", C_GND),
         ("power 3V3", C_PWR_3V3),

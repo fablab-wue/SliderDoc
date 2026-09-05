@@ -31,8 +31,8 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **LED** | Light-emitting diode | Status lighting: discrete RGB on GP2–GP4 and/or an optional NeoPixel. Colours mirror motion, delay, TL, limits, and DRV_ERROR (see User Manual). |
 | **MJ** | MoveJoy | SliderMC joystick velocity hold: signed percent of session `SS` (optional 2nd axis). Skip unchanged values on the UIC. See [motion-joy.md](../mc/motion-joy.md). |
 | **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../architecture/overview.md). |
-| **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_status_callback` (1-axis) / `set_status2_callback` (2-axis). |
-| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional 2-axis: `axis_count` from CG `axis2_use`, dual `moveTo`/`home`, `set_status2_callback`. |
+| **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_axis_status_callback` (`cb(axis, state, pos, speed, accel, dest)`). |
+| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional 2-axis: `axis_count` from CG `axis2_use`, dual `moveTo`/`home`, `set_axis_status_callback`. Verbose `#…` is `#<state> <axis1> | <axis2>`. |
 | **MSM** | Stop–shoot–move | Stills timelapse: stand still → pulse `CTRL_CAMERA` → wait exposure → hop → settle → repeat. Default when `tl_mode`/`JKS_TL_MODE` is `"msm"` and TL ≠ 1. Toggle vs Cont with `T`+`D`+`*`. |
 | **Cont** | Continuous crawl | TL≠1 ÷N crawl with `CTRL_CAMERA` hold-high like video (not pulses). OLED `Cont xN @Ffps`; video time = wall-time÷TL. Match the camera’s own TL to the slider TL. |
 | **NP-F** | NP-F battery mount | Common camcorder / LED light battery form factor. Mentioned in compare and hardware notes for turnkey or field power packs—not required by the Pico firmware itself. |
@@ -48,7 +48,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **SPI** | Serial Peripheral Interface | Multi-wire bus used to configure some TMC drivers (current, microsteps). JKSlider motion still uses STEP/DIR after the driver is set up. |
 | **SliderPins** | HW profile overlay | One gitignored file per slider build (`SliderPins.py` from the example). Overrides any key in `MC_config` / `UIC_config` / `JKSliderConfig`. Edit **that file only**. |
 | **STEP** / **DRV_STEP** | Step pulse | One pulse advances the motor by one microstep. SliderMC `PIN_DRV_STEP` (GP18); rate and ramps come from the SliderMC planner. |
-| **SW_HOME** | Home switch | SliderMC homing reference input (`PIN_SW_HOME`, GP22); enabled by `SW_HOME_use`. |
+| **SP** | SetPosition | SliderMC command: redefine reported pose (no motion). Bare/`SP 0` = here is zero. |
 | **TL** | Timelapse | Panel **TIMELAPSE** divider and yellow **TL** badge. ×1 is video (hold-high while moving / soft-paused); ≠1 selects MSM or Cont (`tl_mode`), toggled with `T`+`D`+`*`. |
 | **TMC** | Trinamic Motor Control | Family of silent / feature-rich stepper drivers (e.g. TMC2208/09, TMC5160) commonly wired as STEP/DIR (+ EN) to the Pico. |
 | **USB** | Universal Serial Bus | Used to flash MicroPython, run Thonny/`mpremote`, and optionally power the Pico during bring-up. Prefer a data-capable cable. |
@@ -65,7 +65,7 @@ Electronics and pinouts use the `BTN_*` prefix (e.g. `BTN_STOP`); the User Manua
 | **Mark** | JKSlider PosA / PosB / PosC — a bookmark (waypoint). Goto goes there; MOVE can still leave the framed shot. Not a wall. |
 | **Working window** | B4Slider manuals say **A/B**. Session `SL`/`SR` on SliderMC — a wall **and** the MOVE target. See [working-window.md](../mc/working-window.md). |
 | **Soft limit / envelope** | Persisted `slider_min` / `slider_max` (rail). Boot copies into the session window; do not shrink with `CS` for a shot. |
-| **Hard limit** | Hardware switch (`SW_HOME` / `SW_LIMIT_*`); red LED. Not the panel STOP key. |
+| **Hard limit** | Hardware switch (`SW_LIMIT_*`); used as home reference when `home_mode` is 1/2. Red LED. Not the panel STOP key. |
 
 ## Panel controls
 

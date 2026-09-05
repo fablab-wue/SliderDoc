@@ -1,6 +1,7 @@
 # Generate RP2040-Zero pinout ASCII + PNG (stdlib only).
 #   python tools/render_rp2040zero_pinout_SliderMC.py          # SliderMC
 #   python tools/render_rp2040zero_pinout_SliderMC.py button   # JKSlider UIC
+#   python tools/render_rp2040zero_pinout_SliderMC.py b4       # B4Slider UIC
 #
 # Top view + bottom view (USB at top).
 # Label columns follow the Waveshare diagram: left edge on the left, GP0..GP13 on
@@ -82,37 +83,37 @@ RIGHT = [
     ("GP1", "DRV_DIR"),
     ("GP2", "DRV_EN"),
     ("GP3", "DRV_ERROR"),
-    ("GP4", "SW_HOME*"),
-    ("GP5", "DRV_STEP2"),
-    ("GP6", "DRV_DIR2"),
-    ("GP7", "DRV_ERROR2"),
-    ("GP8", "SW_HOME2*"),
+    ("GP4", "SW_LIMIT_L*"),
+    ("GP5", "SW_LIMIT_R*"),
+    ("GP6", "DRV_STEP2"),
+    ("GP7", "DRV_DIR2"),
+    ("GP8", "DRV_ERROR2"),
 ]
 
 # Bottom edge, left→right (drawn rotated 90 deg CW under the matching pad).
 BOTTOM = [
     ("GP13", "UART_RX"),
     ("GP12", "UART_TX"),
-    ("GP11", "free"),
-    ("GP10", "SW_LIMIT_L*"),
-    ("GP9", "SW_LIMIT_R*"),
+    ("GP11", "DRV_EN2"),
+    ("GP10", "SW_LIMIT_R2*"),
+    ("GP9", "SW_LIMIT_L2*"),
 ]
 
 # Bottom view SMD pads, top→bottom.
 BOT_PADS = [
     ("GND", "GND"),
-    ("GP25", "SW_LIMIT_L2*"),
-    ("GP24", "SW_LIMIT_R2*"),
-    ("GP23", "DBG_FIFO"),
-    ("GP22", "DBG_MOV"),
-    ("GP21", "DBG_MOV_CONST"),
-    ("GP20", "DBG_CMD"),
-    ("GP19", "DBG_IRQ"),
-    ("GP18", "DBG_UNDERRUN"),
-    ("GP17", "DRV_EN2"),
+    ("GP25", "free"),
+    ("GP24", "free"),
+    ("GP23", "free"),
+    ("GP22", "free"),
+    ("GP21", "free"),
+    ("GP20", "free"),
+    ("GP19", "free"),
+    ("GP18", "free"),
+    ("GP17", "free"),
 ]
 
-# JKSlider UIC on RP2040-Zero, button mode (assets/rp2040zero_pinout_button.txt).
+# JKSlider UIC on RP2040-Zero, button mode (assets/JKSlider_rp2040zero_pinout_button.txt).
 BUTTON_LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
@@ -155,12 +156,54 @@ BUTTON_BOT_PADS = [
     ("GP17", "free"),
 ]
 
+# B4Slider UIC on RP2040-Zero (assets/B4Slider_rp2040zero_pinout_button.txt).
+B4_LEFT = [
+    ("5V", "5V"),
+    ("GND", "GND"),
+    ("3V3", "3V3"),
+    ("GP29", "CTRL_CAMERA"),
+    ("GP28", "free"),
+    ("GP27", "POT_ACCEL"),
+    ("GP26", "POT_SPEED"),
+    ("GP15", "DSP_I2C_SCL"),
+    ("GP14", "DSP_I2C_SDA"),
+]
+B4_RIGHT = [
+    ("GP0", "BTN_SET"),
+    ("GP1", "BTN_MOVE_L"),
+    ("GP2", "BTN_MOVE_R"),
+    ("GP3", "BTN_MOVE_L2"),
+    ("GP4", "BTN_MOVE_R2"),
+    ("GP5", "free"),
+    ("GP6", "free"),
+    ("GP7", "free"),
+    ("GP8", "BTN_OPTION"),
+]
+B4_BOTTOM = [
+    ("GP13", "UART_RX"),
+    ("GP12", "UART_TX"),
+    ("GP11", "LED_R"),
+    ("GP10", "LED_G"),
+    ("GP9", "LED_B"),
+]
+B4_BOT_PADS = [
+    ("GND", "GND"),
+    ("GP25", "free"),
+    ("GP24", "free"),
+    ("GP23", "free"),
+    ("GP22", "free"),
+    ("GP21", "free"),
+    ("GP20", "free"),
+    ("GP19", "free"),
+    ("GP18", "free"),
+    ("GP17", "free"),
+]
+
 LEGEND = [
     ("EXT_*", C_EXT),
     ("DRV_*", C_DRV),
     ("UART_*", C_UART),
     ("SW_*", C_SW),
-    ("DBG_*", C_DBG),
     ("LED", C_LED),
     ("free", C_FREE),
     ("GND", C_GND),
@@ -192,7 +235,7 @@ def _layout(mode: str):
             "fun_w": 186,
             "ascii_head": (
                 "Waveshare RP2040-Zero — JKSlider UIC pinout (USB at top)",
-                'BUTTON mode  |  overlay in SliderPins.py (RP2040-Zero keys)',
+                'BUTTON mode  |  overlay in SliderPins.py (RP2040_ZERO_JKSlider)',
             ),
             "ascii_notes": [
                 "Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
@@ -204,8 +247,33 @@ def _layout(mode: str):
             ],
             "png_title": "RP2040-Zero JKSlider UIC pinout",
             "png_sub": "Top + bottom view  USB at top  BUTTON mode  SliderPins overlay",
-            "txt_name": "rp2040zero_pinout_button.txt",
-            "png_name": "rp2040zero_pinout_button.png",
+            "txt_name": "JKSlider_rp2040zero_pinout_button.txt",
+            "png_name": "JKSlider_rp2040zero_pinout_button.png",
+        }
+    if mode == "b4":
+        return {
+            "left": B4_LEFT,
+            "right": B4_RIGHT,
+            "bottom": B4_BOTTOM,
+            "bot_pads": B4_BOT_PADS,
+            "legend": BUTTON_LEGEND,
+            "fun_w": 200,
+            "ascii_head": (
+                "Waveshare RP2040-Zero — B4Slider UIC pinout (USB at top)",
+                'BUTTON mode  |  overlay in SliderPins.py (RP2040_ZERO_B4Slider)',
+            ),
+            "ascii_notes": [
+                "Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
+                "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
+                "CTRL_CAMERA on GP29. Six buttons: SET GP0, MOVE_L/R GP1/2, MOVE_L2/R2 GP3/4, OPTION GP8.",
+                "Axis 2 active when SliderMC axis2_use=1. Button mode: active-low pull-ups.",
+                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–25 free.",
+                "Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).",
+            ],
+            "png_title": "RP2040-Zero B4Slider UIC pinout",
+            "png_sub": "Top + bottom view  USB at top  6-button 2-axis  SliderPins overlay",
+            "txt_name": "B4Slider_rp2040zero_pinout_button.txt",
+            "png_name": "B4Slider_rp2040zero_pinout_button.png",
         }
     return {
         "left": LEFT,
@@ -219,10 +287,10 @@ def _layout(mode: str):
             "Defaults in include/pins.h (BOARD_RP2040_ZERO)",
         ),
         "ascii_notes": [
-            "Legend: motor DRV on GP0–3; axis2 STEP/DIR/ERR/HOME on GP5–8; EN2 on GP17.",
-            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 115200 baud GP12/13; axis2_use supported.",
-            "SW_* / LIMIT_* off until CS …_use=1. LIMIT2 on GP24/25; DBG GP18–23 (OK with axis2).",
-            "GP29 status LED; GP11/16/28 free; GP16 = onboard RGB unused.",
+            "Legend: motor DRV on GP0–3; LIMIT L/R on GP4/5; axis2 STEP/DIR/ERR on GP6–8.",
+            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 115200 baud GP12/13; EN2 GP11; LIMIT2 GP9/10.",
+            "SW_LIMIT_* off until CS …_use=1. GP17–25 free. axis2_use supported.",
+            "GP29 status LED; GP16 = onboard RGB unused.",
             "Pin names match IX / VG (axis2 rows only when axis2_use=1).",
         ],
         "png_title": "RP2040-Zero SliderMC pinout",
@@ -419,10 +487,10 @@ def render_png(path: Path, mode: str = "mc"):
 
 def main():
     modes = sys.argv[1:] or ["mc"]
-    unknown = [m for m in modes if m not in ("mc", "button")]
+    unknown = [m for m in modes if m not in ("mc", "button", "b4")]
     if unknown:
         print("unknown mode(s):", ", ".join(unknown), file=sys.stderr)
-        print("usage: python tools/render_rp2040zero_pinout_SliderMC.py [mc] [button]", file=sys.stderr)
+        print("usage: python tools/render_rp2040zero_pinout_SliderMC.py [mc] [button] [b4]", file=sys.stderr)
         sys.exit(2)
 
     OUT_PNG.mkdir(parents=True, exist_ok=True)

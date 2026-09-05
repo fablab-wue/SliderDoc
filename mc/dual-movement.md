@@ -10,7 +10,7 @@
 
 How SliderMC coordinates **two STEP/DIR axes** when `axis2_use=1`. Typical rig: **axis 1 = linear travel** (slider), **axis 2 = pan** (tilt or turn also work). Dual `MT` / `M` is a **time-synced** dual move (both finish together), **not** a CNC-style diagonal feedrate.
 
-UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_status2_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider / B4Slider remain 1-axis faces.
+UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_axis_status_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider / B4Slider remain 1-axis faces (`UIC_Base` uses axis 1). Verbose `#…` joins per-axis groups with ` | ` (see [protocol — Verbose push](../contract/protocol.md#verbose-push-3-hz-when-session-verbose1)).
 
 **Related:** [config.md](config.md) · [motion.md](motion.md) · [motion-joy.md](motion-joy.md) · [protocol — Optional 2nd axis](../contract/protocol.md#optional-2nd-axis-axis2_use) · [pins.md](pins.md)
 

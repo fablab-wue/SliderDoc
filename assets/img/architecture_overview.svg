@@ -151,7 +151,7 @@
   <path d="M 460 310 H 540 V 220 H 630" fill="none" stroke="#334155" stroke-width="1.4"
         marker-end="url(#arrow)"/>
   <text x="545" y="212" font-family="Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="9" fill="#64748b">SW_HOME</text>
+        font-size="9" fill="#64748b">SW_LIMIT</text>
 
   <path d="M 460 320 H 560 V 300 H 630" fill="none" stroke="#334155" stroke-width="1.4"
         marker-end="url(#arrow)"/>

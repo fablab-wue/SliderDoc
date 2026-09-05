@@ -1,8 +1,8 @@
 Raspberry Pi Pico — SliderMC pinout (top view, USB at top)
 Defaults in include/pins.h + data/mc.ini
 
-function           pin                         pin      function
-                              +--- USB ---+
+        function         pin              pin        function
+                         +--- USB ---+
   free             GP0      1 |o         o| 40 VBUS     VBUS
   free             GP1      2 |o         o| 39 VSYS     VSYS
   GND              GND      3 |o         o| 38 GND      GND
@@ -14,18 +14,18 @@ function           pin                         pin      function
   SW_LIMIT_R2*     GP6      9 |o         o| 32 GP27     SW_LIMIT_R*
   SW_LIMIT_L2*     GP7     10 |o         o| 31 GP26     SW_LIMIT_L*
   free             GP8     11 |o         o| 30 RUN      RUN
-  SW_HOME2*        GP9     12 |o         o| 29 GP22     SW_HOME*
+  free             GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
   DRV_ERROR2       GP10    14 |o         o| 27 GP21     DRV_ERROR
   DRV_EN2          GP11    15 |o         o| 26 GP20     DRV_EN
   DRV_DIR2         GP12    16 |o         o| 25 GP19     DRV_DIR
   DRV_STEP2        GP13    17 |o         o| 24 GP18     DRV_STEP
   GND              GND     18 |o         o| 23 GND      GND
-  DBG_IRQ          GP14    19 |o         o| 22 GP17     UART_RX
-  DBG_UNDERRUN     GP15    20 |o         o| 21 GP16     UART_TX
-                              +-----------+
+  free             GP14    19 |o         o| 22 GP17     UART_RX
+  free             GP15    20 |o         o| 21 GP16     UART_TX
+                         +-----------+
 
 Legend: EXT_0…3 on GP2–5 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.
-axis2_use=1: GP6/7/9 + GP10–13 (LIMIT_*/HOME2 / DRV_*2); DBG GP10–13 off then.
-SW_* / LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.
-GP14–15 DBG_* (DEBUG_HW); GP0/1/8/23–25/28 free. Pin names match IX / VG.
+axis2_use=1: GP6/7 + GP10–13 (LIMIT_*2 / DRV_*2).
+SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.
+GP0/1/8/9/14/15/22–25 free (GP28 buzzer). Pin names match IX / VG.
