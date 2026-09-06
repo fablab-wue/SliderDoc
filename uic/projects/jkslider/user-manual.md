@@ -20,7 +20,7 @@ Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED
 
 The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-The stack **supports** an optional **2nd STEP/DIR axis** (`axis2_use`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_axis_status_callback`, axis 1). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
+The stack **supports** an optional **2nd STEP/DIR axis** (`CS axis 2` then `RB`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_axis_status_callback`, axis 1). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
 
 ## Getting started
 
@@ -66,9 +66,9 @@ Cruise, jog, stop, boost, halt, home, soft travel chords, and mid-move pause.
 | **STOP** tap while already slowing | ` 0 ` tap | Fast halt |
 | **STOP** hold ≥ 1 s | ` 0 ` hold ≥ 1 s | Fast halt |
 | **OPTION + STOP** (keypad, both ` * `) | ` * ` ` 0 ` ` * ` | Emergency halt (same as STOP hold ≥ 1 s) |
-| **STOP + A** | ` 0 ` ` A ` | Go to soft min (`slider_min`) |
+| **STOP + A** | ` 0 ` ` A ` | Go to soft min (`slider_min_1`) |
 | **STOP + B** | ` 0 ` ` B ` | Go to midpoint of soft min/max |
-| **STOP + C** | ` 0 ` ` C ` | Go to soft max (`slider_max`) |
+| **STOP + C** | ` 0 ` ` C ` | Go to soft max (`slider_max_1`) |
 | **OPTION + STOP + A** | ` * ` ` 0 ` ` A ` | Homing |
 | **DELAY** hold while moving | ` D ` hold | Soft-stop **pause** (mode kept; OLED **Paused**) |
 | **DELAY** release while paused | ` D ` release | **Resume** the same move (incl. continue to PosA/B/C) |
@@ -171,7 +171,7 @@ If an MSM hop cannot fit in the interval (accel too slow / TL too aggressive), s
 2. **Tap** **MOVE_R** and release within ~⅓ s — carriage starts cruising in that direction and stays locked until you stop it or it hits a limit.
 3. The simple rule is: short tap = start cruise; same side again = stop; opposite side = reverse.
 4. If **OPTION** is already held before you press **MOVE_L** / **MOVE_R**, the move starts at the panel’s **max speed and max accel**.
-5. If **OPTION** is pressed while the move is already running, it acts as a speed boost only: **speed jumps to max_speed**, while **accel stays at the pot/set value** until OPTION is released.
+5. If **OPTION** is pressed while the move is already running, it acts as a speed boost only: **speed jumps to `max_speed_1`**, while **accel stays at the pot/set value** until OPTION is released.
 6. Release OPTION and the move falls back to the current pot values.
 7. **Tip** **MOVE_R** again to stop (or press **STOP** / opposite MOVE / A/B/C).
 
@@ -180,7 +180,7 @@ If an MSM hop cannot fit in the interval (accel too slow / TL too aggressive), s
 1. **Hold** **MOVE_R** longer than ~⅓ s — carriage continues moving while the key is down.
 2. **Release** — cruise stops smoothly and the movement ends.
 3. This is the “jog while held” mode. It is different from the short tap locked-cruise mode above.
-4. If you keep **OPTION** down while holding **MOVE_L** / **MOVE_R**, the carriage still runs with the pot accel and only the speed is boosted to max_speed; it does not switch to max_accel during the move.
+4. If you keep **OPTION** down while holding **MOVE_L** / **MOVE_R**, the carriage still runs with the pot accel and only the speed is boosted to `max_speed_1`; it does not switch to max accel during the move.
 
 ### FAST jog
 

@@ -8,26 +8,26 @@
 
 # Joystick control — technical manual
 
-**MoveJoy** (`MJ`) is a single command for driving SliderMC from an analogue
+**Move Joy** (`MJ`) is a single command for driving SliderMC from an analogue
 joystick (or any host that streams a signed speed). It covers 1-axis and
 2-axis sliders: one packet is a full velocity snapshot, the planner holds
 that speed until the next `MJ`, a rail, or another move command.
 
-This sits beside the normal sine-ramp planner (`MT`/`M`/`ML`/`MR`/`MH`) and
+This sits beside the normal sine-ramp planner (`MT`/`MB`/`MH`) and
 the host-authored [Motion Path](motion-path.md) player. Command reference:
 [protocol.md — M — Movement](../contract/protocol.md#m--movement-silent).
 Hardware notes for a panel stick: [joysticks.md](../components/joysticks.md).
 
-## Why not `ML` / `MR` + `SS` + `MS`?
+## Why not a huge `MT`?
 
-Those four commands can approximate a stick, but they fight the protocol:
+Firmware does **not** clip an out-of-window `MT` — it returns `!E:soft`.
+Hold-to-jog is therefore **`SS` then `MJ ±100`** (and `MS` on release), not
+`MT9999`. Run-to-rail uses `MT` to a **known** `GL`/`GR` end.
 
-- `SS` is the **100 % reference** for later `MT`/`ML` — a stick must not
-  overwrite it on every deflection.
-- Dual-axis sticks need **independent** signed speeds (`MJ 40 -20`). Dual
-  `MT` time-sync and a single session cruise cannot do that.
-- Typical update rate is **5–20 Hz** (also acyclic). Re-issuing a long
-  position jog on every packet would restart ramps and eventually expire.
+`SS` is the **100 % reference** for later `MT`/`MB` — a stick must not
+overwrite it on every deflection. Dual-axis sticks need **independent**
+signed speeds (`MJ 40 -20`). Dual `MT` time-sync and a single session cruise
+cannot do that. Typical update rate is **5–20 Hz** (also acyclic).
 
 `MJ` is a **velocity hold**: cruise is `% of SS` (clamped per axis), the
 target is the soft-limit in that direction, and identical repeats are a
@@ -38,14 +38,14 @@ value has not changed, to reduce the payload on the serial link.
 
 ## Commands
 
-| Short | Long | Args | Description |
-|-------|------|------|-------------|
-| `MJ` | `MoveJoy` | `pct [pct2]` | Signed joy speed as **percent of session `SS`**. Negative = left (`ML`), positive = right (`MR`), `0` = soft-stop (normal `SA` deceleration). Optional 2nd arg on a 2-axis slider. |
-| `SS` | `SetSpeed` | `v` or bare | 100 % reference (mm/s). Legal **during** joy-mode; rescales live cruise. |
-| `SA` | `SetAccel` | `a` or bare | Ramp used for accel/decel (including stick changes and `MJ 0`). Legal during joy-mode. |
-| `MS` | `MoveStop` | — | Ends joy-mode and soft-stops (same as other moves). |
+| Short | Phrase | Args | Description |
+|-------|--------|------|-------------|
+| `MJ` | Move Joy | `pct [pct2 [pct3]]` | Signed joy speed as **percent of session `SS`**. Negative = left, positive = right, `0` = soft-stop (normal `SA` deceleration). Extra args for extra live axes (omit → `0`). Named `X`/`Y`/`Z` also legal. |
+| `SS` | Set Speed | `v` or bare | 100 % reference (mm/s). Legal **during** joy-mode; rescales live cruise. |
+| `SA` | Set Accel | `a` or bare | Ramp used for accel/decel (including stick changes and `MJ 0`). Legal during joy-mode. |
+| `MS` | Move Stop | — | Ends joy-mode and soft-stops (same as other moves). |
 
-Success is silent (like `ML`/`MR`). Needs `SE 1`. Rejected while path-mode
+Success is silent. Needs `SE 1`. Rejected while path-mode
 is active (`!E:busy path active`) and while disabled (`!E:disabled`).
 
 ## Speed law
@@ -57,16 +57,16 @@ sign(v) = sign(pct)
 ```
 
 - Values above 100 % are allowed; they **clamp**, they do not error.
-- Axis 1 clamps to `max_speed`; axis 2 to `max_speed_2`.
+- Axis 1 clamps to `max_speed_1`; axis 2 to `max_speed_2`; axis 3 to `max_speed_3`.
 - `|pct| < 1e-3` counts as 0 (float noise). Deadband belongs on the UIC.
-- `MJ` does **not** change session `SS`. After joy ends, `MT`/`ML` still use
+- `MJ` does **not** change session `SS`. After joy ends, `MT`/`MB` still use
   the previous cruise.
 
 ## 1-axis vs 2-axis snapshot
 
 Each `MJ` is a **complete** velocity snapshot:
 
-| Call | 1-axis | 2-axis (`axis2_use=1`) |
+| Call | 1-axis | 2-axis (`axis=2`) |
 |------|--------|------------------------|
 | `MJ 40` | axis 1 = 40 % | axis 1 = 40 %, **axis 2 = 0 %** (soft-stop) |
 | `MJ 40 -20` | `pct2` ignored | independent cruises (not dual-`MT` time-sync) |
@@ -79,8 +79,8 @@ The first `MJ` enters **joy-mode** and ramps toward the commanded velocity
 (`SA`). Joy-mode **stays on** even at 0 % so a later `MJ 50` is just another
 setpoint.
 
-These **exit** joy-mode and take over motion: `MT`, `M`, `ML`, `MR`, `MH`,
-`MS`, realtime `!`, `HT`/`H`, path `PG`.
+These **exit** joy-mode and take over motion: `MT`, `MB`, `MH`,
+`MS`, realtime `!` / `ESC`, `HT`, path `PG`.
 
 `SS` / `SA` (including bare reset to `init_*`) do **not** exit joy-mode.
 `SS` updates the 100 % reference; live cruise becomes
@@ -94,7 +94,7 @@ joy-mode.
 ## Limits
 
 - **Soft rail:** remaining distance clips to the session working window
-  (`SL`/`SR`, boot-copied from `slider_min` / `slider_max`). The axis sits
+  (`SL`/`SR`, boot-copied from `slider_min_1` / `slider_max_1`). The axis sits
   there with **no `!E`**. Reverse `MJ` moves away. See [working-window.md](working-window.md).
 - **Hard-limit trip while moving:** same `planner_halt_all()` as other moves
   (EN off).
@@ -140,9 +140,9 @@ MT 100        # ends joy-mode; seek uses current SS (40)
 
 | Key | Role |
 |-----|------|
-| `max_speed` | Ceiling for `SS` and axis-1 cruise (including `MJ`) |
+| `max_speed_1` | Ceiling for `SS` and axis-1 cruise (including `MJ`) |
 | `max_speed_2` | Axis-2 cruise ceiling (independent of `SS`) |
-| `max_accel` / `max_accel_2` | Per-axis cap on session `SA` when applied to that axis |
+| `max_accel_1` / `max_accel_2` | Per-axis cap on session `SA` when applied to that axis |
 | `init_speed` / `init_accel` | Reloaded by bare `SS` / `SA` (still legal in joy-mode) |
 
 See [config.md](config.md). Dual-axis timing for `MT` (not `MJ`):

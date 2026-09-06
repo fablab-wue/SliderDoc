@@ -22,7 +22,7 @@ One consolidated view of the whole stack — details live in each repo README an
 - **Motorized camera slider control** — laptop-free set operation; analogue speed and accel; STOP / EMO / limits  
 - **JKSlider** full panel + **B4Slider** minimal remote — and room for more UIC faces on the same protocol  
 - **Construction kit** — JKSlider / B4Slider panel apps, **`MC_Client`** / **`UIC_Base`**, SliderMC motion; build sliders, mini-dollies, rotating heads, turntables, **slider + pan**, or other STEP/DIR rigs  
-- **Optional 2-axis** — typical **linear travel + pan** (or tilt/turn), **time-synced** dual moves (not CNC); SliderMC `axis2_use`; `MC_Client` dual `moveTo` / `home`. Shipping panels stay 1-axis. [dual-movement.md](mc/dual-movement.md) · [UIC API](uic/api/overview.md)  
+- **Optional 2-axis** — typical **linear travel + pan** (or tilt/turn), **time-synced** dual moves (not CNC); SliderMC `CS axis 2` then `RB` (`axis=3` also exists); `MC_Client` dual `moveTo` / `home`. Shipping panels stay 1-axis. [dual-movement.md](mc/dual-movement.md) · [UIC API](uic/api/overview.md)  
 - **Production moves** — marks A/B/C, pair loops, DELAY, timelapse dividers, pause/resume, live retarget, camera trigger  
 - **Dedicated motion MCU** — PIO step timing isolated from MicroPython UIC; crossed UART contract at 115200 baud  
 - **Open firmware, open docs** — MIT licensed; Thonny / REPL and USB CLI; edit pins, fork panels, script moves  

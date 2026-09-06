@@ -68,7 +68,7 @@ The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **U
 # Slider Motion Controller V1.0 ['$' for help]
 ```
 
-When config `axis2_use=1` (Pico), the banner includes the literal suffix `- 2 Axis`. When config `name` is set, the device name is prefixed (`# <name> - Slider Motion Controller V…`). Hosts should accept any `# ` ready line; see [protocol.md — Startup banner](protocol.md#startup-banner).
+When config `axis` is 2 or 3, the banner includes the literal suffix `- N Axis`. When config `name` is set, the device name is prefixed (`# <name> - Slider Motion Controller V…`). Hosts should accept any `# ` ready line; see [protocol.md — Startup banner](protocol.md#startup-banner).
 
 If no banner arrives within **100 ms**, the UIC sends another `\n`. After **3 s** without a banner it prints an error to the USB/REPL shell and **continues** (panel UI can start without motion). On success (or soft-continue) it sends `SV 1` for verbose status.
 

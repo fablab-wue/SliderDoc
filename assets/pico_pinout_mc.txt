@@ -1,31 +1,31 @@
 Raspberry Pi Pico — SliderMC pinout (top view, USB at top)
 Defaults in include/pins.h + data/mc.ini
 
-        function         pin              pin        function
-                         +--- USB ---+
-  free             GP0      1 |o         o| 40 VBUS     VBUS
-  free             GP1      2 |o         o| 39 VSYS     VSYS
+  function         pin                        pin       function
+                              +--- USB ---+
+  SW_LIMIT_R3*     GP0      1 |o         o| 40 VBUS     VBUS
+  SW_LIMIT_L3*     GP1      2 |o         o| 39 VSYS     VSYS
   GND              GND      3 |o         o| 38 GND      GND
-  EXT_0            GP2      4 |o         o| 37 3V3_EN   3V3_EN
-  EXT_1            GP3      5 |o         o| 36 3V3      3V3 OUT
-  EXT_2            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
-  EXT_3            GP5      7 |o         o| 34 GP28     BUZZER*
+  DRV_ERROR3       GP2      4 |o         o| 37 3V3_EN   3V3_EN
+  DRV_EN3          GP3      5 |o         o| 36 3V3      3V3 OUT
+  DRV_DIR3         GP4      6 |o         o| 35 ADC_VREF ADC_VREF
+  DRV_STEP3        GP5      7 |o         o| 34 GP28     BUZZER*
   GND              GND      8 |o         o| 33 AGND     ADC GND
   SW_LIMIT_R2*     GP6      9 |o         o| 32 GP27     SW_LIMIT_R*
   SW_LIMIT_L2*     GP7     10 |o         o| 31 GP26     SW_LIMIT_L*
-  free             GP8     11 |o         o| 30 RUN      RUN
-  free             GP9     12 |o         o| 29 GP22     free
+  EXT_0            GP8     11 |o         o| 30 RUN      RUN
+  EXT_1            GP9     12 |o         o| 29 GP22     CAMERA_CTRL
   GND              GND     13 |o         o| 28 GND      GND
   DRV_ERROR2       GP10    14 |o         o| 27 GP21     DRV_ERROR
   DRV_EN2          GP11    15 |o         o| 26 GP20     DRV_EN
   DRV_DIR2         GP12    16 |o         o| 25 GP19     DRV_DIR
   DRV_STEP2        GP13    17 |o         o| 24 GP18     DRV_STEP
   GND              GND     18 |o         o| 23 GND      GND
-  free             GP14    19 |o         o| 22 GP17     UART_RX
-  free             GP15    20 |o         o| 21 GP16     UART_TX
-                         +-----------+
+  EXT_2            GP14    19 |o         o| 22 GP17     UART_RX
+  EXT_3            GP15    20 |o         o| 21 GP16     UART_TX
+                              +-----------+
 
-Legend: EXT_0…3 on GP2–5 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.
-axis2_use=1: GP6/7 + GP10–13 (LIMIT_*2 / DRV_*2).
-SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.
-GP0/1/8/9/14/15/22–25 free (GP28 buzzer). Pin names match IX / VG.
+Legend: EXT_0…3 on GP8/9/14/15 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.
+CS axis 2 + RB: GP6/7 + GP10–13. CS axis 3: STEP3/DIR3/EN3/ERR3/L3/R3 on GP5–0.
+SW_LIMIT_*_N off until CS …_use=1. GP21 DRV_ERROR always polled. GP22 CAMERA_CTRL reserved.
+Pico 2 / Pico 2 W reuse this map (2 W LED GP28). Pin names match IX / VG.

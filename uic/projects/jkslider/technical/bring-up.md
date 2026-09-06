@@ -170,23 +170,23 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 - [ ] **Motor steps per turn** — usual NEMA17 = `200` (1.8°).
 - [ ] **Microstepping** — must match the **driver DIP / MS straps / SPI config**. Project default is often **8**.
 - [ ] **Travel per motor revolution (mm)** — leadscrew pitch or belt pitch × pulley teeth.
-- [ ] Confirm: `steps_per_unit = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV`  
+- [ ] Confirm: `steps_per_unit_1 = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV`  
   Example: 200 × 8 ÷ 5 → **320 steps/mm**.
 
 ### B. How far the carriage may travel
 
 - [ ] Measure usable travel in mm (after end stops / hard stops with a safety margin).
-- [ ] Set MC `slider_min` (often `0.0` after homing) and `slider_max` (e.g. `600.0` for a 60 cm usable run) via `CS` / mc.ini.
-- [ ] UIC reads these via `CG` after the welcome banner (`slider.slider_min` / `slider.slider_max`).
+- [ ] Set MC `slider_min_1` (often `0.0` after homing) and `slider_max_1` (e.g. `600.0` for a 60 cm usable run) via `CS` / mc.ini.
+- [ ] UIC reads these via `CG` after the welcome banner (`slider.slider_min` / `slider.slider_max` Python fields filled from `*_1`).
 - [ ] Optional (UIC): `SOFT_LIMIT_WARN_MM` — how many mm before the end the LED starts “near limit” blink (default 10).
 
 ### C. Speeds and “feel”
 
-- [ ] MC `max_speed` — fastest SPEED pot / FAST may request (start **conservative**, e.g. 50–100). UIC uses this as pot full scale.
-- [ ] MC `max_accel` / `init_accel` — planner ceiling and session default; panel ACCEL pot uses `JKS_ACCEL_MIN_MM_S2`…`min(JKS_ACCEL_MAX_MM_S2, max_accel)`.
+- [ ] MC `max_speed_1` — fastest SPEED pot / FAST may request (start **conservative**, e.g. 50–100). UIC uses this as pot full scale.
+- [ ] MC `max_accel_1` / `init_accel` — planner ceiling and session default; panel ACCEL pot uses `JKS_ACCEL_MIN_MM_S2`…`min(JKS_ACCEL_MAX_MM_S2, max_accel_1)`.
 - [ ] Optional UIC clamps: `JKS_SPEED_MAX_MM_S`, `JKS_ACCEL_MAX_MM_S2`, `JKS_SPEED_MIN_MM_S`.
 - [ ] Homing / DRV_ERROR / home direction — **SliderMC** config (`HOME_*`, halt decel, etc.).
-- [ ] If motion feels rough at high speed: lower MC `max_speed`, or check microstepping / power / mechanical binding.  
+- [ ] If motion feels rough at high speed: lower MC `max_speed_1`, or check microstepping / power / mechanical binding.  
   See SliderMC motion docs and [Technical Manual — Motion](motion-installer.md).
 
 ### D. Driver and switch logic (must match your electronics)
@@ -194,7 +194,7 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 - [ ] `PIN_DRV_STEP` / `PIN_DRV_DIR` / `PIN_DRV_EN` / `PIN_SW_LIMIT_*` / `PIN_DRV_ERROR` — on the **SliderMC** Pico (see [PINS.md](../../../../mc/pins.md)); not on the UIC.
 - [ ] `EN_ACTIVE_LOW` — `True` for most A4988 / DRV8825 / TMC boards (enable when pin is low).
 - [ ] `DIR_POSITIVE_HIGH` — if “right” on the panel moves the wrong way, flip this to `True`/`False` (or swap A/B motor wires once mechanics are fixed).
-- [ ] `SW_LIMIT_L_use` / `SW_LIMIT_R_use` / `*_active` — match your limit switches (many are to GND with pull-up → active low). Set `home_mode` 1 or 2 to home on that limit.
+- [ ] `SW_LIMIT_L_1_use` / `SW_LIMIT_R_1_use` / `*_active` — match your limit switches (many are to GND with pull-up → active low). Set `home_mode_1` 1 or 2 to home on that limit.
 - [ ] `DRV_ERROR_ACTIVE_HIGH` / `DRV_ERROR_PULL` — match your E-stop wiring (or leave unused pin safe).
 - [ ] LED pins / `LED_ACTIVE_HIGH` if you fit an RGB LED (UIC `UIC_config.py`).
 - [ ] OLED: `DSP_ENABLED = True` only if wired; set `DSP_DRIVER` / `DSP_ROTATE_180` and SDA/SCL if not using the defaults.

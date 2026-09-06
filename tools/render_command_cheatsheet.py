@@ -5,8 +5,8 @@ Command rows mirror firmware k_help_rows in src/protocol/commands.cpp.
 Canonical command prose: contract/protocol.md — keep GROUPS descriptions in sync.
 Regenerate after editing protocol tables: python tools/render_command_cheatsheet.py
 
-Each row: (short, long, call, reply, desc)
-  call/reply appear in the Markdown reference; HTML print sheet uses short/long/desc.
+Each row: (short, phrase, call, reply, desc)
+  call/reply appear in the Markdown reference; HTML print sheet uses short/phrase/desc.
 """
 
 from __future__ import annotations
@@ -35,71 +35,71 @@ FW_VERSION = "1.0"
 
 SILENT = "—"
 
-# (group_title, [(short, long, call, reply, desc), ...])
+# (group_title, [(short, phrase, call, reply, desc), ...])
 GROUPS = [
     (
         "S — Set (session)",
         [
             (
                 "SS",
-                "SetSpeed",
+                "Set Speed",
                 "SS [<v>]",
                 SILENT,
-                "Cruise speed mm/s (≤ max_speed); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.",
+                "Cruise speed mm/s (≤ max_speed_1); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.",
             ),
             (
                 "SA",
-                "SetAccel",
+                "Set Accel",
                 "SA [<a>]",
                 SILENT,
-                "Peak accel mm/s² (≤ max_accel); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.",
+                "Peak accel mm/s² (≤ max_accel_1); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.",
             ),
             (
                 "SE",
-                "SetEnable",
+                "Set Enable",
                 "SE [0|1]",
                 SILENT,
                 "Driver enable 0|1; bare toggles; required before motion; off = hard stop.",
             ),
             (
                 "ST",
-                "SetTerminal",
+                "Set Terminal",
                 "ST [0|1]",
                 SILENT,
                 "Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).",
             ),
             (
                 "SV",
-                "SetVerbose",
+                "Set Verbose",
                 "SV [0|1]",
                 SILENT,
                 "Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).",
             ),
             (
                 "SD",
-                "SetDebug",
+                "Set Debug",
                 "SD [0..5]",
                 SILENT,
                 "USB-only debug level 0..5; bare restores default; never on UIC UART.",
             ),
             (
                 "SL",
-                "SetLeft",
-                "SL [<pos> [<pos2>]]",
+                "Set Left",
+                "SL [<pos> [<pos2> [<pos3>]]] | SL X.. Y.. Z..",
                 SILENT,
-                "Session soft min (working window); bare→slider_min; none clears (→envelope if set); skip _; !E:limit past envelope.",
+                "Session soft min (working window); bare→slider_min_N; none clears (→envelope if set); skip _; !E:limit past envelope.",
             ),
             (
                 "SR",
-                "SetRight",
-                "SR [<pos> [<pos2>]]",
+                "Set Right",
+                "SR [<pos> [<pos2> [<pos3>]]] | SR X.. Y.. Z..",
                 SILENT,
-                "Session soft max; bare→slider_max; none clears; skip _; !E:limit if left>right.",
+                "Session soft max; bare→slider_max_N; none clears; skip _; !E:limit if left>right.",
             ),
             (
                 "SP",
-                "SetPosition",
-                "SP [<pos> [<pos2>]]",
+                "Set Position",
+                "SP [<pos> [<pos2> [<pos3>]]] | SP X.. Y.. Z..",
                 SILENT,
                 "Set reported pose (no motion); idle only; bare/0 = here is zero; skip _.",
             ),
@@ -108,24 +108,24 @@ GROUPS = [
     (
         "G — Get (session)",
         [
-            ("GS", "GetSpeed", "GS", "GS:<mm/s>", "Current session cruise speed."),
-            ("GA", "GetAccel", "GA", "GA:<mm/s2>", "Current session acceleration."),
-            ("GE", "GetEnable", "GE", "GE:0|1", "Driver enable state."),
-            ("GT", "GetTerminal", "GT", "GT:0|1", "Terminal Mode state."),
-            ("GV", "GetVerbose", "GV", "GV:0|1", "Verbose push state."),
-            ("GD", "GetDebug", "GD", "GD:<0..5>", "USB debug level."),
+            ("GS", "Get Speed", "GS", "GS:<mm/s>", "Current session cruise speed."),
+            ("GA", "Get Accel", "GA", "GA:<mm/s2>", "Current session acceleration."),
+            ("GE", "Get Enable", "GE", "GE:0|1", "Driver enable state."),
+            ("GT", "Get Terminal", "GT", "GT:0|1", "Terminal Mode state."),
+            ("GV", "Get Verbose", "GV", "GV:0|1", "Verbose push state."),
+            ("GD", "Get Debug", "GD", "GD:<0..5>", "USB debug level."),
             (
                 "GL",
-                "GetLeft",
+                "Get Left",
                 "GL",
-                "GL:<pos> [<pos2>]",
-                "Session soft min; effective (session else envelope); - if both None; dual when axis2 on.",
+                "GL:<pos> [<pos2> [<pos3>]]",
+                "Session soft min; effective (session else envelope); - if both None; extra fields when axis≥2.",
             ),
             (
                 "GR",
-                "GetRight",
+                "Get Right",
                 "GR",
-                "GR:<pos> [<pos2>]",
+                "GR:<pos> [<pos2> [<pos3>]]",
                 "Session soft max; same effective / - rules as GL.",
             ),
         ],
@@ -133,53 +133,53 @@ GROUPS = [
     (
         "I — Is / status",
         [
-            ("IM", "IsMoving", "IM", "IM:0|1", "Moving or settling on any active axis."),
-            ("IH", "IsHoming", "IH", "IH:0|1", "Homing cycle active."),
-            ("IL", "IsLimit", "IL", "IL:0|1", "At soft-limit position (axis1)."),
-            ("IE", "IsError", "IE", "IE:0|1", "PIN_DRV_ERROR / EMO latched."),
+            ("IM", "Is Moving", "IM", "IM:0|1", "Moving or settling on any active axis."),
+            ("IH", "Is Homing", "IH", "IH:0|1", "Homing cycle active."),
+            ("IL", "Is Limit", "IL", "IL:0|1", "At soft-limit position (axis1)."),
+            ("IE", "Is Error", "IE", "IE:0|1", "PIN_DRV_ERROR / EMO latched."),
             (
                 "IP",
-                "IsPosition",
+                "Is Position",
                 "IP",
-                "IP:<pos> [<pos2>]",
-                "Axis-1 position; second field when axis2_use=1.",
+                "IP:<pos> [<pos2> [<pos3>]]",
+                "One field per live axis (CG axis).",
             ),
-            ("IA", "IsAxis", "IA", "IA:1|2", "Active axis count (config_axis2_enabled)."),
+            ("IA", "Is Axis", "IA", "IA:1|2|3", "Live axis count (CS axis / CG axis)."),
             (
                 "IT",
-                "IsTarget",
+                "Is Target",
                 "IT",
                 "IT:<pos>|-",
                 "Axis-1 seek target, or - if none / soft-stop.",
             ),
             (
                 "IR",
-                "IsReady",
+                "Is Ready",
                 "IR",
                 "IR:0|1",
                 "1 only if idle, not homing, enabled, and not waiting.",
             ),
-            ("IW", "IsWaiting", "IW", "IW:0|1", "1 if any W / WM / WH / WP / WC / WnC wait is active."),
+            ("IW", "Is Waiting", "IW", "IW:0|1", "1 if any WT / WM / WH / WP / WC / WN wait is active."),
             (
                 "ID",
-                "IsDiag",
+                "Is Diag",
                 "ID",
                 "ID:underrun=N peak_hz=… overshoot=… fifo_min=…",
                 "Motion diag counters (FIFO underrun, peak STEP Hz, …).",
             ),
             (
-                "IZ",
-                "IsReset",
-                "IZ",
-                "IZ:<reason>",
+                "IC",
+                "Is Cause",
+                "IC",
+                "IC:<reason>",
                 "Last chip reset: power|wdt|run|soft|debug|brownout|…",
             ),
             (
-                "IX",
-                "Pinout",
-                "IX",
+                "IG",
+                "Is GPIO",
+                "IG",
                 "(multi-line table)",
-                "ASCII GP / name / desc (≤80 cols). Axis-2 rows only if axis2 on.",
+                "ASCII GP / name / desc (≤80 cols). Extra-axis rows only if that axis is live.",
             ),
         ],
     ),
@@ -188,49 +188,35 @@ GROUPS = [
         [
             (
                 "MT",
-                "MoveTo",
-                "MT <pos> [<pos2>]",
+                "Move To",
+                "MT <pos> [<pos2> [<pos3>]] | MT X.. Y.. Z..",
                 SILENT,
-                "Absolute user units; optional 2nd axis; skip _; needs SE; live-retarget. Dual: time-sync ratio.",
+                "Absolute user units; extra live axes; skip _; needs SE; live-retarget. Dual: time-sync ratio. Out-of-window = !E:soft (no clip).",
             ),
             (
-                "M",
-                "Move",
-                "M <delta> [<delta2>]",
+                "MB",
+                "Move By",
+                "MB <delta> [<delta2> [<delta3>]] | MB X.. Y.. Z..",
                 SILENT,
-                "Relative move (alias MoveBy); same dual/skip rules as MT.",
-            ),
-            (
-                "ML",
-                "MoveLeft",
-                "ML [0|1|2]",
-                SILENT,
-                "Jog −; mask 0=both, 1=axis1, 2=axis2 when axis2 on; soft-stop MS/!.",
-            ),
-            (
-                "MR",
-                "MoveRight",
-                "MR [0|1|2]",
-                SILENT,
-                "Jog +; mask same as ML; soft-stop MS/!.",
+                "Relative move; same extra-axis/skip/named rules as MT.",
             ),
             (
                 "MJ",
-                "MoveJoy",
-                "MJ <pct> [<pct2>]",
+                "Move Joy",
+                "MJ <pct> [<pct2> [<pct3>]] | MJ X.. Y.. Z..",
                 SILENT,
-                "Joy speed % of SS, signed (− left / + right); 2-axis optional pct2 (omit=0); 0=soft-stop; SS/SA live; clamp max_speed[_2].",
+                "Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release.",
             ),
             (
                 "MH",
-                "MoveHome",
-                "MH [1|2]",
+                "Move Home",
+                "MH [1|2|3]",
                 SILENT,
-                "Homing; axis 1 (default) or 2; no-op if home_mode=0; cancel MS/H.",
+                "Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/HT.",
             ),
             (
                 "MS",
-                "MoveStop",
+                "Move Stop",
                 "MS",
                 SILENT,
                 "Soft decelerate both axes; keeps enable; ends joy-mode; does not cancel waits. Dual: scaled accel kept.",
@@ -242,35 +228,35 @@ GROUPS = [
         [
             (
                 "PC",
-                "PathClear",
+                "Path Clear",
                 "PC",
                 SILENT,
                 "Clear path buffer (count→0); !E:busy while PG active.",
             ),
             (
                 "PD",
-                "PathData",
-                "PD <um> [<um2>]",
+                "Path Data",
+                "PD <um> [<um2> [<um3>]] | PD X.. Y.. Z..",
                 SILENT,
-                "Append signed µm sample(s); optional axis2; skip _ →0; OK while PG (live stream).",
+                "Append signed µm sample(s); extra live axes; skip _ →0; OK while PG (live stream).",
             ),
             (
                 "PG",
-                "PathGo",
+                "Path Go",
                 "PG",
                 SILENT,
-                "Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/H ends path.",
+                "Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/HT ends path.",
             ),
             (
                 "PN",
-                "PathNumber",
+                "Path Number",
                 "PN",
                 "PN:<count>",
                 "Samples in buffer; allowed during PG.",
             ),
             (
                 "PS",
-                "PathSlice",
+                "Path Slice",
                 "PS [<us>]",
                 SILENT,
                 "Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.",
@@ -278,19 +264,19 @@ GROUPS = [
         ],
     ),
     (
-        "X — Extender",
+        "E — Extender / beep",
         [
             (
-                "X0–3",
-                "Ext0–3",
-                "Xn [0|1]",
+                "EO",
+                "Ext Out",
+                "EO0..3 [0|1]",
                 SILENT,
-                "Ext out n logical 0|1; bare toggles; glued X00≡X0 0; OK during EMO. X4+ rejected.",
+                "Ext out n logical 0|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected.",
             ),
             (
-                "Z",
-                "Buzzer",
-                "Z",
+                "BE",
+                "Beep",
+                "BE",
                 SILENT,
                 "Pulse PIN_BUZZER ~0.1 s; not a wait. No-op if BUZZER_use=0. OK during EMO/path.",
             ),
@@ -301,21 +287,21 @@ GROUPS = [
         [
             (
                 "CS",
-                "ConfigSet",
+                "Config Set",
                 "CS <key> <value>",
                 SILENT,
-                "Persist key to mc.ini; silent ok. axis2_use / WDT_use need RB to take HW effect.",
+                "Persist key to mc.ini; silent ok. axis / WDT_use need RB to take HW effect.",
             ),
             (
                 "CR",
-                "ConfigReset",
+                "Config Reset",
                 "CR",
                 SILENT,
                 "Reset all config to compiled defaults and save mc.ini.",
             ),
             (
                 "CG",
-                "ConfigGet",
+                "Config Get",
                 "CG [<key>]",
                 "CG:<key>=<value>",
                 "One key, or bare dumps all keys (multi-line).",
@@ -325,7 +311,7 @@ GROUPS = [
                 "Reboot",
                 "RB",
                 SILENT,
-                "Soft MCU reset (no power cycle); EN off first. After CS axis2_use.",
+                "Soft MCU reset (no power cycle); EN off first. After CS axis.",
             ),
         ],
     ),
@@ -333,44 +319,44 @@ GROUPS = [
         "W — Wait",
         [
             (
-                "W",
-                "Wait",
-                "W [<sec>]",
+                "WT",
+                "Wait Time",
+                "WT [<sec>]",
                 SILENT,
                 "Delay then continue ; chain; bare→1 s; never !E:timeout.",
             ),
             (
                 "WM",
-                "WaitMoving",
+                "Wait Moving",
                 "WM [<timeout_s>]",
                 SILENT,
                 "Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.",
             ),
             (
                 "WH",
-                "WaitHoming",
+                "Wait Homing",
                 "WH [<timeout_s>]",
                 SILENT,
                 "Pause until homing ends; timeout same as WM.",
             ),
             (
                 "WP",
-                "WaitPos",
+                "Wait Pos",
                 "WP <pos> [<timeout_s>]",
                 SILENT,
                 "Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout.",
             ),
             (
                 "WC",
-                "WaitCruise",
+                "Wait Cruise",
                 "WC [<timeout_s>]",
                 SILENT,
                 "Wait until cruise (status M) or idle; optional timeout → !E:timeout.",
             ),
             (
-                "WnC",
-                "WaitNotCruise",
-                "WnC [<timeout_s>]",
+                "WN",
+                "Wait Not cruise",
+                "WN [<timeout_s>]",
                 SILENT,
                 "Wait until not cruise M; idle/A/B→immediate; timeout same as WM.",
             ),
@@ -379,34 +365,48 @@ GROUPS = [
     (
         "V — Version",
         [
-            ("VA", "VersionAbout", "VA", "VA:…", "About string (name, version, author)."),
-            ("VF", "VersionFW", "VF", "VF:<version>", "Firmware version."),
-            ("VP", "VersionProtocol", "VP", "VP:<n>", "Protocol version."),
+            ("VA", "Version About", "VA", "VA:…", "About string (name, version, author)."),
+            ("VF", "Version FW", "VF", "VF:<version>", "Firmware version."),
+            ("VP", "Version Protocol", "VP", "VP:<n>", "Protocol version (2)."),
         ],
     ),
     (
         "Special",
         [
             (
-                "H/HT",
+                "HT",
                 "Halt",
-                "H | HT",
+                "HT",
                 SILENT,
                 "Immediate STEP abort; enable off; cancel waits and remaining ; chain.",
             ),
             (
-                "P",
-                "Pins",
-                "VG | P",
+                "VG",
+                "Version GPIO",
+                "VG",
                 "VG:PIN_*=n (multi-line)",
-                "Machine-readable pin map (alias VersionGPIO). Axis-2 pins if axis2 on.",
+                "Machine-readable pin map. Extra-axis pins if that axis is live.",
             ),
             (
-                "$/HL",
+                "HL/$",
                 "Help",
-                "$ | HL | Help",
+                "HL | $",
                 "(multi-line table)",
-                "ASCII table of all commands (≤80 columns).",
+                "Two-column table of all commands (short + phrase).",
+            ),
+            (
+                "?/#",
+                "Status now",
+                "? | #",
+                "#<state> …",
+                "Realtime compact status line (no newline).",
+            ),
+            (
+                "!/ESC",
+                "Soft stop now",
+                "! | ESC",
+                SILENT,
+                "Realtime soft stop (same urgency as MS).",
             ),
         ],
     ),
@@ -535,7 +535,7 @@ code {
 }
 """
 
-# Left: S, G, I, M, Path   Right: X, C, W, V, Special
+# Left: S, G, I, M, Path   Right: E, C, W, V, Special
 COL_SPLIT = 5
 
 
@@ -566,7 +566,7 @@ def build_html() -> str:
             '<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>'
         )
         parts.append(
-            "<thead><tr><th>Short</th><th>Long</th><th>Description</th></tr></thead>"
+            "<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>"
         )
         parts.append("<tbody>")
         for sh, lng, _call, _reply, desc in rows:
@@ -592,14 +592,16 @@ def build_html() -> str:
         '<div class="row"><strong>Wire:</strong> '
         "one command per line (<code>\\n</code>); "
         "chain with <code>;</code>; "
-        "<code>#</code> comment to EOL (comment-only lines ignored); "
+        "axis args positional or named <code>X</code>/<code>Y</code>/<code>Z</code> "
+        "(glued <code>MTX20Y50Z100</code> ok); "
+        "<code>#</code> is realtime status, not a comment; "
         "bare bool setters toggle; "
         "motion/settings silent on success; errors <code>!E:code message</code>.</div>"
     )
     parts.append(
         '<div class="row"><strong>Realtime</strong> (no newline): '
-        "<code>?</code> status · "
-        "<code>!</code> soft stop · "
+        "<code>?</code>/<code>#</code> status · "
+        "<code>!</code>/<code>ESC</code> soft stop · "
         "<code>Ctrl-X</code> (0x18) soft reset.</div>"
     )
     parts.append(
@@ -611,9 +613,10 @@ def build_html() -> str:
     )
     parts.append(
         '<div class="row"><strong>Halt vs Stop:</strong> '
-        "<code>MS</code>/<code>!</code> soft decel (enable kept, ends joy-mode); "
-        "<code>H</code>/<code>HT</code> immediate abort, enable off, cancel waits. "
-        "<code>MJ</code>: skip if value unchanged.</div>"
+        "<code>MS</code>/<code>!</code>/<code>ESC</code> soft decel (enable kept, ends joy-mode); "
+        "<code>HT</code> immediate abort, enable off, cancel waits. "
+        "<code>MJ</code>: skip if value unchanged. Hold-to-jog: <code>MJ ±100</code>, "
+        "<code>MS</code> on release.</div>"
     )
     parts.append("</footer>")
     parts.append("</div></body></html>")
@@ -641,8 +644,8 @@ def build_markdown() -> str:
     for title, rows in GROUPS:
         lines.append(f"## {title}")
         lines.append("")
-        lines.append("| Short | Long | Call | Reply | Description |")
-        lines.append("|-------|------|------|-------|-------------|")
+        lines.append("| Short | Phrase | Call | Reply | Description |")
+        lines.append("|-------|--------|------|-------|-------------|")
         for sh, lng, call, reply, desc in rows:
             lines.append(
                 f"| `{_md_cell(sh)}` | `{_md_cell(lng)}` | `{_md_cell(call)}` | "
@@ -652,19 +655,19 @@ def build_markdown() -> str:
     lines.append("## Notes")
     lines.append("")
     lines.append(
-        "- Chain with `;`. Realtime (no newline): `?` status, `!` soft stop, `Ctrl-X` soft reset."
+        "- Chain with `;`. Realtime (no newline): `?`/`#` status, `!`/`ESC` soft stop, `Ctrl-X` soft reset. `#` is not a comment."
     )
     lines.append(
-        "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`H`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IX`/`Help`/`CG`/`Z`/`X0-3`."
+        "- Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`HT`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IG`/`HL`/`$`/`CG`/`BE`."
     )
     lines.append(
-        "- `MJ` / `MoveJoy`: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. See [motion-joy.md](../mc/motion-joy.md)."
+        "- `MJ` / Move Joy: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. Hold-to-jog: `SS` then `MJ ±100`, `MS` on release. See [motion-joy.md](../mc/motion-joy.md)."
     )
     lines.append(
-        "- Skip token `_` only (`MT`/`M`/`PD`/`SL`/`SR`). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
+        "- Skip token `_` only (`MT`/`MB`/`PD`/`SL`/`SR`). Named `X`/`Y`/`Z` is an alternative (not mixed with positional). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
     )
     lines.append(
-        "- Soft limits / units: see config keys `slider_min`/`max`, `steps_per_unit`, `unit_name`."
+        "- Soft limits / units: see config keys `slider_min_N`/`slider_max_N`, `steps_per_unit_N`, `unit_name`."
     )
     lines.append("")
     return "\n".join(lines)

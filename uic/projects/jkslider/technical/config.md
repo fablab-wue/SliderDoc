@@ -33,7 +33,7 @@ STEP/DIR/EN, DRV_ERROR, and hard limits (`SW_LIMIT_*`) are on the **SliderMC** P
 
 **RP2040-Zero as UIC** (button mode): copy the `RP2040_ZERO_*` keys from `SliderPins.example.py` into `SliderPins.py`. UART GP12/13, I2C1 GP14/15, pinout [JKSlider_rp2040zero_pinout_button.png](../../../../assets/img/JKSlider_rp2040zero_pinout_button.png). Details: [panel.md](panel.md#rp2040-zero-uic-button-mode).
 
-Also set `DSP_ENABLED`, LED polarity, etc. Motion ceilings (`max_speed`, `max_accel`) and soft travel (`slider_min` / `slider_max`) live on **SliderMC** and are read by UIC via `CG` after the welcome banner. Full list: [../../../api/overview.md](../../../api/overview.md). Architecture: [../../../../architecture/overview.md](../../../../architecture/overview.md).
+Also set `DSP_ENABLED`, LED polarity, etc. Motion ceilings (`max_speed_1`, `max_accel_1`) and soft travel (`slider_min_1` / `slider_max_1`) live on **SliderMC** and are read by UIC via `CG` after the welcome banner (Python `mc.max_speed` / `mc.slider_min` stay filled from `*_1`). Full list: [../../../api/overview.md](../../../api/overview.md). Architecture: [../../../../architecture/overview.md](../../../../architecture/overview.md).
 
 ## One file per slider HW (`SliderPins.py`)
 
@@ -75,8 +75,8 @@ Later panel apps can add another dict (e.g. `OtherApp = { ... }`) in the same `S
 | `JKS_AT_MARK_MM` | Distance (mm) to treat carriage as at PosA/B/C (default 0.5) |
 | `JKS_LEFT_IS_NEGATIVE` | Left = decreasing position |
 | `JKS_SPEED_MIN_MM_S` | SPEED pot floor (mm/s) |
-| `JKS_SPEED_MAX_MM_S` | Panel ceiling: clamps `slider.max_speed = min(MC max_speed, this)` after CG |
-| `JKS_ACCEL_MIN_MM_S2` / `JKS_ACCEL_MAX_MM_S2` | ACCEL pot floor; max clamps `slider.max_accel = min(MC max_accel, JKS_ACCEL_MAX_MM_S2)` |
+| `JKS_SPEED_MAX_MM_S` | Panel ceiling: clamps `slider.max_speed = min(MC max_speed_1, this)` after CG |
+| `JKS_ACCEL_MIN_MM_S2` / `JKS_ACCEL_MAX_MM_S2` | ACCEL pot floor; max clamps `slider.max_accel = min(MC max_accel_1, JKS_ACCEL_MAX_MM_S2)` |
 | `JKS_SPEED_CURVE_GAMMA` | SPEED pot feel |
 | `JKS_JOYSTICK_CURVE_GAMMA` / `JOYSTICK_DEADZONE` | Stick feel |
 | `JKS_POT_*` / `JKS_ACCEL_*` / `JKS_JOY_*` | ADC denoise |

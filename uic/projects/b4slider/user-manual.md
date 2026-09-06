@@ -15,7 +15,7 @@ App: [`B4Slider.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4Slider
 Shared motion / LED stack: [../../api/overview.md](../../api/overview.md). Installer hub: [../jkslider/technical/README.md](../jkslider/technical/README.md).  
 One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([HTML source](cheat-sheet/cheat-sheet.html)).
 
-B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. On a **2-axis** build add optional *MOVE_L2* and *MOVE_R2* (GP8/GP9) when SliderMC `axis2_use=1` — typical **linear travel + pan**. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window per axis (see [Workflow: A / B](#workflow-a--b-working-window)).
+B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. On a **2-axis** build add optional *MOVE_L2* and *MOVE_R2* (GP8/GP9) when SliderMC is `CS axis 2` then `RB` — typical **linear travel + pan**. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window per axis (see [Workflow: A / B](#workflow-a--b-working-window)).
 
 > *Italic* in this manual = optional **2nd axis** (pan). Skip those rows if your build is 1-axis only.
 
@@ -23,14 +23,14 @@ Optional second pot (**ACCEL**) when `B4S_USE_ACCEL_POT=1`. OLED is not required
 
 The panel Pico talks to a **motion board** (SliderMC) over UART, or to an MKS SERVO via [MC_MKS_Client](../../libraries/mks-servo-rs485.md). If that link is unplugged, the UI may still start, but moves will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-**2-axis:** enable `axis2_use` on SliderMC and reboot (`RB`). B4Slider auto-detects `axis_count==2`, homes axis 1 then axis 2 at boot (`B4S_HOMING_ENABLED`), and exposes *MOVE_L2/R2* with the same tap/hold/latch semantics as axis 1. Dual moves (*MOVE_L*+*MOVE_L2* or *MOVE_R*+*MOVE_R2*) are [time-synced](../../../mc/dual-movement.md) after both *pan* soft limits are marked — see [2-axis mode](#2-axis-mode-pan). Wire: [protocol.md](../../../contract/protocol.md#optional-2nd-axis-axis2_use).
+**2-axis:** enable with `CS axis 2` on SliderMC and reboot (`RB`). B4Slider auto-detects `axis_count==2`, homes axis 1 then axis 2 at boot (`B4S_HOMING_ENABLED`), and exposes *MOVE_L2/R2* with the same tap/hold/latch semantics as axis 1. Dual moves (*MOVE_L*+*MOVE_L2* or *MOVE_R*+*MOVE_R2*) are [time-synced](../../../mc/dual-movement.md) after both *pan* soft limits are marked — see [2-axis mode](#2-axis-mode-pan). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
 
 ## Getting started
 
 1. Power on — status LED does a rainbow while locked (if unlock is enabled).
 2. **Unlock** — press **OPTION** (` * `). (Disable with `B4S_BOOT_UNLOCK = False`.)
 3. **Homing** (if `B4S_HOMING_ENABLED`) — axis 1, then *axis 2* when `axis_count==2`.
-4. Soft limits start at **full slider travel** (MC session window = `slider_min` / `slider_max` per axis). The shot window lives on the MC (`SL` / `SR`) until reboot — nothing is written to `mc.ini`.
+4. Soft limits start at **full slider travel** (MC session window = `slider_min_1` / `slider_max_1` per axis). The shot window lives on the MC (`SL` / `SR`) until reboot — nothing is written to `mc.ini`.
 5. Dial **SPEED**, then use MOVE / SET as below.
 
 **OPTION** is a modifier: hold it with another control. Alone it does nothing (except unlock at boot).
@@ -57,7 +57,7 @@ Silk: axis 1 `<` / `>`; center `*`; axis 2 *`<2` / `>2`* (example labels).
 
 - Left → slower floor; right → faster (finer at the low end; `B4S_SPEED_CURVE_GAMMA`).
 - Can be changed while moving (unless OPTION is held for max-speed boost).
-- Full-scale ceiling is the panel/MC max (`B4S_SPEED_MAX_MM_S` / MC `max_speed`).
+- Full-scale ceiling is the panel/MC max (`B4S_SPEED_MAX_MM_S` / MC `max_speed_1`).
 
 ### ACCEL (optional)
 
@@ -130,7 +130,7 @@ While holding SET for accel, the LED flashes **white once per second** so you ca
 
 ## 2-axis mode (pan)
 
-Requires SliderMC `axis2_use=1` and a reboot. B4Slider wires *MOVE_L2* (GP8) and *MOVE_R2* (GP9).
+Requires SliderMC `CS axis 2` and a reboot (`RB`). B4Slider wires *MOVE_L2* (GP8) and *MOVE_R2* (GP9).
 
 ### Sync vs setup
 
@@ -143,8 +143,8 @@ Mark pan A and B with *SET+MOVE_L2/R2*; then *L+L2* / *R+R2* moves are cinematic
 
 ### OPTION on dual moves (sync mode)
 
-- **Axis 1 (travel):** `max_speed` while OPTION held.
-- **Axis 2 (pan):** scaled to `max_speed × distance_ratio` so both axes still finish together.
+- **Axis 1 (travel):** `max_speed_1` while OPTION held.
+- **Axis 2 (pan):** scaled to `max_speed_1 × distance_ratio` so both axes still finish together.
 
 ## Color codes
 
@@ -182,7 +182,7 @@ One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([
 4. **Hold** **MOVE_L** / **MOVE_R** longer than ~⅓ s for hold-to-run. The carriage moves while the button is down; release stops it.
 5. **Same-side tap while cruising** stops the cruise; **opposite-side tap** reverses direction. This makes the move buttons behave like a left/right lock-and-stop control rather than a raw jog.
 6. **OPTION before MOVE_L / MOVE_R** changes the start condition: when OPTION is already down before the move starts, the slider launches with **max speed + max accel**.
-7. **OPTION during movement** is a speed boost only: **speed goes to max_speed**, while **accel stays at the current pot/preset value** until OPTION is released.
+7. **OPTION during movement** is a speed boost only: **speed goes to `max_speed_1`**, while **accel stays at the current pot/preset value** until OPTION is released.
 8. If you want to keep the current pot accel but make the move faster, hold OPTION after the move is already running. If you want the full startup acceleration burst, press OPTION before the move.
 9. **SET** while moving soft-stops the carriage. **MOVE_L + MOVE_R** is the emergency halt; any button re-enables the driver after a disabled state.
 10. **All four** (MOVE_L + MOVE_R + OPTION + SET) resets the session like power-up and clears the soft-limit / loop state.

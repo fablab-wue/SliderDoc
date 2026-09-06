@@ -232,7 +232,7 @@ def render_ascii(mode: str) -> str:
         lines.extend(
             [
                 "B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION) on 1-axis;",
-                "  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC axis2_use=1.",
+                "  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC CS axis 2 + RB.",
                 "  SPEED pot, optional ACCEL pot (GP27, B4S_USE_ACCEL_POT).",
                 "  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, or joystick.",
                 "  SET on GP5 (was STOP on JKSlider).",

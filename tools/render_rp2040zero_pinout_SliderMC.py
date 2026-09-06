@@ -71,10 +71,10 @@ LEFT = [
     ("3V3", "3V3"),
     ("GP29", "LED"),
     ("GP28", "BUZZER*"),
-    ("GP27", "EXT_0"),
-    ("GP26", "EXT_1"),
-    ("GP15", "EXT_2"),
-    ("GP14", "EXT_3"),
+    ("GP27", "DRV_STEP3"),
+    ("GP26", "DRV_DIR3"),
+    ("GP15", "DRV_EN3"),
+    ("GP14", "DRV_ERROR3"),
 ]
 
 # Right edge, top→bottom.
@@ -102,15 +102,15 @@ BOTTOM = [
 # Bottom view SMD pads, top→bottom.
 BOT_PADS = [
     ("GND", "GND"),
-    ("GP25", "free"),
-    ("GP24", "free"),
-    ("GP23", "free"),
-    ("GP22", "free"),
-    ("GP21", "free"),
+    ("GP25", "CAMERA_CTRL"),
+    ("GP24", "EXT_0"),
+    ("GP23", "EXT_1"),
+    ("GP22", "EXT_2"),
+    ("GP21", "EXT_3"),
     ("GP20", "free"),
     ("GP19", "free"),
-    ("GP18", "free"),
-    ("GP17", "free"),
+    ("GP18", "SW_LIMIT_L3*"),
+    ("GP17", "SW_LIMIT_R3*"),
 ]
 
 # JKSlider UIC on RP2040-Zero, button mode (assets/JKSlider_rp2040zero_pinout_button.txt).
@@ -204,6 +204,7 @@ LEGEND = [
     ("DRV_*", C_DRV),
     ("UART_*", C_UART),
     ("SW_*", C_SW),
+    ("CAMERA_CTRL", C_CTRL),
     ("LED", C_LED),
     ("free", C_FREE),
     ("GND", C_GND),
@@ -266,7 +267,7 @@ def _layout(mode: str):
                 "Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
                 "CTRL_CAMERA on GP29. Six buttons: SET GP0, MOVE_L/R GP1/2, MOVE_L2/R2 GP3/4, OPTION GP8.",
-                "Axis 2 active when SliderMC axis2_use=1. Button mode: active-low pull-ups.",
+                "Axis 2 active when SliderMC CS axis 2 then RB. Button mode: active-low pull-ups.",
                 "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–25 free.",
                 "Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).",
             ],
@@ -288,10 +289,10 @@ def _layout(mode: str):
         ),
         "ascii_notes": [
             "Legend: motor DRV on GP0–3; LIMIT L/R on GP4/5; axis2 STEP/DIR/ERR on GP6–8.",
-            "EXT_0…3 on GP27/26/15/14 (X0…X3); UART 115200 baud GP12/13; EN2 GP11; LIMIT2 GP9/10.",
-            "SW_LIMIT_* off until CS …_use=1. GP17–25 free. axis2_use supported.",
-            "GP29 status LED; GP16 = onboard RGB unused.",
-            "Pin names match IX / VG (axis2 rows only when axis2_use=1).",
+            "Axis 3: STEP3/DIR3 GP27/26, EN3/ERR3 GP15/14, LIMIT3 GP18/17. CAMERA_CTRL GP25 reserved.",
+            "EXT_0…3 on GP24–21 (X0…X3); UART 115200 baud GP12/13; EN2 GP11; LIMIT2 GP9/10.",
+            "SW_LIMIT_*_N off until CS …_use=1. RP2350 Mini reuses this map. CS axis 2|3 supported.",
+            "GP29 status LED; GP16 = onboard RGB unused. Pin names match IX / VG.",
         ],
         "png_title": "RP2040-Zero SliderMC pinout",
         "png_sub": "Top + bottom view  USB at top  BOARD_RP2040_ZERO  pins.h defaults",

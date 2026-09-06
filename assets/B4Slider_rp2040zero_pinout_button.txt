@@ -1,0 +1,42 @@
+Waveshare RP2040-Zero — B4Slider UIC pinout (USB at top)
+BUTTON mode  |  overlay in SliderPins.py (RP2040_ZERO_B4Slider)
+
+    function     pad                  pad    function
+                        +---- USB ----+
+  5V             5V     |o           o| GP0    BTN_SET
+  GND            GND    |o           o| GP1    BTN_MOVE_L
+  3V3            3V3    |o           o| GP2    BTN_MOVE_R
+  CTRL_CAMERA    GP29   |o           o| GP3    BTN_MOVE_L2
+  free           GP28   |o           o| GP4    BTN_MOVE_R2
+  POT_ACCEL      GP27   |o           o| GP5    free
+  POT_SPEED      GP26   |o           o| GP6    free
+  DSP_I2C_SCL    GP15   |o           o| GP7    free
+  DSP_I2C_SDA    GP14   |o           o| GP8    BTN_OPTION
+                        +-------------+
+                         13 12 11 10 9
+
+Bottom edge (left→right):
+  GP13   UART_RX
+  GP12   UART_TX
+  GP11   LED_R
+  GP10   LED_G
+  GP9    LED_B
+
+Bottom-side SMD pads (top→bottom):
+  GND    GND
+  GP25   free
+  GP24   free
+  GP23   free
+  GP22   free
+  GP21   free
+  GP20   free
+  GP19   free
+  GP18   free
+  GP17   free
+
+Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.
+OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.
+CTRL_CAMERA on GP29. Six buttons: SET GP0, MOVE_L/R GP1/2, MOVE_L2/R2 GP3/4, OPTION GP8.
+Axis 2 active when SliderMC CS axis 2 then RB. Button mode: active-low pull-ups.
+GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–25 free.
+Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).

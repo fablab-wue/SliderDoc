@@ -15,12 +15,12 @@ Use when changing mechanics, driver, or travel. Full detail: [bring-up.md](../..
 - [ ] Motor steps/rev (usually 200)
 - [ ] Microstepping matches driver DIP/SPI
 - [ ] mm per motor revolution measured
-- [ ] `steps_per_unit` verified
-- [ ] `slider_min` / `slider_max` set via `CS` or `mc.ini` — [mc/config.md](../../mc/config.md)
+- [ ] `steps_per_unit_1` verified
+- [ ] `slider_min_1` / `slider_max_1` set via `CS` or `mc.ini` — [mc/config.md](../../mc/config.md)
 
 ## B. Speed / feel
 
-- [ ] `max_speed` / `max_accel` conservative first
+- [ ] `max_speed_1` / `max_accel_1` conservative first
 - [ ] Homing direction and switch polarity — [mc/config.md](../../mc/config.md)
 
 ## C. Driver pins (SliderMC)

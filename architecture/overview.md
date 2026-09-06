@@ -30,7 +30,7 @@ JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated moti
 The project intentionally keeps these terms separate:
 
 - **Hard limit** = physical end-stop or safety switch. This is the rail hardware level.
-- **Envelope** = configured rail travel (`slider_min` / `slider_max`). This is the installer's fixed mechanical span.
+- **Envelope** = configured rail travel (`slider_min_1` / `slider_max_1`). This is the installer's fixed mechanical span.
 - **Working window** = session soft ends (`SL` / `SR`) that clip B4Slider travel during a shot.
 - **Mark** = JKSlider waypoint (PosA / PosB / PosC). It is a remembered pose, not a wall.
 
@@ -55,10 +55,10 @@ What may attach to each board (same ownership as the overview diagram):
 
 ### MC — may connect
 
-- Motor / STEP·DIR driver (integrated or external); optional **2nd** STEP·DIR when `axis2_use=1` — typical **linear travel (axis 1) + pan (axis 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
-- Hard limit switch(es) (`SW_LIMIT_*`; optional `*_2` with axis2) — also used as the homing reference (`home_mode` 1/2)
-- Optional stall-home via `DRV_ERROR` (`home_mode` 3/4)
-- Ext outputs (`EXT_0`…`EXT_3`); optional piezo (`PIN_BUZZER` / `Z`)
+- Motor / STEP·DIR driver (integrated or external); optional **2nd** STEP·DIR when `CS axis 2` then `RB` (`axis=3` also exists) — typical **linear travel (axis 1) + pan (axis 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
+- Hard limit switch(es) (`SW_LIMIT_*`; optional extra-axis pins when `axis` ≥ 2) — also used as the homing reference (`home_mode_N` 1/2)
+- Optional stall-home via `DRV_ERROR` (`home_mode_N` 3/4)
+- Ext outputs (`EXT_0`…`EXT_3`); optional piezo (`PIN_BUZZER` / `BE`)
 - `DRV_ERROR` / E-stop interlock
 - USB debug (host PC)
 - UART to UIC
@@ -217,8 +217,8 @@ Sibling clone paths: `../assets/img/pico_pinout_mc.png`, `../mc/pins.md`.
 
 - ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
 - **Startup:** a `\n` on UIC UART or USB unlocks the MC; MC replies with welcome `# …` banner; UIC then sends `SV 1`.
-- Commands: `MT`, `M`, `ML`, `MR`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `H`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
-- Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]` — 2-axis appends ` | ` and the same group for axis 2
+- Commands: `MT`, `MB`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `HT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
+- Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]` — extra live axes append ` | ` and the same group (`#I p1 | p2 | p3` when `axis=3`)
 - Errors: `!E:<code> <text>`
 
 Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/api/overview.md).

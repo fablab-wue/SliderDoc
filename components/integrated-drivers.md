@@ -18,19 +18,19 @@ Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [pic
 
 | Net | Default GP | Config |
 |-----|------------|--------|
-| `DRV_STEP` | 18 | `DRV_STEP_active` |
-| `DRV_DIR` | 19 | `DRV_DIR_active` |
-| `DRV_EN` | 20 | `DRV_EN_active` (typical `0` = active-low) |
-| `DRV_ERROR` | **21** | `DRV_ERROR_active` (always polled) |
+| `DRV_STEP` | 18 | `DRV_STEP_1_active` |
+| `DRV_DIR` | 19 | `DRV_DIR_1_active` |
+| `DRV_EN` | 20 | `DRV_EN_1_active` (typical `0` = active-low) |
+| `DRV_ERROR` | **21** | `DRV_ERROR_1_active` (always polled) |
 
-Mechanics (must match the integrated drive’s microstep/setting) — set on SliderMC as `steps_per_unit` (and related home keys). UIC `UIC_config.py` may keep matching `MICROSTEPS` / `MM_PER_REV` for display helpers only.
+Mechanics (must match the integrated drive’s microstep/setting) — set on SliderMC as `steps_per_unit_1` (and related home keys). UIC `UIC_config.py` may keep matching `MICROSTEPS` / `MM_PER_REV` for display helpers only.
 
 | Symbol | Default | Role |
 |--------|---------|------|
 | Full steps / rev | 200 | 1.8° motor |
 | Microsteps | 8 | Must match driver straps / menu |
 | mm per rev | 5.0 | Lead / belt pitch × teeth |
-| `steps_per_unit` | 320 | e.g. `(200 × 8) / 5` |
+| `steps_per_unit_1` | 320 | e.g. `(200 × 8) / 5` |
 
 ### Closed-loop STEP/DIR + alarm → `DRV_ERROR`
 
@@ -53,11 +53,11 @@ Full notes: [Technical Manual — Closed-loop drivers](../uic/projects/jkslider/
 
 ```ini
 # mc.ini
-steps_per_unit=320
-DRV_STEP_active=1
-DRV_DIR_active=1
-DRV_EN_active=0
-DRV_ERROR_active=0
+steps_per_unit_1=320
+DRV_STEP_1_active=1
+DRV_DIR_1_active=1
+DRV_EN_1_active=0
+DRV_ERROR_1_active=0
 ```
 
 ### MKS SERVO42C (NEMA17 closed-loop)
@@ -116,9 +116,9 @@ Calibrate the encoder once per the MKS procedure (shaft free).
 | Menu | Recommended |
 |------|-------------|
 | **Mode** | **`CR_vFOC`** (closed-loop STEP/DIR). Do **not** use `CR_UART` with JKSlider/SliderMC. |
-| **MStep** | Fixed microstep (e.g. **8** or **16**) — must match firmware `steps_per_unit`. |
-| **En** | **`L`** (low = enabled) to match `DRV_EN_active=0`. Or **Hold** if EN is unused. |
-| **Dir** | **CW** or **CCW** so “+mm” matches the mechanics (or flip `DRV_DIR_active`). |
+| **MStep** | Fixed microstep (e.g. **8** or **16**) — must match firmware `steps_per_unit_1`. |
+| **En** | **`L`** (low = enabled) to match `DRV_EN_1_active=0`. Or **Hold** if EN is unused. |
+| **Dir** | **CW** or **CCW** so “+mm” matches the mechanics (or flip `DRV_DIR_1_active`). |
 | **Protect** | Optional stall/locked-rotor protection. |
 | **0_Mode** | **Disable** — use JKSlider/SliderMC homing, not motor power-on return-to-zero. |
 | **MPlyer** | Leave **Enable** (smoother motion); it does **not** change host pulses per rev. |
@@ -126,16 +126,16 @@ Calibrate the encoder once per the MKS procedure (shaft free).
 #### Config (SliderMC)
 
 ```ini
-steps_per_unit=320
-DRV_STEP_active=1
-DRV_DIR_active=1
-DRV_EN_active=0
-DRV_ERROR_active=0
+steps_per_unit_1=320
+DRV_STEP_1_active=1
+DRV_DIR_1_active=1
+DRV_EN_1_active=0
+DRV_ERROR_1_active=0
 ```
 
-`steps_per_unit = (200 × MStep) / mm_per_rev`. Enable with `SE 1`, then test small moves (`MT 10`).
+`steps_per_unit_1 = (200 × MStep) / mm_per_rev`. Enable with `SE 1`, then test small moves (`MT 10`).
 
-The 42C main header has **no ALM pin**. Do **not** use SliderMC `home_mode` 3/4 (stall-home) on 42C — prefer LIMIT 1/2 or `SP`. If you wire an alarm to `DRV_ERROR`, treat it as EMO only.
+The 42C main header has **no ALM pin**. Do **not** use SliderMC `home_mode_1` 3/4 (stall-home) on 42C — prefer LIMIT 1/2 or `SP`. If you wire an alarm to `DRV_ERROR`, treat it as EMO only.
 
 ### MKS SERVO42D / 57D (STEP/DIR on SliderMC)
 
@@ -151,8 +151,8 @@ Power from the motor supply (typically 12–24 V). Share signal ground. For 3.3 
 | GND | **Gnd** |
 | `DRV_ERROR` | **57D `OUT_1`** only (stall: 0 = protected, 1 = unprotected) |
 
-**42D** has no `OUT_1`. Stall (“Wrong”) still latches; clear via screen, UART `3D`, or EN invalid — SliderMC cannot see it. Use `home_mode` 1/2 (`IN_1` / `LIMIT_REMAP`) or `SP`. Do **not** use 3/4.
+**42D** has no `OUT_1`. Stall (“Wrong”) still latches; clear via screen, UART `3D`, or EN invalid — SliderMC cannot see it. Use `home_mode_1` 1/2 (`IN_1` / `LIMIT_REMAP`) or `SP`. Do **not** use 3/4.
 
-**57D:** enable **Protect** on the motor menu, wire `OUT_1` → `DRV_ERROR` with `DRV_ERROR_active=0`, set `home_mode` 3 or 4. Firmware pulses EN (MKS pulse-mode clear), waits for `OUT_1` high, then drives out. See [homing-switches.md](homing-switches.md).
+**57D:** enable **Protect** on the motor menu, wire `OUT_1` → `DRV_ERROR` with `DRV_ERROR_1_active=0`, set `home_mode_1` 3 or 4. Firmware pulses EN (MKS pulse-mode clear), waits for `OUT_1` high, then drives out. See [homing-switches.md](homing-switches.md).
 
-Menu: **Mode `CR_vFOC`** (pulse), **En `L`** to match `DRV_EN_active=0`, **Protect** on for stall-home. Do not use 3/4 on `MC_MKS_Client` (RS485).
+Menu: **Mode `CR_vFOC`** (pulse), **En `L`** to match `DRV_EN_1_active=0`, **Protect** on for stall-home. Do not use 3/4 on `MC_MKS_Client` (RS485).

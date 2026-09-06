@@ -25,7 +25,7 @@ Competitive scan of commercial and DIY motorized sliders vs **JKSlider V1** (UIC
 | Strong | MicroPython UIC (maker / DIY panel) |
 | Gap | Remote; panel still primarily 1-axis |
 
-**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive a **2nd STEP/DIR axis** (`axis2_use` on Pico or Zero); shipping JKSlider/B4Slider panels remain primarily **1-axis** UX. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
+**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive a **2nd STEP/DIR axis** (`CS axis 2` then `RB` on Pico or Zero; `axis=3` also exists); shipping JKSlider/B4Slider panels remain primarily **1-axis** UX. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
 
 ---
 
@@ -162,7 +162,7 @@ Gaps vs what buyers expect from “motorized camera slider” products and from 
 | Priority | Missing capability | Why it matters | Who has it |
 |----------|--------------------|----------------|------------|
 | **P1** | Wireless / app remote | Tight spaces, solo interview B-cam, phone as joystick. Pico W could host BLE/Wi‑Fi later. | Edelkrone app, Accsoon TopRig, iFootage Moco (Nano 2 / Pico Pro), Neewer / GVM apps, Zeapon app, Rhino Arc II, Syrp, QuadMeUp ESP32 web UI |
-| **P1** | Dual-axis **panel** UX (pan orbit / tracking) | SliderMC optional 2nd STEP/DIR (`axis2_use`) is available; JKSlider/B4Slider still drive primarily one axis. | Accsoon 55° pan, Zeapon AXIS (pan / Pro tilt), Nano 2 + DJI RS, Pico Pro 360° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
+| **P1** | Dual-axis **panel** UX (pan orbit / tracking) | SliderMC optional 2nd STEP/DIR (`CS axis 2` then `RB`) is available; JKSlider/B4Slider still drive primarily one axis. | Accsoon 55° pan, Zeapon AXIS (pan / Pro tilt), Nano 2 + DJI RS, Pico Pro 360° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
 | **P2** | More keyframes / path edit | A/B/C is strong for set work; VFX/macro wants 5+ keyframes and ease per segment. | Nano 2 (8 points), Rhino Arc II (5 KF), Edelkrone, Kessler CineDrive, ESP32 3-axis DIY |
 | **P2** | Incline / vertical mode + holding torque UX | Safety when hand-control or power loss could back-drive. | Edelkrone SliderONE v3, Kessler worm drives, Accsoon vertical rating, Zeapon / Nano 2 vertical payload ratings |
 | **P3** | Turnkey battery + mechanics SKU | Product gap vs controller-only positioning — not a firmware gap. | Accsoon NP-F kits, Pico Pro built-in pack, Neewer / GVM NP-F kits, Nano 2 PD/NP-F, Rhino/Syrp/Edelkrone/Zeapon complete systems |
@@ -179,7 +179,7 @@ Gaps vs what buyers expect from “motorized camera slider” products and from 
 
 ### P1 — Reach
 
-Pico W BLE or simple web remote · dual-axis panel UX on top of SliderMC `axis2_use`.
+Pico W BLE or simple web remote · dual-axis panel UX on top of SliderMC `CS axis 2`.
 
 ### P2+ — Pro polish
 
@@ -195,7 +195,7 @@ More keyframes · incline hold UX · packaged NP-F power notes in Hardware Manua
 
 **Against Neewer ER1 / GVM Slider-80:** those are the cheap complete CF kits (~USD 240–400) with app A/B and TL. JKSlider is the set panel and open STEP/DIR stack, not a USD 300 Amazon rail.
 
-**Against Zeapon AXIS:** AXIS is the fastest bag-to-2-axis carbon slider (~USD 600–1200). JKSlider should not chase a motorized pan head — keep owning tactile 1-axis control; SliderMC `axis2_use` is the path if a light pan face is needed.
+**Against Zeapon AXIS:** AXIS is the fastest bag-to-2-axis carbon slider (~USD 600–1200). JKSlider should not chase a motorized pan head — keep owning tactile 1-axis control; SliderMC `CS axis 2` is the path if a light pan face is needed.
 
 **Against Edelkrone / Rhino / Syrp / Kessler:** those are multi-axis motion products; JKSlider should not chase full MoCo — keep owning tactile control, open hardware, and MSM. SliderMC already supports an optional 2nd STEP/DIR; next reach is a light remote / dual-axis panel UX.
 

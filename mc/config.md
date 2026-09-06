@@ -15,7 +15,7 @@ Factory defaults are compiled in `include/config_defaults.h` and mirrored in `da
 They are loaded from `init_*` config keys at boot. `SS`/`SA`/`ST`/`SV` change session only (not the file).  
 Bare `SS`/`SA` reload that field from config init. `CS` updates config and the matching session field.
 
-Legacy aliases on parse/`CS`/`CG`: `speed`→`init_speed`, `accel`→`init_accel`, `verbose`→`init_verbose`, `terminal`→`init_terminal`, `soft_min`→`slider_min`, `soft_max`→`slider_max`, `debug_level`→`init_debug_level`. Saves write only the new names.
+**No firmware aliases** for old unnumbered axis-1 keys (`max_speed`, `slider_min`, `home_mode`, `DRV_STEP_active`, …) or `axis2_use`. Those names return `!E:cfg`. Same-release synonyms only: `steps_per_mm_N`→`steps_per_unit_N`, `soft_min_N`/`soft_max_N`→`slider_min_N`/`slider_max_N`, plus session-init aliases `speed`→`init_speed`, `accel`→`init_accel`, `verbose`→`init_verbose`, `terminal`→`init_terminal`, `debug_level`→`init_debug_level`. Saves write only the canonical names.
 
 ## Protocol
 
@@ -46,47 +46,46 @@ Default is **3**.
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `init_speed` | float mm/s | 50 | Cruise speed init (session via `SS`/`GS`); must be ≤ `max_speed` |
-| `init_accel` | float mm/s² | 200 | Peak sine-ramp acceleration init; must be ≤ `max_accel` |
-| `max_speed` | float mm/s | 100 | Speed ceiling (`SS` rejects above; planner also caps axis-1 cruise, including `MJ`) |
-| `max_accel` | float mm/s² | 300 | Accel ceiling (`SA` rejects above; planner caps axis-1 accel) |
-| `steps_per_unit` | float | 320 | Steps per user unit (mm, deg, …); legacy alias `steps_per_mm` |
+| `init_speed` | float mm/s | 50 | Cruise speed init (session via `SS`/`GS`); must be ≤ `max_speed_1` |
+| `init_accel` | float mm/s² | 200 | Peak sine-ramp acceleration init; must be ≤ `max_accel_1` |
+| `max_speed_1` | float mm/s | 100 | Axis-1 speed ceiling (`SS` rejects above; planner also caps axis-1 cruise, including `MJ`) |
+| `max_accel_1` | float mm/s² | 300 | Axis-1 accel ceiling (`SA` rejects above; planner caps axis-1 accel) |
+| `max_speed_2` / `max_speed_3` | float mm/s | 100 | Axis-2 / axis-3 speed ceiling (planner / `MJ`; session `SS` still vs `max_speed_1`) |
+| `max_accel_2` / `max_accel_3` | float mm/s² | 300 | Axis-2 / axis-3 accel ceiling |
+| `steps_per_unit_1` | float | 320 | Axis-1 steps per user unit (mm, deg, …); synonym `steps_per_mm_1` |
 | `unit_name` | string | `mm` | UIC unit label (max 7 printable ASCII chars; no `#`) |
-| `slider_min` | float units or `none` | 0 | Soft-limit **envelope** min (`none` / `-` disables); boot → session `SL`; homing |
-| `slider_max` | float units or `none` | 600 | Soft-limit **envelope** max; boot → session `SR` |
+| `slider_min_1` | float units or `none` | 0 | Axis-1 soft-limit **envelope** min (`none` / `-` disables); boot → session `SL`; homing; synonym `soft_min_1` |
+| `slider_max_1` | float units or `none` | 600 | Axis-1 envelope max; boot → session `SR`; synonym `soft_max_1` |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
+| `verbose_rate_hz` | int | 3 | Verbose push rate when session verbose is on |
 | `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](../contract/protocol.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
-| `WDT_use` | 0/1 | 1 | `1` = arm RP2040 WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
-| `axis2_use` | 0/1 | 0 | `1` = enable 2nd STEP/DIR axis (Pico / Pico W / RP2040-Zero) |
+| `WDT_use` | 0/1 | 1 | `1` = arm WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
+| `axis` | 1\|2\|3 | 1 | Live STEP/DIR axis count. `IA` / banner `- N Axis` follow this. **`RB` required** before extra PIO/SMs and pins init. |
 | `name` | string | *(empty)* | Optional device name in welcome banner (max 31 printable ASCII chars; no `#`) |
-| `DRV_STEP_active` | 0/1 | 1 | STEP active level (PIO program) |
-| `DRV_DIR_active` | 0/1 | 1 | `1` = DIR high means +mm |
-| `DRV_EN_active` | 0/1 | 0 | EN active level (`0` = low-active) |
-| `DRV_ERROR_active` | 0/1 | 0 | Driver error input active level |
-| `SW_LIMIT_L_active` | 0/1 | 0 | Left hard-limit active level |
-| `SW_LIMIT_R_active` | 0/1 | 0 | Right hard-limit active level |
-| `SW_LIMIT_L_use` | 0/1 | 0 | `1` = enable left hard limit on `PIN_SW_LIMIT_L` |
-| `SW_LIMIT_R_use` | 0/1 | 0 | `1` = enable right hard limit on `PIN_SW_LIMIT_R` |
-| `BUZZER_use` | 0/1 | 0 | `1` = enable `PIN_BUZZER` (GP28) for `Z`; skipped if that GPIO is `PIN_LED` (Pico W) |
-| `EXT_0_active` … `EXT_3_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default); four extenders (`X0`…`X3`) |
-| `home_mode` | 0..4 | 0 | Homing reference mode (see below) |
-| `home_move_out` | float mm | 3 | Extra travel after leaving reference switch |
-| `home_speed` | float mm/s | 25 | Cruise speed during homing |
-| `home_accel` | float mm/s² | 20 | Acceleration during homing |
-| `steps_per_unit_2` | float | *(same default as axis1)* | Axis-2 steps per user unit (alias `steps_per_mm_2`) |
-| `slider_min_2` | float mm or `none` | *(mirror)* | Axis-2 soft min |
-| `slider_max_2` | float mm or `none` | *(mirror)* | Axis-2 soft max |
-| `DRV_STEP_active_2` … `DRV_ERROR_active_2` | 0/1 | *(mirror)* | Axis-2 driver pin polarities |
-| `SW_LIMIT_*_active_2` / `SW_LIMIT_*_use_2` | 0/1 | *(mirror)* | Axis-2 hard limits |
-| `home_mode_2` | 0..4 | 0 | Axis-2 homing mode |
-| `home_move_out_2` / `home_speed_2` / `home_accel_2` | float | *(mirror)* | Axis-2 homing parameters |
-| `max_speed_2` | float mm/s | *(same default as `max_speed`)* | Axis-2 speed ceiling (planner / `MJ`; `SS` still vs `max_speed`) |
-| `max_accel_2` | float mm/s² | *(same default as `max_accel`)* | Axis-2 accel ceiling |
+| `DRV_STEP_1_active` | 0/1 | 1 | Axis-1 STEP active level (PIO program) |
+| `DRV_STEP_2_active` | 0/1 | 1 | Axis-2 STEP polarity. **No `DRV_STEP_3_active`** — axis 3 STEP follows axis 2 (PIO has two polarity programs). |
+| `DRV_DIR_1_active` … `DRV_DIR_3_active` | 0/1 | 1 | `1` = DIR high means +units |
+| `DRV_EN_1_active` … `DRV_EN_3_active` | 0/1 | 0 | EN active level (`0` = low-active) |
+| `DRV_ERROR_1_active` … `DRV_ERROR_3_active` | 0/1 | 0 | Driver error input active level |
+| `SW_LIMIT_L_1_active` / `SW_LIMIT_R_1_active` | 0/1 | 0 | Axis-1 hard-limit active levels |
+| `SW_LIMIT_L_1_use` / `SW_LIMIT_R_1_use` | 0/1 | 0 | `1` = enable that axis-1 hard limit |
+| `SW_LIMIT_L_N_active` / `SW_LIMIT_R_N_use` | 0/1 | 0 | Same for axes 2 and 3 (`SW_LIMIT_R_3_use`, …). Digit is **before** `_active` / `_use`. |
+| `BUZZER_use` | 0/1 | 0 | `1` = enable `PIN_BUZZER` (GP28) for `BE`; skipped if that GPIO is `PIN_LED` (Pico W) |
+| `EXT_0_active` … `EXT_3_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default); four extenders (`EO0`…`EO3`) |
+| `home_mode_1` | 0..4 | 0 | Axis-1 homing reference mode (see below) |
+| `home_move_out_1` | float mm | 3 | Extra travel after leaving reference switch |
+| `home_speed_1` | float mm/s | 25 | Cruise speed during homing |
+| `home_accel_1` | float mm/s² | 20 | Acceleration during homing |
+| `steps_per_unit_2` / `_3` | float | 320 | Axis-2 / 3 steps per user unit (synonym `steps_per_mm_N`) |
+| `slider_min_2` / `_3` | float or `none` | 0 | Axis-2 / 3 envelope min (synonym `soft_min_N`) |
+| `slider_max_2` / `_3` | float or `none` | 600 | Axis-2 / 3 envelope max (synonym `soft_max_N`) |
+| `home_mode_2` / `home_mode_3` | 0..4 | 0 | Axis-2 / 3 homing mode |
+| `home_move_out_N` / `home_speed_N` / `home_accel_N` | float | *(same as axis 1)* | Homing parameters for axes 2 and 3 |
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
 | `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
-| `path_buffer_size` | int | 32000 | `PD` sample capacity per axis (1..32768); dual buffers when axis2 on; see [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) |
+| `path_buffer_size` | int | 32000 | Logical `PD` sample cap **per axis** (≤ pool/`n`); pool is 65536 samples split by live `axis`. See [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); session field set via `PS`; bare `PS` reloads this |
 
 ### Pin active levels
@@ -96,12 +95,12 @@ Helper: `config_pin_asserted(gpio_level, active)`. Extender outputs boot **inact
 
 Removed legacy keys: `step_active_high`, `dir_invert`, `en_active_low`.
 
-### Hard limits (`SW_LIMIT_*_use`)
+### Hard limits (`SW_LIMIT_*_N_use`)
 
-GPIO numbers stay fixed in `pins.h`. Each side is independent:
+GPIO numbers stay fixed in `pins.h`. Each side and axis is independent:
 
-- `SW_LIMIT_L_use=0` / `SW_LIMIT_R_use=0` (default): that switch is not fitted — pin not initialized for limits, no poll, no trip.
-- `=1`: poll that pin with ~**20 ms** software debounce (bounce / Prellen).
+- `SW_LIMIT_L_1_use=0` / `SW_LIMIT_R_1_use=0` (default): that switch is not fitted — pin not initialized for limits, no poll, no trip.
+- `=1`: poll that pin with ~**20 ms** software debounce (bounce / Prellen). Same pattern for `_2` / `_3`.
 
 On a stable assert: **immediate** stop (PIO FIFO cleared, no decelerate), driver disabled (`SE 0`), state `HARD_LIMIT`, wait/command chain canceled. Toward-limit moves are rejected (`!E:hard`). After `SE 1`, motion **away** from the switch is allowed; the latch clears when the switch is stably released. See [MOTION.md](MOTION.md).
 
@@ -109,7 +108,7 @@ On a stable assert: **immediate** stop (PIO FIFO cleared, no decelerate), driver
 
 `board_heartbeat_init()` runs **before** the unlock `\n` wait: it sets up `PIN_LED` and, if `WDT_use=1` (default), arms the RP2040 watchdog (**2 s** timeout). Every protocol/`unlock` poll (~5 ms) calls `board_heartbeat_tick()`, which always feeds the WDT and advances the LED state machine every **3rd** poll (~**67 Hz**, close to 64). A freeze of that path longer than 2 s (including a hung wait-for-`\n`) triggers a reboot.
 
-`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W external GP28 (`picow` env — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero external GP14.
+`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W / Pico 2 W external GP28 (`picow` / `pico2w` — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero / RP2350 Mini external GP29.
 
 Until the first `\n` (UIC UART or USB CDC) and banner, the LED uses the **WAIT** pattern. After `board_heartbeat_ready()`, patterns follow `McState` (same source as verbose/`?`), priority: ERROR → HARD_LIMIT → HOMING → MOVING → DISABLED → IDLE → HOLD/other.
 
@@ -149,27 +148,27 @@ HOLD/else (c&0x30)==0     duty 16/64   ~1 Hz longer still
 ```
 
 
-### Homing (`home_mode`)
+### Homing (`home_mode_N`)
 
-There is no dedicated home-switch pin. Homing uses a hard limit (modes 1/2) or driver stall / `DRV_ERROR` (modes 3/4). `home_mode=0` plus `SP` declares origin without a switch.
+There is no dedicated home-switch pin. Homing uses a hard limit (modes 1/2) or driver stall / `DRV_ERROR` (modes 3/4). `home_mode_N=0` plus `SP` declares origin without a switch. Use `home_mode_1` / `home_mode_2` / `home_mode_3`.
 
 | Value | Behavior |
 |-------|----------|
 | `0` | No homing. `MH` returns silently. Use `SP` to declare “here is zero.” |
-| `1` | Seek `SW_LIMIT_L` (needs `SW_LIMIT_L_use=1`); finish at `slider_min` |
-| `2` | Seek `SW_LIMIT_R` (needs `SW_LIMIT_R_use=1`); finish at `slider_max` |
-| `3` | Seek left until `DRV_ERROR`; EN pulse; wait clear; drive out; finish at `slider_min` |
-| `4` | Seek right until `DRV_ERROR`; same stall cycle; finish at `slider_max` |
+| `1` | Seek `SW_LIMIT_L` (needs `SW_LIMIT_L_N_use=1`); finish at `slider_min_N` |
+| `2` | Seek `SW_LIMIT_R` (needs `SW_LIMIT_R_N_use=1`); finish at `slider_max_N` |
+| `3` | Seek left until `DRV_ERROR`; EN pulse; wait clear; drive out; finish at `slider_min_N` |
+| `4` | Seek right until `DRV_ERROR`; same stall cycle; finish at `slider_max_N` |
 
-Old ini files that still contain `SW_HOME_*` keys remap stale `home_mode` `3→1` and `4→2` on load (those used to mean LIMIT home). `CS home_mode 3` / `4` now means stall-home.
+`SW_HOME_*` keys are gone (not remapped). `CS home_mode_N 3` / `4` means stall-home.
 
-`MH` / `MoveHome` requires `SE 1`. Optional axis arg `1` (default) or `2` when `axis2_use=1`. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out`. Seek is capped at 110% of `(slider_max − slider_min)`. Abort: `MS`/`Halt` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
+`MH` / Move Home requires `SE 1`. Optional axis arg `1` (default), `2`, or `3` when that count is live. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out_N` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out_N`. Seek is capped at 110% of `(slider_max_N − slider_min_N)`. Abort: `MS`/`HT` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
 
-### Optional 2nd axis (`axis2_use`)
+### Live axis count (`axis`)
 
-`axis2_use=1` enables a second independent STEP/DIR planner axis on **Pico / Pico W / RP2040-Zero**. Session cruise/accel (`SS`/`SA`) are shared; mechanics, soft limits, pin polarities, homing, and **`max_speed_2` / `max_accel_2`** use the `*_2` keys. Query `IA` / `Axis` / `IsAxis` → `IA:2`. Welcome banner gains `- 2 Axis`. Position query `IP` returns two mm values. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md). Joystick: [motion-joy.md](motion-joy.md).
+`axis` is `1`, `2`, or `3` (default `1`). Extra axes are independent STEP/DIR planner axes on Pico / Pico W / Pico 2 / Pico 2 W / RP2040-Zero / RP2350 Mini. Session cruise/accel (`SS`/`SA`) are shared; mechanics, envelopes, pin polarities, and homing use numbered keys (`max_speed_2`, `slider_min_3`, `home_mode_2`, …). Query `IA` / Is Axis → `IA:1|2|3`. Welcome banner gains `- N Axis`. `IP` returns one field per live axis. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md). Joystick: [motion-joy.md](motion-joy.md).
 
-`CS axis2_use` updates RAM/`mc.ini` immediately (`IA` / banner reflect the new value), but **PIO state machines and axis-2 GPIO take effect only after reboot** (`RB` / `Reboot`, or power-cycle). Dual `MT` before reboot can show targets while `pos2` stays at 0. Same pattern as `WDT_use` (see above).
+`CS axis` updates RAM/`mc.ini` immediately (`IA` / banner reflect the new value), but **PIO state machines and extra-axis GPIO take effect only after reboot** (`RB` / `Reboot`, or power-cycle). Dual/triple `MT` before reboot can show targets while extra poses stay at 0. Same pattern as `WDT_use` (see above).
 
 ## Persistence
 

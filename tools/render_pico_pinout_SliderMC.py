@@ -8,6 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from pinout_common import (
+    C_CTRL,
     C_CTRL_PIN,
     C_DBG,
     C_DRV,
@@ -33,26 +34,26 @@ OUT_TXT = DOCS / "assets"
 
 # Left / right edge, top→bottom (USB at top). Official 40-pin header map.
 LEFT = [
-    ("GP0", "free"),
-    ("GP1", "free"),
+    ("GP0", "SW_LIMIT_R3*"),
+    ("GP1", "SW_LIMIT_L3*"),
     ("GND", "GND"),
-    ("GP2", "EXT_0"),
-    ("GP3", "EXT_1"),
-    ("GP4", "EXT_2"),
-    ("GP5", "EXT_3"),
+    ("GP2", "DRV_ERROR3"),
+    ("GP3", "DRV_EN3"),
+    ("GP4", "DRV_DIR3"),
+    ("GP5", "DRV_STEP3"),
     ("GND", "GND"),
     ("GP6", "SW_LIMIT_R2*"),
     ("GP7", "SW_LIMIT_L2*"),
-    ("GP8", "free"),
-    ("GP9", "free"),
+    ("GP8", "EXT_0"),
+    ("GP9", "EXT_1"),
     ("GND", "GND"),
     ("GP10", "DRV_ERROR2"),
     ("GP11", "DRV_EN2"),
     ("GP12", "DRV_DIR2"),
     ("GP13", "DRV_STEP2"),
     ("GND", "GND"),
-    ("GP14", "free"),
-    ("GP15", "free"),
+    ("GP14", "EXT_2"),
+    ("GP15", "EXT_3"),
 ]
 
 RIGHT = [
@@ -67,7 +68,7 @@ RIGHT = [
     ("GP27", "SW_LIMIT_R*"),
     ("GP26", "SW_LIMIT_L*"),
     ("RUN", "RUN"),
-    ("GP22", "free"),
+    ("GP22", "CAMERA_CTRL"),
     ("GND", "GND"),
     ("GP21", "DRV_ERROR"),
     ("GP20", "DRV_EN"),
@@ -112,10 +113,10 @@ def render_ascii() -> str:
         [
             "                         +-----------+",
             "",
-            "Legend: EXT_0…3 on GP2–5 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.",
-            "axis2_use=1: GP6/7 + GP10–13 (LIMIT_*2 / DRV_*2).",
-            "SW_LIMIT_* off until CS …_use=1. GP21 DRV_ERROR always polled.",
-            "GP0/1/8/9/14/15/22–25 free (GP28 buzzer). Pin names match IX / VG.",
+            "Legend: EXT_0…3 on GP8/9/14/15 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.",
+            "CS axis 2 + RB: GP6/7 + GP10–13. CS axis 3: STEP3/DIR3/EN3/ERR3/L3/R3 on GP5–0.",
+            "SW_LIMIT_*_N off until CS …_use=1. GP21 DRV_ERROR always polled. GP22 CAMERA_CTRL reserved.",
+            "Pico 2 / Pico 2 W reuse this map (2 W LED GP28). Pin names match IX / VG.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -147,6 +148,7 @@ def render_png(path: Path):
         ("DRV_*", C_DRV),
         ("UART_*", C_UART),
         ("SW_*", C_SW),
+        ("CAMERA_CTRL", C_CTRL),
         ("free", C_FREE),
         ("GND", C_GND),
         ("power 3V3", C_PWR_3V3),
