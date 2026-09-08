@@ -37,6 +37,6 @@ Bottom-side SMD pads (top→bottom):
 Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.
 OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.
 CTRL_CAMERA on GP29. Six buttons: SET GP0, MOVE_L/R GP1/2, MOVE_L2/R2 GP3/4, OPTION GP8.
-Axis 2 active when SliderMC CS axis 2 then RB. Button mode: active-low pull-ups.
+MOVE_L2/R2 when SliderMC CS motors 2 (no RB). Button mode: active-low pull-ups.
 GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–25 free.
 Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).

@@ -59,7 +59,7 @@ GROUPS = [
                 "Set Enable",
                 "SE [0|1]",
                 SILENT,
-                "Driver enable 0|1; bare toggles; required before motion; off = hard stop.",
+                "Driver enable 0|1; bare toggles; required before motion; off = hard stop. SE 0 also stops servo PWM (limp).",
             ),
             (
                 "ST",
@@ -85,21 +85,21 @@ GROUPS = [
             (
                 "SL",
                 "Set Left",
-                "SL [<pos> [<pos2> [<pos3>]]] | SL X.. Y.. Z..",
+                "SL [<pos> …] | SL X.. Y.. Z.. A.. B.. C..",
                 SILENT,
-                "Session soft min (working window); bare→slider_min_N; none clears (→envelope if set); skip _; !E:limit past envelope.",
+                "Session soft min (working window); bare→MOTOR_N_min/SERVO envelope; none clears (→envelope if set); skip _; !E:limit past envelope.",
             ),
             (
                 "SR",
                 "Set Right",
-                "SR [<pos> [<pos2> [<pos3>]]] | SR X.. Y.. Z..",
+                "SR [<pos> …] | SR X.. Y.. Z.. A.. B.. C..",
                 SILENT,
-                "Session soft max; bare→slider_max_N; none clears; skip _; !E:limit if left>right.",
+                "Session soft max; bare→MOTOR_N_max/SERVO envelope; none clears; skip _; !E:limit if left>right.",
             ),
             (
                 "SP",
                 "Set Position",
-                "SP [<pos> [<pos2> [<pos3>]]] | SP X.. Y.. Z..",
+                "SP [<pos> …] | SP X.. Y.. Z.. A.. B.. C..",
                 SILENT,
                 "Set reported pose (no motion); idle only; bare/0 = here is zero; skip _.",
             ),
@@ -118,14 +118,14 @@ GROUPS = [
                 "GL",
                 "Get Left",
                 "GL",
-                "GL:<pos> [<pos2> [<pos3>]]",
-                "Session soft min; effective (session else envelope); - if both None; extra fields when axis≥2.",
+                "GL:<pos> [| …]",
+                "Session soft min; effective (session else envelope); - if both None; extra pipe fields when packed≥2.",
             ),
             (
                 "GR",
                 "Get Right",
                 "GR",
-                "GR:<pos> [<pos2> [<pos3>]]",
+                "GR:<pos> [| …]",
                 "Session soft max; same effective / - rules as GL.",
             ),
         ],
@@ -141,10 +141,10 @@ GROUPS = [
                 "IP",
                 "Is Position",
                 "IP",
-                "IP:<pos> [<pos2> [<pos3>]]",
-                "One field per live axis (CG axis).",
+                "IP:<pos> [| …]",
+                "One pipe field per packed live channel (motors then servos; CG axis = sum).",
             ),
-            ("IA", "Is Axis", "IA", "IA:1|2|3", "Live axis count (CS axis / CG axis)."),
+            ("IA", "Is Axis", "IA", "IA:<n>", "Packed live channels motors+servos (1..6). Same as CG axis. CS axis rejected."),
             (
                 "IT",
                 "Is Target",
@@ -189,21 +189,21 @@ GROUPS = [
             (
                 "MT",
                 "Move To",
-                "MT <pos> [<pos2> [<pos3>]] | MT X.. Y.. Z..",
+                "MT <pos> … | MT X.. Y.. Z.. A.. B.. C..",
                 SILENT,
-                "Absolute user units; extra live axes; skip _; needs SE; live-retarget. Dual: time-sync ratio. Out-of-window = !E:soft (no clip).",
+                "Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip).",
             ),
             (
                 "MB",
                 "Move By",
-                "MB <delta> [<delta2> [<delta3>]] | MB X.. Y.. Z..",
+                "MB <delta> … | MB X.. Y.. Z.. A.. B.. C..",
                 SILENT,
-                "Relative move; same extra-axis/skip/named rules as MT.",
+                "Relative move; same skip/named XYZABC rules as MT.",
             ),
             (
                 "MJ",
                 "Move Joy",
-                "MJ <pct> [<pct2> [<pct3>]] | MJ X.. Y.. Z..",
+                "MJ <pct> … | MJ X.. Y.. Z.. A.. B.. C..",
                 SILENT,
                 "Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release.",
             ),
@@ -236,9 +236,9 @@ GROUPS = [
             (
                 "PD",
                 "Path Data",
-                "PD <um> [<um2> [<um3>]] | PD X.. Y.. Z..",
+                "PD <um> … | PD X.. Y.. Z.. A.. B.. C..",
                 SILENT,
-                "Append signed µm sample(s); extra live axes; skip _ →0; OK while PG (live stream).",
+                "Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream).",
             ),
             (
                 "PG",
@@ -290,7 +290,7 @@ GROUPS = [
                 "Config Set",
                 "CS <key> <value>",
                 SILENT,
-                "Persist key to mc.ini; silent ok. axis / WDT_use need RB to take HW effect.",
+                "Persist key to mc.ini; silent ok. CS motors/servos re-init GPIO immediately (no RB). CS axis rejected.",
             ),
             (
                 "CR",
@@ -311,7 +311,7 @@ GROUPS = [
                 "Reboot",
                 "RB",
                 SILENT,
-                "Soft MCU reset (no power cycle); EN off first. After CS axis.",
+                "Soft MCU reset (no power cycle); EN off first. CS motors/servos do not need RB.",
             ),
         ],
     ),
@@ -344,7 +344,7 @@ GROUPS = [
                 "Wait Pos",
                 "WP <pos> [<timeout_s>]",
                 SILENT,
-                "Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout.",
+                "Wait until time-sync master pos reached/overstepped; idle→immediate; 2nd arg=timeout.",
             ),
             (
                 "WC",
@@ -367,7 +367,7 @@ GROUPS = [
         [
             ("VA", "Version About", "VA", "VA:…", "About string (name, version, author)."),
             ("VF", "Version FW", "VF", "VF:<version>", "Firmware version."),
-            ("VP", "Version Protocol", "VP", "VP:<n>", "Protocol version (2)."),
+            ("VP", "Version Protocol", "VP", "VP:3", "Protocol version (3)."),
         ],
     ),
     (
@@ -664,10 +664,10 @@ def build_markdown() -> str:
         "- `MJ` / Move Joy: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. Hold-to-jog: `SS` then `MJ ±100`, `MS` on release. See [motion-joy.md](../mc/motion-joy.md)."
     )
     lines.append(
-        "- Skip token `_` only (`MT`/`MB`/`PD`/`SL`/`SR`). Named `X`/`Y`/`Z` is an alternative (not mixed with positional). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
+        "- Skip token `_` only (`MT`/`MB`/`PD`/`SL`/`SR`). Named `X`/`Y`/`Z`/`A`/`B`/`C` is an alternative (not mixed with positional). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
     )
     lines.append(
-        "- Soft limits / units: see config keys `slider_min_N`/`slider_max_N`, `steps_per_unit_N`, `unit_name`."
+        "- Envelopes / units: `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`, `steps_per_unit_N`, `unit_name`. `CS axis` and `CS slider_*` are rejected."
     )
     lines.append("")
     return "\n".join(lines)

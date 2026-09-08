@@ -64,7 +64,7 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 
 API units are user units (typically mm / mm/s / mm/s², or ° / °/s / °/s²); internals use steps via `steps_per_unit_N`. See [dual-movement.md](dual-movement.md) for dual-axis timing and units.
 
-With `axis` = 2 or 3 (`CS axis 2` / `CS axis 3`, then `RB`), the planner maintains **one to three** independent axes, each with its own PIO state machine, position, soft limits, and homing FSM. Session `SS`/`SA` apply to all; extra-arg `MT`/`MB`/`MJ`/`SL`/`SR`/`SP`/`PD` (skip `_` or named `X`/`Y`/`Z`) select which axes move. `MH 1|2|3` homes one axis. `MJ` / Move Joy holds a signed per-axis velocity as a percent of `SS` (independent, not dual-`MT` time-sync) — [motion-joy.md](motion-joy.md). See [dual-movement.md](dual-movement.md) and [protocol.md — Live axis count](../contract/protocol.md#live-axis-count-axis).
+With `motors` = 2 or 3 (`CS motors 2` / `CS motors 3`), the planner maintains **one to three** independent STEP/DIR axes, each with its own PIO state machine, position, soft limits, and homing FSM. Optional RC servos pack after motors (PWM, no homing). Session `SS`/`SA` apply on the **time-sync master**; extra-arg `MT`/`MB`/`MJ`/`SL`/`SR`/`SP`/`PD` (skip `_` or named `X`/`Y`/`Z`/`A`/`B`/`C`) select which packed channels move. `MH 1|2|3` homes one **motor**. `MJ` / Move Joy holds a signed per-channel velocity as a percent of `SS` (independent, not dual-`MT` time-sync) — [motion-joy.md](motion-joy.md). See [dual-movement.md](dual-movement.md) and [protocol.md — Live axis count](../contract/protocol.md#live-axis-count-axis).
 
 Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.cpp`.
 
@@ -72,7 +72,7 @@ Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.
 
 `PC`/`PD`/`PG`/`PN`/`PS` (see [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path)) implement a host-authored motion
 path via a second, deliberately simpler planner in `src/motion/motion_path.cpp`,
-kept separate from the sine-ramp planner above. This is a **second planner**, not an extra physical axis — though when `axis` ≥ 2, path mode plays **n** sample streams (extra `PD` args; pool split by live `axis`).
+kept separate from the sine-ramp planner above. This is a **second planner**, not an extra physical axis — though when packed count ≥ 2, path mode plays **n** sample streams (extra `PD` args; pool split by live packed count, `PATH_AXES` 6).
 
 - **Buffer:** a flat `int16_t` array (path pool **65536** samples split by live `n` = `axis`; `path_buffer_size` is the logical cap **per axis**, default 32000), holding one signed µm delta-distance per fixed time
   slice (`PS`, µs). Extra live axes get parallel buffers. `PD` appends; `PG` always plays from sample 0.
@@ -136,7 +136,7 @@ Enabled per side and axis with `SW_LIMIT_L_N_use` / `SW_LIMIT_R_N_use` (GPIOs fi
 - Polled from `planner_tick` with **~20 ms** debounce (assert and release) to survive switch bounce.
 - On stable trip: shared **`planner_halt()`** — `pio_step_stop_hard()`, `enable=0`, cancel waits/chain, state letter `L`.
 - Toward-limit commands rejected until cleared; after `SE 1`, drive-out (opposite direction) is allowed; latch clears on stable release.
-- Soft limits / working window (`slider_min_N`/`slider_max_N` envelope; `SL`/`SR` session): **separate**; see [working-window.md](working-window.md).
+- Soft limits / working window (`MOTOR_N_*` / `SERVO_N_*` envelope; `SL`/`SR` session): **separate**; see [working-window.md](working-window.md).
 
 ## Stop vs Halt
 
@@ -155,9 +155,9 @@ Requires `enable=1` and a valid `home_mode_N` (limit modes also need that side�
 
 1. If sitting on the opposite hard limit: drive out until released (`ClearHard`).
 2. If already on the reference limit: skip seek and start backoff.
-3. **Seek** toward the reference (1 −, 2 +) at `home_speed_N` / `home_accel_N`. Soft limits do not clamp. Max travel `1.1 × (slider_max_N − slider_min_N)` → `!E:home travel`.
+3. **Seek** toward the reference (1 −, 2 +) at `home_speed_N` / `home_accel_N`. Soft limits do not clamp. Max travel `1.1 × (MOTOR_N_max − MOTOR_N_min)` → `!E:home travel`.
 4. On reference assert: reverse (**Backoff**), leave the switch, then continue `home_move_out_N` mm.
-5. Set machine position to `slider_min_N` (1) or `slider_max_N` (2); clear `homing`.
+5. Set machine position to `MOTOR_N_min` (1) or `MOTOR_N_max` (2); clear `homing`.
 
 The reference limit does not raise a hard-limit fault during seek (it ends seek). Hitting the **other** limit aborts with `!E:home hard`.
 
@@ -167,7 +167,7 @@ The reference limit does not raise a hard-limit fault during seek (it ends seek)
 2. Stop stepping. Pulse `DRV_EN` off then on (~200 ms) so latched DIAG / Protect can clear.
 3. Wait until `DRV_ERROR` is stably deasserted (~20 ms debounce). Timeout → `!E:home stall`.
 4. Drive out `home_move_out_N` (DIAG ignored for a short window after re-enable).
-5. Set pose to `slider_min_N` (3) or `slider_max_N` (4).
+5. Set pose to `MOTOR_N_min` (3) or `MOTOR_N_max` (4).
 
 A real EMO still applies if `DRV_ERROR` asserts while **not** in this stall seek/reset, or if the line stays asserted after the EN pulse times out. Hitting a hard limit during stall-home aborts (`!E:home hard`). `MS` soft-cancels; `HT` emergency-halts.
 

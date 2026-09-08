@@ -16,8 +16,10 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 |---------|-----------|---------|
 | **ADC** | Analogue-to-digital converter | Reads a continuous voltage as a number. On JKSlider, ADC channels sample the SPEED, ACCEL, and optional JOYSTICK pots so the firmware can map knob position to mm/s and mm/s². |
 | **API** | Application programming interface | The documented methods and config for writing your own code on top of `MC_Client` / `UIC_Base` (see [`../uic/api/overview.md`](../uic/api/overview.md)). JKSlider is one application that uses this API. |
-| **IA** | IsAxis | SliderMC query `IA` / `Axis` / `IsAxis` → `IA:1`, `IA:2`, or `IA:3` (live `CG axis`). |
-| **axis** | Live STEP/DIR count | Config `axis` = `1\|2\|3`. Enable extras with `CS axis 2` or `CS axis 3` then `RB` (typical **linear travel + pan**, time-synced dual `MT`/`M` — not CNC). Pico / Pico W / RP2040-Zero. On Pico, DBG GP10–13 are reclaimed; on Zero, DBG and extra axes coexist. UIC: `MC_Client.axis_count` from CG `axis`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#live-axis-count-axis). |
+| **IA** | IsAxis | SliderMC query `IA` → packed live count `motors+servos` (`CG axis` is the same sum). |
+| **motors** | STEP/DIR count | Config `motors` = `1\|2\|3`. Enable extras with `CS motors 2` or `CS motors 3` (no `RB`). Typical **linear travel + pan**, time-synced dual `MT`/`M` — not CNC. UIC: `MC_Client.getMotorCount()`. |
+| **servos** | RC PWM count | Config `servos` = `0..3`. Packed after motors (`A`/`B`/`C`). PWM ~2.5′ resolution over ±135°. |
+| **axis** | Packed channel count | Read-only sum `motors+servos` (`IA` / `CG axis`). **`CS axis` is rejected.** UIC: `MC_Client.axis_count`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#live-axis-count-axis). |
 | **unit_name** | User-unit label | SliderMC config (`CG unit_name`); default `mm`. UIC readout for user units used with `steps_per_unit_1`. |
 | **DIR** | Direction | Digital STEP/DIR line that selects motor travel sense (forward vs reverse). SliderMC `PIN_DRV_DIR` (GP19); polarity via `DRV_DIR_1_active` / `CS`. |
 | **DIP** | Dual in-line package | Small switch banks on many stepper driver boards. Often used to set microstepping; those straps must match `MICROSTEPS` on SliderMC. |
@@ -32,7 +34,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **MJ** | MoveJoy | SliderMC joystick velocity hold: signed percent of session `SS` (optional 2nd axis). Skip unchanged values on the UIC. See [motion-joy.md](../mc/motion-joy.md). |
 | **MC** / **SliderMC** | Motion controller | Dedicated Pico (or compact RP2040 board, e.g. RP2040-Zero) running SliderMC (C++/PlatformIO): STEP/DIR planner, home/limits, `DRV_ERROR`, EXT. See [`../architecture/overview.md`](../architecture/overview.md). |
 | **MC_API** | Motion client contract | Duck-typed method surface on `MC_Client` (and a future RS485 client): `start`, motion/config, getters, `axis_count`, `set_axis_status_callback` (`cb(axis, state, pos, speed, accel, dest)`). |
-| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Optional extra axes: `axis_count` from CG `axis`, dual `moveTo`/`home`, `set_axis_status_callback`. Verbose `#…` is `#<state> <axis1> | <axis2>` (and `| <axis3>` when `axis=3`). |
+| **MC_Client** | Motion client class | UIC UART client to SliderMC (`MC_client.py`). Packed `axis_count` from CG `axis`; **`getMotorCount()`** / **`getServoCount()`**. Dual `moveTo`/`home` gated on motors. Verbose `#…` is one line with `|` groups (empty `||` = idle 0; trailing idle 0 elides). |
 | **MSM** | Stop–shoot–move | Stills timelapse: stand still → pulse `CTRL_CAMERA` → wait exposure → hop → settle → repeat. Default when `tl_mode`/`JKS_TL_MODE` is `"msm"` and TL ≠ 1. Toggle vs Cont with `T`+`D`+`*`. |
 | **Cont** | Continuous crawl | TL≠1 ÷N crawl with `CTRL_CAMERA` hold-high like video (not pulses). OLED `Cont xN @Ffps`; video time = wall-time÷TL. Match the camera’s own TL to the slider TL. |
 | **NP-F** | NP-F battery mount | Common camcorder / LED light battery form factor. Mentioned in compare and hardware notes for turnkey or field power packs—not required by the Pico firmware itself. |
@@ -64,7 +66,7 @@ Electronics and pinouts use the `BTN_*` prefix (e.g. `BTN_STOP`); the User Manua
 |------|---------|
 | **Mark** | JKSlider PosA / PosB / PosC — a bookmark (waypoint). Goto goes there; MOVE can still leave the framed shot. Not a wall. |
 | **Working window** | B4Slider manuals say **A/B**. Session `SL`/`SR` on SliderMC — a wall **and** the MOVE target. See [working-window.md](../mc/working-window.md). |
-| **Soft limit / envelope** | Persisted `slider_min_1` / `slider_max_1` (rail). Boot copies into the session window; do not shrink with `CS` for a shot. |
+| **Soft limit / envelope** | Persisted `MOTOR_1_min` / `MOTOR_1_max` (rail). Boot copies into the session window; do not shrink with `CS` for a shot. |
 | **Hard limit** | Hardware switch (`SW_LIMIT_*`); used as home reference when `home_mode_N` is 1/2. Red LED. Not the panel STOP key. |
 
 ## Panel controls

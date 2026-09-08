@@ -66,7 +66,7 @@ sign(v) = sign(pct)
 
 Each `MJ` is a **complete** velocity snapshot:
 
-| Call | 1-axis | 2-axis (`axis=2`) |
+| Call | 1-motor | 2-motor (`motors=2`) |
 |------|--------|------------------------|
 | `MJ 40` | axis 1 = 40 % | axis 1 = 40 %, **axis 2 = 0 %** (soft-stop) |
 | `MJ 40 -20` | `pct2` ignored | independent cruises (not dual-`MT` time-sync) |
@@ -94,7 +94,7 @@ joy-mode.
 ## Limits
 
 - **Soft rail:** remaining distance clips to the session working window
-  (`SL`/`SR`, boot-copied from `slider_min_1` / `slider_max_1`). The axis sits
+  (`SL`/`SR`, boot-copied from `MOTOR_1_min` / `MOTOR_1_max`). The axis sits
   there with **no `!E`**. Reverse `MJ` moves away. See [working-window.md](working-window.md).
 - **Hard-limit trip while moving:** same `planner_halt_all()` as other moves
   (EN off).

@@ -141,12 +141,12 @@ code {
 <tbody>
 <tr><td class="sh">SS</td><td class="ln">Set Speed</td><td class="ds">Cruise speed mm/s (≤ max_speed_1); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.</td></tr>
 <tr><td class="sh">SA</td><td class="ln">Set Accel</td><td class="ds">Peak accel mm/s² (≤ max_accel_1); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
-<tr><td class="sh">SE</td><td class="ln">Set Enable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop.</td></tr>
+<tr><td class="sh">SE</td><td class="ln">Set Enable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop. SE 0 also stops servo PWM (limp).</td></tr>
 <tr><td class="sh">ST</td><td class="ln">Set Terminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).</td></tr>
 <tr><td class="sh">SV</td><td class="ln">Set Verbose</td><td class="ds">Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).</td></tr>
 <tr><td class="sh">SD</td><td class="ln">Set Debug</td><td class="ds">USB-only debug level 0..5; bare restores default; never on UIC UART.</td></tr>
-<tr><td class="sh">SL</td><td class="ln">Set Left</td><td class="ds">Session soft min (working window); bare→slider_min_N; none clears (→envelope if set); skip _; !E:limit past envelope.</td></tr>
-<tr><td class="sh">SR</td><td class="ln">Set Right</td><td class="ds">Session soft max; bare→slider_max_N; none clears; skip _; !E:limit if left&gt;right.</td></tr>
+<tr><td class="sh">SL</td><td class="ln">Set Left</td><td class="ds">Session soft min (working window); bare→MOTOR_N_min/SERVO envelope; none clears (→envelope if set); skip _; !E:limit past envelope.</td></tr>
+<tr><td class="sh">SR</td><td class="ln">Set Right</td><td class="ds">Session soft max; bare→MOTOR_N_max/SERVO envelope; none clears; skip _; !E:limit if left&gt;right.</td></tr>
 <tr><td class="sh">SP</td><td class="ln">Set Position</td><td class="ds">Set reported pose (no motion); idle only; bare/0 = here is zero; skip _.</td></tr>
 </tbody></table></section>
 <section class="group">
@@ -161,7 +161,7 @@ code {
 <tr><td class="sh">GT</td><td class="ln">Get Terminal</td><td class="ds">Terminal Mode state.</td></tr>
 <tr><td class="sh">GV</td><td class="ln">Get Verbose</td><td class="ds">Verbose push state.</td></tr>
 <tr><td class="sh">GD</td><td class="ln">Get Debug</td><td class="ds">USB debug level.</td></tr>
-<tr><td class="sh">GL</td><td class="ln">Get Left</td><td class="ds">Session soft min; effective (session else envelope); - if both None; extra fields when axis≥2.</td></tr>
+<tr><td class="sh">GL</td><td class="ln">Get Left</td><td class="ds">Session soft min; effective (session else envelope); - if both None; extra pipe fields when packed≥2.</td></tr>
 <tr><td class="sh">GR</td><td class="ln">Get Right</td><td class="ds">Session soft max; same effective / - rules as GL.</td></tr>
 </tbody></table></section>
 <section class="group">
@@ -174,8 +174,8 @@ code {
 <tr><td class="sh">IH</td><td class="ln">Is Homing</td><td class="ds">Homing cycle active.</td></tr>
 <tr><td class="sh">IL</td><td class="ln">Is Limit</td><td class="ds">At soft-limit position (axis1).</td></tr>
 <tr><td class="sh">IE</td><td class="ln">Is Error</td><td class="ds">PIN_DRV_ERROR / EMO latched.</td></tr>
-<tr><td class="sh">IP</td><td class="ln">Is Position</td><td class="ds">One field per live axis (CG axis).</td></tr>
-<tr><td class="sh">IA</td><td class="ln">Is Axis</td><td class="ds">Live axis count (CS axis / CG axis).</td></tr>
+<tr><td class="sh">IP</td><td class="ln">Is Position</td><td class="ds">One pipe field per packed live channel (motors then servos; CG axis = sum).</td></tr>
+<tr><td class="sh">IA</td><td class="ln">Is Axis</td><td class="ds">Packed live channels motors+servos (1..6). Same as CG axis. CS axis rejected.</td></tr>
 <tr><td class="sh">IT</td><td class="ln">Is Target</td><td class="ds">Axis-1 seek target, or - if none / soft-stop.</td></tr>
 <tr><td class="sh">IR</td><td class="ln">Is Ready</td><td class="ds">1 only if idle, not homing, enabled, and not waiting.</td></tr>
 <tr><td class="sh">IW</td><td class="ln">Is Waiting</td><td class="ds">1 if any WT / WM / WH / WP / WC / WN wait is active.</td></tr>
@@ -189,8 +189,8 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">MT</td><td class="ln">Move To</td><td class="ds">Absolute user units; extra live axes; skip _; needs SE; live-retarget. Dual: time-sync ratio. Out-of-window = !E:soft (no clip).</td></tr>
-<tr><td class="sh">MB</td><td class="ln">Move By</td><td class="ds">Relative move; same extra-axis/skip/named rules as MT.</td></tr>
+<tr><td class="sh">MT</td><td class="ln">Move To</td><td class="ds">Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip).</td></tr>
+<tr><td class="sh">MB</td><td class="ln">Move By</td><td class="ds">Relative move; same skip/named XYZABC rules as MT.</td></tr>
 <tr><td class="sh">MJ</td><td class="ln">Move Joy</td><td class="ds">Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release.</td></tr>
 <tr><td class="sh">MH</td><td class="ln">Move Home</td><td class="ds">Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/HT.</td></tr>
 <tr><td class="sh">MS</td><td class="ln">Move Stop</td><td class="ds">Soft decelerate both axes; keeps enable; ends joy-mode; does not cancel waits. Dual: scaled accel kept.</td></tr>
@@ -202,7 +202,7 @@ code {
 <thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">PC</td><td class="ln">Path Clear</td><td class="ds">Clear path buffer (count→0); !E:busy while PG active.</td></tr>
-<tr><td class="sh">PD</td><td class="ln">Path Data</td><td class="ds">Append signed µm sample(s); extra live axes; skip _ →0; OK while PG (live stream).</td></tr>
+<tr><td class="sh">PD</td><td class="ln">Path Data</td><td class="ds">Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream).</td></tr>
 <tr><td class="sh">PG</td><td class="ln">Path Go</td><td class="ds">Play buffer from sample 0; needs SE; !E:empty|busy|disabled. MS/HT ends path.</td></tr>
 <tr><td class="sh">PN</td><td class="ln">Path Number</td><td class="ds">Samples in buffer; allowed during PG.</td></tr>
 <tr><td class="sh">PS</td><td class="ln">Path Slice</td><td class="ds">Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.</td></tr>
@@ -224,10 +224,10 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
-<tr><td class="sh">CS</td><td class="ln">Config Set</td><td class="ds">Persist key to mc.ini; silent ok. axis / WDT_use need RB to take HW effect.</td></tr>
+<tr><td class="sh">CS</td><td class="ln">Config Set</td><td class="ds">Persist key to mc.ini; silent ok. CS motors/servos re-init GPIO immediately (no RB). CS axis rejected.</td></tr>
 <tr><td class="sh">CR</td><td class="ln">Config Reset</td><td class="ds">Reset all config to compiled defaults and save mc.ini.</td></tr>
 <tr><td class="sh">CG</td><td class="ln">Config Get</td><td class="ds">One key, or bare dumps all keys (multi-line).</td></tr>
-<tr><td class="sh">RB</td><td class="ln">Reboot</td><td class="ds">Soft MCU reset (no power cycle); EN off first. After CS axis.</td></tr>
+<tr><td class="sh">RB</td><td class="ln">Reboot</td><td class="ds">Soft MCU reset (no power cycle); EN off first. CS motors/servos do not need RB.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>W — Wait</h2>
@@ -238,7 +238,7 @@ code {
 <tr><td class="sh">WT</td><td class="ln">Wait Time</td><td class="ds">Delay then continue ; chain; bare→1 s; never !E:timeout.</td></tr>
 <tr><td class="sh">WM</td><td class="ln">Wait Moving</td><td class="ds">Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.</td></tr>
 <tr><td class="sh">WH</td><td class="ln">Wait Homing</td><td class="ds">Pause until homing ends; timeout same as WM.</td></tr>
-<tr><td class="sh">WP</td><td class="ln">Wait Pos</td><td class="ds">Wait until axis-1 pos reached/overstepped; idle→immediate; 2nd arg=timeout.</td></tr>
+<tr><td class="sh">WP</td><td class="ln">Wait Pos</td><td class="ds">Wait until time-sync master pos reached/overstepped; idle→immediate; 2nd arg=timeout.</td></tr>
 <tr><td class="sh">WC</td><td class="ln">Wait Cruise</td><td class="ds">Wait until cruise (status M) or idle; optional timeout → !E:timeout.</td></tr>
 <tr><td class="sh">WN</td><td class="ln">Wait Not cruise</td><td class="ds">Wait until not cruise M; idle/A/B→immediate; timeout same as WM.</td></tr>
 </tbody></table></section>
@@ -250,7 +250,7 @@ code {
 <tbody>
 <tr><td class="sh">VA</td><td class="ln">Version About</td><td class="ds">About string (name, version, author).</td></tr>
 <tr><td class="sh">VF</td><td class="ln">Version FW</td><td class="ds">Firmware version.</td></tr>
-<tr><td class="sh">VP</td><td class="ln">Version Protocol</td><td class="ds">Protocol version (2).</td></tr>
+<tr><td class="sh">VP</td><td class="ln">Version Protocol</td><td class="ds">Protocol version (3).</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>Special</h2>

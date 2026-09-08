@@ -8,20 +8,20 @@
 
 # About dual movement - 2 axis slider
 
-How SliderMC coordinates **two STEP/DIR axes** when `axis=2`. Typical rig: **axis 1 = linear travel** (slider), **axis 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is a **time-synced** dual move (both finish together), **not** a CNC-style diagonal feedrate. Config `axis=3` exists (third STEP/DIR, same protocol tokens); this page keeps the 2-axis timing story.
+How SliderMC coordinates **two STEP/DIR motors** when `motors=2`. Typical rig: **motor 1 = linear travel** (slider), **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is a **time-synced** dual move (both finish together), **not** a CNC-style diagonal feedrate. `motors=3` exists (third STEP/DIR, same protocol tokens); optional RC servos pack after motors. This page keeps the 2-motor timing story.
 
-UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_axis_status_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider / B4Slider remain 1-axis faces (`UIC_Base` uses axis 1). Verbose `#…` joins per-axis groups with ` | ` (`#I p1 | p2` when `axis=2`, `#I p1 | p2 | p3` when `axis=3` — see [protocol — Verbose push](../contract/protocol.md#verbose-push-3-hz-when-session-verbose1)).
+UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `getMotorCount()`, packed `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_axis_status_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider stays 1-motor; B4Slider pan buttons gate on `getMotorCount() >= 2`. Verbose `#…` joins packed groups with ` | ` (`#I p1 | p2` — see [protocol — Verbose push](../contract/protocol.md#verbose-push-3-hz-when-session-verbose1)).
 
 **Related:** [config.md](config.md) · [motion.md](motion.md) · [motion-joy.md](motion-joy.md) · [protocol — Live axis count](../contract/protocol.md#live-axis-count-axis) · [pins.md](pins.md)
 
 ---
 
-## Enabling axis2
+## Enabling motor 2
 
-1. `CS axis 2` (persist with normal config save / `mc.ini`). Use `CS axis 3` for a third STEP/DIR axis.
-2. **Reboot** with `RB` / `Reboot`, or power-cycle.
+1. `CS motors 2` (persist with normal config save / `mc.ini`). Use `CS motors 3` for a third STEP/DIR motor.
+2. GPIO / PIO re-init **immediately** — no `RB` required.
 
-`CS` updates config, `IA`, and the welcome banner immediately, but the second PIO state machine and axis-2 GPIOs are set up only at boot. Dual `MT` before reboot can leave `pos2` stuck at 0.
+**`CS axis` is rejected.** Dual `MT` is valid as soon as `IA` shows the new sum.
 
 Supported boards: Pico / Pico W / RP2040-Zero. Pin map: [pins.md](pins.md).
 
@@ -85,10 +85,10 @@ Same-release synonyms: `steps_per_mm_1` / `steps_per_mm_2` still set the same fi
 ## Endless rotation: soft limits `none`
 
 ```text
-CS slider_min_1 none
-CS slider_max_1 none
-CS slider_min_2 none
-CS slider_max_2 none
+CS MOTOR_1_min none
+CS MOTOR_1_max none
+CS MOTOR_2_min none
+CS MOTOR_2_max none
 ```
 
 (`-` is also accepted.) Soft travel bounds are disabled for that axis — typical for a continuous pan.
@@ -102,11 +102,11 @@ CS slider_max_2 none
 | Axis 1 | Axis 2 |
 |--------|--------|
 | `steps_per_unit_1` | `steps_per_unit_2` |
-| `slider_min_1` / `slider_max_1` | `slider_min_2` / `slider_max_2` |
+| `MOTOR_1_min` / `MOTOR_1_max` | `MOTOR_2_min` / `MOTOR_2_max` |
 | `DRV_*_1_active`, `SW_*_1_*`, `home_*_1` | same keys with `_2` (digit before `_active` / `_use`) |
 | `max_speed_1` / `max_accel_1` | `max_speed_2` / `max_accel_2` |
 
-**Shared** (not per-axis): session `SS`/`SA`, `unit_name`, `axis`, `name`, ramp/path globals, debug/verbose init. `MJ` uses session `SS` as 100 % and clamps each axis to its own `max_speed_1` / `max_speed_2`. Axis 3 uses the matching `_3` keys when `axis=3`.
+**Shared** (not per-motor): session `SS`/`SA` (master units), `unit_name`, `motors`/`servos`, `name`, ramp/path globals, debug/verbose init. `MJ` uses session `SS` as 100 % and clamps each motor to its own `max_speed_N`. Packed servos use `SERVO_N_*`. Motor 3 uses the matching `_3` keys when `motors=3`.
 
 Full tables: [config.md](config.md).
 
@@ -117,7 +117,7 @@ Full tables: [config.md](config.md).
 1. **Skip token:** `MT _ 45` for pan-only; `MT 200` stays axis1-only. Extra live axes take a 3rd token (`MT a b c`); skip `_` idles that axis.
 2. **Hold-to-jog:** `SS` then `MJ ±100` (per-axis `0` on extras), `MS` on release. There is no `ML`/`MR`.
 3. **Joystick:** `MJ pct [pct2 [pct3]]` — independent signed % of `SS` per axis (omit extra → that axis = 0). Not dual-`MT` time-sync. See [motion-joy.md](motion-joy.md).
-4. **Prefer pan on axis 2** — keeps linear “mm” on axis 1 (`IP` first field / UIC habit). `WP` / Wait Pos is axis 1 only (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md). Homing: `MH 1|2|3`.
+4. **Prefer pan on motor 2** — keeps linear “mm” on motor 1 (`IP` first field / UIC habit). `WP` / Wait Pos is the **time-sync master** (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md). Homing: `MH 1|2|3` (motors only).
 5. **`max_speed_1` / `max_speed_2` clamp:** if `|d2| ≫ |d1|`, scaled `v2` may hit `max_speed_2` and **lose** perfect time sync — shorten the axis2 move, raise the cap, or move axes sequentially. Mid-move `SS`/`SA` stay time-synced while coordination is active (same clamp still applies).
 6. **Path mode (`PG`):** extra `PD` args are **slice-timed**, not the same as dual-`MT` distance scaling. See [motion-path.md](motion-path.md).
 7. **UIC:** JKSlider / B4Slider UIs are still mostly 1-axis; dual `MT` is driven by hosts/scripts. Use `CG unit_name` for the display unit.
@@ -126,8 +126,8 @@ Full tables: [config.md](config.md).
 
 ## Quick checklist
 
-- [ ] `CS axis 2` → save → **`RB`**
+- [ ] `CS motors 2` (no `RB`)
 - [ ] `steps_per_unit_1` / `_2` match mechanics (mm or °)
 - [ ] `unit_name` set for UIC (`mm` or `deg`)
-- [ ] Soft limits `none` on any endless rotate axis
+- [ ] Soft limits `none` on any endless rotate motor
 - [ ] Watch `|d2|/|d1|` vs `max_speed_1` / `max_speed_2` on dual seeks

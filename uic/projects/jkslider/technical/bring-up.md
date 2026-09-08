@@ -176,8 +176,8 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 ### B. How far the carriage may travel
 
 - [ ] Measure usable travel in mm (after end stops / hard stops with a safety margin).
-- [ ] Set MC `slider_min_1` (often `0.0` after homing) and `slider_max_1` (e.g. `600.0` for a 60 cm usable run) via `CS` / mc.ini.
-- [ ] UIC reads these via `CG` after the welcome banner (`slider.slider_min` / `slider.slider_max` Python fields filled from `*_1`).
+- [ ] Set MC `MOTOR_1_min` (often `0.0` after homing) and `MOTOR_1_max` (e.g. `600.0` for a 60 cm usable run) via `CS` / mc.ini.
+- [ ] UIC reads these via `CG` after the welcome banner (`slider.slider_min` / `slider.slider_max` Python fields filled from packed channel 1).
 - [ ] Optional (UIC): `SOFT_LIMIT_WARN_MM` — how many mm before the end the LED starts “near limit” blink (default 10).
 
 ### C. Speeds and “feel”

@@ -18,29 +18,28 @@ model vs JKSlider marks: [marks-vs-working-window.md](../architecture/marks-vs-w
 
 | Layer | Keys / commands | Persists |
 |-------|-----------------|----------|
-| **Envelope** | `slider_min_1` / `slider_max_1` (and `_2` / `_3`) via `CS` / `mc.ini` | Yes — installer rail, homing pose/span |
+| **Envelope** | `MOTOR_N_min` / `MOTOR_N_max` (and `SERVO_N_*`; packed `axis_min_N`) via `CS` / `mc.ini` | Yes — installer rail, homing pose/span |
 | **Working window** | `SL` / `SR` (session); read with `GL` / `GR` | No — reboot / bare `SL`/`SR` reload from envelope |
 
 Boot copies the envelope into the session window (same idea as `SS` from
 `init_speed`). `none` on an envelope side means that side has no mechanical
 clip (e.g. rotary); the session side starts disabled (`GL:-`).
 
-**Do not** shrink the rail with `CS slider_min_1` for a shot. That overwrote the
-envelope and survived power-off. Use `SL` / `SR` instead.
+**Do not** shrink the rail with `CS MOTOR_1_min` for a shot (`CS slider_*` is rejected). Use `SL` / `SR` instead.
 
 ## Commands
 
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
-| `SL` | Set Left | `[pos [pos2 [pos3]]]` | Session **min** (−). Bare = reset to `slider_min_N`. `none` = clear that side. |
-| `SR` | Set Right | `[pos [pos2 [pos3]]]` | Session **max** (+). Bare = reset to `slider_max_N`. `none` = clear that side. |
-| `GL` | `GetLeft` | — | Effective left: session, else envelope if set, else `-`. Dual: `GL:<a> <b>`. |
+| `SL` | Set Left | `[pos [pos2 […]]]` | Session **min** (−). Bare = reset to envelope. `none` = clear that side. |
+| `SR` | Set Right | `[pos [pos2 […]]]` | Session **max** (+). Bare = reset to envelope. `none` = clear that side. |
+| `GL` | `GetLeft` | — | Effective left: session, else envelope if set, else `-`. Packed: `GL:a \| b`. |
 | `GR` | `GetRight` | — | Same shape as `GL`. |
 
 Skip on one axis with `_` (leave unchanged). `none` stores session None for that
 side — not a skip. Missing 2nd arg does **not** zero axis 2.
 
-**Envelope fallback:** if the session side is None and `slider_min_N`/`slider_max_N` is set,
+**Envelope fallback:** if the session side is None and `MOTOR_N_min`/`SERVO_N_min` (packed `axis_min_N`) is set,
 `GL`/`GR` and motion clipping use the envelope value. Only when **both** session
 and envelope are None is that side open (`GL:-`).
 
@@ -61,8 +60,8 @@ envelope) for remaining-distance clipping. Homing and path playback still use th
 - Pose **inside** the window: travel stops softly at left/right.
 - Pose **outside** (e.g. after `SL`/`SR`): motion **into** the window is
   allowed; further **out** sits with no `!E` spam (same as joy-at-rail).
-- `CS slider_min_N` / `slider_max_N` updates the envelope only and **clamps** the session
-  window inward if needed; it does not reopen a narrowed shot by itself.
+- `CS MOTOR_N_min` / `MOTOR_N_max` (or `SERVO_N_*`) updates the envelope only and **clamps** the session
+  window inward if needed; it does not reopen a narrowed shot by itself. `CS slider_*` is rejected.
 
 ## Typical command flow
 
@@ -70,7 +69,7 @@ B4-style SET+MOVE mapped to the wire:
 
 ```text
 ...
-GL              # GL:0     (boot = slider_min_1)
+GL              # GL:0     (boot = MOTOR_1_min)
 GR              # GR:600
 ...
 SL 120          # SET+MOVE_L tap at 120 mm
@@ -78,7 +77,7 @@ SR 480          # SET+MOVE_R tap at 480 mm
 GL              # GL:120
 MT 120          # seek the known left wall (not ML / not MT9999)
 ...
-SL              # SET+MOVE_L hold — open left to slider_min_1
+SL              # SET+MOVE_L hold — open left to MOTOR_1_min
 ...
 ```
 
@@ -98,7 +97,7 @@ SL _ none       # clear axis2 only
 - `setLeft` / `setRight` / `getLeft` / `getRight` → `SL` / `SR` / cache
 - `setSoftLimits(min, max)` → session `SL`+`SR` (**not** `CS`); `None` → `SL none` /
   `SR none` (effective limit = envelope when set)
-- `mc.slider_min` / `mc.slider_max` stay the Python API fields filled from CG `slider_min_1` / `slider_max_1` after `fetchConfig`
+- `mc.slider_min` / `mc.slider_max` stay the Python API fields filled from CG `MOTOR_1_min` / `MOTOR_1_max` (packed `axis_min_1`) after `fetchConfig`
 
 **B4Slider** owns the operator chords; the window lives on the MC until reboot.
 **JKSlider** keeps the session at full rail and stores A/B/C marks in the app.
@@ -107,8 +106,8 @@ SL _ none       # clear axis2 only
 
 | Key | Role |
 |-----|------|
-| `slider_min_1` / `slider_max_1` | Envelope (and homing); `none` disables that side |
-| `slider_min_2` / `slider_max_2` | Axis-2 envelope (synonyms `soft_min_N` / `soft_max_N`) |
+| `MOTOR_1_min` / `MOTOR_1_max` | Envelope (and homing); `none` disables that side |
+| `MOTOR_2_min` / `MOTOR_2_max` | Motor-2 envelope (packed `axis_min_2`; synonyms `soft_min_N`) |
 
 See [config.md](config.md). Dual-axis units: [dual-movement.md](dual-movement.md).
 

@@ -57,9 +57,9 @@ usual `!E:<code> <text>` form:
 ## Data model
 
 - **Sample:** one signed 16-bit integer, unit **µm** (micrometres), range
-  `-32768..32767` (≈ ±32.767 mm of delta-distance per slice). With
-  `axis` ≥ 2, each `PD` can supply extra samples (up to 3 tokens); skip token
-  `_` becomes `0` µm on that axis.
+  `-32768..32767` (≈ ±32.767 mm of delta-distance per slice). With packed
+  count ≥ 2, each `PD` can supply extra samples (up to **6** tokens, `PATH_AXES`); skip token
+  `_` becomes `0` µm on that channel.
 - **`0` means stand still** for that slice — no STEP pulses are issued; the
   PIO naturally holds its output level for the slice duration.
 - **Buffer:** a flat array, not a ring buffer. `PD` always appends; `PG`
@@ -68,8 +68,8 @@ usual `!E:<code> <text>` form:
   data without resending it.
 - **Capacity:** `path_buffer_size` (config key, default 32000 samples,
   settable 1..32768 via `CS path_buffer_size <n>` / `CG path_buffer_size`).
-  The static pool is 65536 samples split by live `n` = `axis`; `path_buffer_size`
-  is the logical cap **per axis** (≤ pool/`n`).
+  The static pool is 65536 samples split by live packed `n` = `motors+servos`; `path_buffer_size`
+  is the logical cap **per channel** (≤ pool/`n`).
 - **Slice length:** `PS <us>` (µs, integer, ≥1000). This is a **session**
   value (like `SS`/`SA`), not persisted to `mc.ini` by `PS` itself — the
   persisted default is config key `init_path_slice_us` (default 10000 = 10
@@ -212,7 +212,7 @@ move/session-set commands (`MT`, `MB`, `MJ`, `MH`, `SS`, `SA`, `SE`,
 - **Hard-limit switches and `PIN_DRV_ERROR`** are still monitored and will
   halt the axis during path playback exactly as they do for any other move
   — path-mode is not a way to bypass the emergency stop chain.
-- **Soft position limits** (`slider_min_N`/`slider_max_N`) are **not**
+- **Soft position limits** (`MOTOR_N_min`/`MOTOR_N_max`, packed `axis_min_N`) are **not**
   checked per-slice during path playback, matching the project's stance
   that a Motion Path is pre-verified by the host — the same as speed/accel
   limits not being checked. Keep the path within the mechanical travel.

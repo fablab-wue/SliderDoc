@@ -20,7 +20,7 @@ Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED
 
 The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-The stack **supports** an optional **2nd STEP/DIR axis** (`CS axis 2` then `RB`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-axis** operator UI (`set_axis_status_callback`, axis 1). A custom 2-axis face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
+The stack **supports** an optional **2nd STEP/DIR motor** (`CS motors 2`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-motor** operator UI (`set_axis_status_callback`, axis 1). A custom 2-motor face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
 
 ## Getting started
 
@@ -66,7 +66,7 @@ Cruise, jog, stop, boost, halt, home, soft travel chords, and mid-move pause.
 | **STOP** tap while already slowing | ` 0 ` tap | Fast halt |
 | **STOP** hold ≥ 1 s | ` 0 ` hold ≥ 1 s | Fast halt |
 | **OPTION + STOP** (keypad, both ` * `) | ` * ` ` 0 ` ` * ` | Emergency halt (same as STOP hold ≥ 1 s) |
-| **STOP + A** | ` 0 ` ` A ` | Go to soft min (`slider_min_1`) |
+| **STOP + A** | ` 0 ` ` A ` | Go to soft min (`MOTOR_1_min`) |
 | **STOP + B** | ` 0 ` ` B ` | Go to midpoint of soft min/max |
 | **STOP + C** | ` 0 ` ` C ` | Go to soft max (`slider_max_1`) |
 | **OPTION + STOP + A** | ` * ` ` 0 ` ` A ` | Homing |

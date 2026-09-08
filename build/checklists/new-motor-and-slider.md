@@ -16,7 +16,7 @@ Use when changing mechanics, driver, or travel. Full detail: [bring-up.md](../..
 - [ ] Microstepping matches driver DIP/SPI
 - [ ] mm per motor revolution measured
 - [ ] `steps_per_unit_1` verified
-- [ ] `slider_min_1` / `slider_max_1` set via `CS` or `mc.ini` — [mc/config.md](../../mc/config.md)
+- [ ] `MOTOR_1_min` / `MOTOR_1_max` set via `CS` or `mc.ini` — [mc/config.md](../../mc/config.md)
 
 ## B. Speed / feel
 

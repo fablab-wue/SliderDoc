@@ -16,7 +16,7 @@ Live dumps on the device:
 - `VG` / `VersionGPIO` — machine-readable `PIN_*=GPIO` lines
 - `IX` / `Pinout` — ASCII table of GP number, name, and brief description (≤80 columns)
 
-Extra-axis rows (`DRV_*2` / `SW_*2`, `DRV_*3` / `SW_*3`) appear in `IX` / `VG` **only when** that axis is live (`CS axis 2` or `3`). `PIN_CAMERA_CTRL` is always listed (reserved, inited inactive — **no protocol command**).
+Extra-axis rows (`DRV_*2` / `SW_*2`, `DRV_*3` / `SW_*3`) appear in `IX` / `VG` **only when** that motor is live (`CS motors 2` or `3`). Servo rows appear when `servos>=1`. `PIN_CAMERA_CTRL` is always listed (reserved, inited inactive — **no protocol command**).
 
 ---
 
@@ -28,32 +28,32 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`pico_pinout_mc.t
 
 | Symbol | GPIO | Role |
 |--------|------|------|
-| `PIN_SW_LIMIT_R3` | 0 | Axis-3 hard limit right (`axis≥3`) |
-| `PIN_SW_LIMIT_L3` | 1 | Axis-3 hard limit left |
-| `PIN_DRV_ERROR3` | 2 | Axis-3 fault / E-stop |
-| `PIN_DRV_EN3` | 3 | Axis-3 enable |
-| `PIN_DRV_DIR3` | 4 | Axis-3 DIR |
-| `PIN_DRV_STEP3` | 5 | Axis-3 STEP (polarity follows axis 2) |
-| `PIN_SW_LIMIT_R2` | 6 | Axis-2 hard limit right (`axis≥2`) |
-| `PIN_SW_LIMIT_L2` | 7 | Axis-2 hard limit left |
-| `PIN_EXT_0` | 8 | General-purpose output (`EO0`; inactive at boot) |
-| `PIN_EXT_1` | 9 | Extender `EO1` |
-| `PIN_DRV_ERROR2` | 10 | Axis-2 fault / E-stop |
-| `PIN_DRV_EN2` | 11 | Axis-2 enable |
-| `PIN_DRV_DIR2` | 12 | Axis-2 DIR |
-| `PIN_DRV_STEP2` | 13 | Axis-2 STEP |
-| `PIN_EXT_2` | 14 | Extender `EO2` |
-| `PIN_EXT_3` | 15 | Extender `EO3` |
+| `PIN_DRV_STEP_1` | 0 | Motor 1 STEP |
+| `PIN_DRV_DIR_1` | 1 | Motor 1 DIR |
+| `PIN_SW_LIMIT_L_1` | 2 | Motor 1 hard limit left (`SW_LIMIT_L_1_use=1`) |
+| `PIN_SW_LIMIT_R_1` | 3 | Motor 1 hard limit right |
+| `PIN_DRV_STEP_2` | 4 | Motor 2 STEP (`motors>=2`) |
+| `PIN_DRV_DIR_2` | 5 | Motor 2 DIR |
+| `PIN_SW_LIMIT_L_2` | 6 | Motor 2 hard limit left |
+| `PIN_SW_LIMIT_R_2` | 7 | Motor 2 hard limit right |
+| `PIN_DRV_STEP_3` | 8 | Motor 3 STEP (`motors>=3`; polarity follows motor 2) |
+| `PIN_DRV_DIR_3` | 9 | Motor 3 DIR |
+| `PIN_SW_LIMIT_L_3` | 10 | Motor 3 hard limit left |
+| `PIN_SW_LIMIT_R_3` | 11 | Motor 3 hard limit right |
+| `PIN_DRV_ERROR_1` | 12 | Motor 1 fault / E-stop (always polled) |
+| `PIN_DRV_ERROR_2` | 13 | Motor 2 fault / E-stop |
+| `PIN_DRV_ERROR_3` | 14 | Motor 3 fault / E-stop |
+| `PIN_DRV_ENABLE` | 15 | Shared driver enable |
 | `PIN_UART_TX` | 16 | UART TX to UI controller |
 | `PIN_UART_RX` | 17 | UART RX from UI controller |
-| `PIN_DRV_STEP` | 18 | STEP to driver (axis 1) |
-| `PIN_DRV_DIR` | 19 | DIR (axis 1) |
-| `PIN_DRV_EN` | 20 | Enable (axis 1) |
-| `PIN_DRV_ERROR` | 21 | Driver fault / E-stop (always polled) |
+| `PIN_EXT_4` / `PIN_SERVO_3` | 18 | Extender `EO4`; **SERVO_3 when `servos>=3`** (steals EXT_4) |
+| `PIN_EXT_3` | 19 | Extender `EO3` |
+| `PIN_EXT_2` | 20 | Extender `EO2` |
+| `PIN_EXT_1` | 21 | Extender `EO1` |
 | `PIN_CAMERA_CTRL` | 22 | Reserved camera control (inited inactive; no protocol command) |
 | `PIN_LED` | `LED_BUILTIN` (GP25) | Status / heartbeat LED (onboard) |
-| `PIN_SW_LIMIT_L` | 26 | Hard limit left (if `SW_LIMIT_L_1_use=1`) |
-| `PIN_SW_LIMIT_R` | 27 | Hard limit right (if `SW_LIMIT_R_1_use=1`) |
+| `PIN_SERVO_1` | 26 | RC servo 1 PWM (100 Hz, wrap 65535; ~2.5′ / 0.04° per count over ±135°) |
+| `PIN_SERVO_2` | 27 | RC servo 2 PWM |
 | `PIN_BUZZER` | 28 | Optional piezo (`BE` / Beep); gated by `BUZZER_use` (default off) |
 
 UART baud rate: **115 200**. GP16/GP17 are **UART0** (`Serial1` via `PIN_UART_SERIAL`).
@@ -81,50 +81,54 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`rp2040zero
 
 | Symbol | GPIO | Role |
 |--------|------|------|
-| `PIN_DRV_STEP` | 0 | STEP (axis 1) |
-| `PIN_DRV_DIR` | 1 | DIR (axis 1) |
-| `PIN_DRV_EN` | 2 | Enable (axis 1) |
-| `PIN_DRV_ERROR` | 3 | Driver fault / E-stop |
-| `PIN_SW_LIMIT_L` | 4 | Hard limit left (axis 1) |
-| `PIN_SW_LIMIT_R` | 5 | Hard limit right (axis 1) |
-| `PIN_DRV_STEP2` | 6 | STEP axis2 |
-| `PIN_DRV_DIR2` | 7 | DIR axis2 |
-| `PIN_DRV_ERROR2` | 8 | Fault / E-stop axis2 |
-| `PIN_SW_LIMIT_L2` | 9 | Hard limit left axis2 |
-| `PIN_SW_LIMIT_R2` | 10 | Hard limit right axis2 |
-| `PIN_DRV_EN2` | 11 | Enable axis2 |
+| `PIN_DRV_ENABLE` | 0 | Shared driver enable |
+| `PIN_DRV_STEP_1` | 1 | Motor 1 STEP |
+| `PIN_DRV_DIR_1` | 2 | Motor 1 DIR |
+| `PIN_SW_LIMIT_L_1` | 3 | Motor 1 hard limit left |
+| `PIN_SW_LIMIT_R_1` | 4 | Motor 1 hard limit right |
+| `PIN_DRV_STEP_2` | 5 | Motor 2 STEP |
+| `PIN_DRV_DIR_2` | 6 | Motor 2 DIR |
+| `PIN_SW_LIMIT_L_2` | 7 | Motor 2 hard limit left |
+| `PIN_SW_LIMIT_R_2` | 8 | Motor 2 hard limit right |
+| `PIN_DRV_ERROR_1` | 9 | Motor 1 fault / E-stop |
+| `PIN_DRV_ERROR_2` | 10 | Motor 2 fault / E-stop |
+| `PIN_DRV_ERROR_3` | 11 | Motor 3 fault / E-stop |
 | `PIN_UART_TX` | 12 | UART TX to UIC |
 | `PIN_UART_RX` | 13 | UART RX from UIC |
-| `PIN_DRV_ERROR3` | 14 | Fault / E-stop axis3 |
-| `PIN_DRV_EN3` | 15 | Enable axis3 |
+| `PIN_SW_LIMIT_R_3` | 14 | Motor 3 hard limit right |
+| `PIN_SW_LIMIT_L_3` | 15 | Motor 3 hard limit left |
 | *(unused)* | 16 | Onboard WS2812 data — unused by firmware |
-| `PIN_SW_LIMIT_R3` | 17 | Hard limit right axis3 |
-| `PIN_SW_LIMIT_L3` | 18 | Hard limit left axis3 |
-| `PIN_EXT_3` | 21 | Extender output 3 (`EO3`) |
-| `PIN_EXT_2` | 22 | Extender output 2 (`EO2`) |
-| `PIN_EXT_1` | 23 | Extender output 1 (`EO1`) |
-| `PIN_EXT_0` | 24 | Extender output 0 (`EO0`) |
+| `PIN_EXT_1` | 17 | Extender `EO1` |
+| `PIN_EXT_2` | 18 | Extender `EO2` |
+| `PIN_EXT_3` | 19 | Extender `EO3` |
+| `PIN_EXT_4` | 20 | Extender `EO4` |
+| `PIN_SERVO_1` | 21 | RC servo 1 PWM (100 Hz, wrap 65535; ~2.5′ / 0.04° per count over ±135°) |
+| `PIN_SERVO_2` | 22 | RC servo 2 PWM |
+| `PIN_SERVO_3` | 23 | RC servo 3 PWM |
 | `PIN_CAMERA_CTRL` | 25 | Reserved camera control (inited inactive; no protocol command) |
-| `PIN_DRV_DIR3` | 26 | DIR axis3 |
-| `PIN_DRV_STEP3` | 27 | STEP axis3 (polarity follows axis 2) |
+| `PIN_DRV_DIR_3` | 26 | Motor 3 DIR |
+| `PIN_DRV_STEP_3` | 27 | Motor 3 STEP (polarity follows motor 2) |
 | `PIN_BUZZER` | 28 | Optional piezo (`BE`; `BUZZER_use`) |
 | `PIN_LED` | 29 | External status / heartbeat LED |
 
-`axis` 1\|2\|3 is supported on Zero / Mini.
+`motors` 1\|2\|3 and `servos` 0..3 are supported on Zero / Mini.
 
 ---
 
 ## Shared notes
 
 GPIO numbers are fixed in `pins.h` (not changeable via protocol).  
+Pad drive: STEP / DIR / EXT / SERVO **8 mA**; `PIN_DRV_ENABLE` and `PIN_CAMERA_CTRL` **12 mA**.  
 Active levels for all pins except UART are config keys (`DRV_STEP_1_active`, `SW_LIMIT_L_1_active`, …): `0` = low-active, `1` = high-active. Digit is **before** the suffix (`SW_LIMIT_R_3_use`).  
 Hard-limit **usage** is gated by `SW_LIMIT_L_N_use` / `SW_LIMIT_R_N_use` (default off). Homing modes 1/2 use those same limit pins.  
 Optional **buzzer** is gated by `BUZZER_use` (default off); `BE` pulses `PIN_BUZZER` (GP28) ~0.1 s. On Pico W / Pico 2 W GP28 is `PIN_LED`, so the buzzer is not claimed.  
 `PIN_DRV_ERROR` is always polled (`DRV_ERROR_1_active`); assert → emergency halt + command gate, except during stall-home (`home_mode_N` 3/4). See [CONFIG.md](CONFIG.md) / [MOTION.md](MOTION.md).  
 `PIN_CAMERA_CTRL` is reserved and driven inactive at boot — no `CS` / motion command this pass.
 
-`PIN_EXT_0`…`3` are always outputs. Polarity via `EXT_n_active`; boot level is **inactive**. Logical on/off: `EO0`…`EO3`. **`EO4`… is rejected.**
+`PIN_EXT_1`…`4` are always outputs (logical `EO1`…`EO4` / protocol `EO0`…`EO3`). Polarity via `EXT_n_active`; boot level is **inactive**. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). **`EO4`… is rejected.**
 
-STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Axis 3 STEP follows axis 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
+STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motor 3 STEP follows motor 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
+
+RC servos use hardware PWM at **100 Hz**, wrap **65535**. Default envelope ±135° (1000–2000 µs). Resolution ≈ **2.5 arc minutes (′)** / 0.04° per count. `SE 0` stops PWM (limp).
 
 Oscilloscope `DEBUG_HW` pins are **off by default** (commented out in `pins.h`) and are not shown on the pinout images. Define `DEBUG_HW` at compile time if you need them; they then appear in `IX`/`VG` only.

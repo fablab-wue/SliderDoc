@@ -1,6 +1,6 @@
 # SliderMC firmware docs
 
-C++ / FreeRTOS motor controller for RP2040 (STEP/DIR axis; optional 2nd/3rd STEP/DIR via `CS axis 2` / `CS axis 3` then `RB`).
+C++ / FreeRTOS motor controller for RP2040 (STEP/DIR motors plus optional RC servos; `CS motors` / `CS servos`, protocol VP:3).
 
 **Start here:** [build.md](build.md)
 

@@ -15,7 +15,7 @@ Factory defaults are compiled in `include/config_defaults.h` and mirrored in `da
 They are loaded from `init_*` config keys at boot. `SS`/`SA`/`ST`/`SV` change session only (not the file).  
 Bare `SS`/`SA` reload that field from config init. `CS` updates config and the matching session field.
 
-**No firmware aliases** for old unnumbered axis-1 keys (`max_speed`, `slider_min`, `home_mode`, `DRV_STEP_active`, …) or `axis2_use`. Those names return `!E:cfg`. Same-release synonyms only: `steps_per_mm_N`→`steps_per_unit_N`, `soft_min_N`/`soft_max_N`→`slider_min_N`/`slider_max_N`, plus session-init aliases `speed`→`init_speed`, `accel`→`init_accel`, `verbose`→`init_verbose`, `terminal`→`init_terminal`, `debug_level`→`init_debug_level`. Saves write only the canonical names.
+**No firmware aliases** for old unnumbered axis-1 keys (`max_speed`, `slider_min`, `home_mode`, `DRV_STEP_active`, …) or `axis2_use`. Those names return `!E:cfg`. **`CS axis` and `CS slider_*` are rejected.** Same-release synonyms only: `steps_per_mm_N`→`steps_per_unit_N`, `soft_min_N`/`soft_max_N`→packed `axis_min_N`/`axis_max_N`, plus session-init aliases `speed`→`init_speed`, `accel`→`init_accel`, `verbose`→`init_verbose`, `terminal`→`init_terminal`, `debug_level`→`init_debug_level`. Saves write only the canonical names (`MOTOR_*` / `SERVO_*`, not `slider_*`).
 
 ## Protocol
 
@@ -54,14 +54,16 @@ Default is **3**.
 | `max_accel_2` / `max_accel_3` | float mm/s² | 300 | Axis-2 / axis-3 accel ceiling |
 | `steps_per_unit_1` | float | 320 | Axis-1 steps per user unit (mm, deg, …); synonym `steps_per_mm_1` |
 | `unit_name` | string | `mm` | UIC unit label (max 7 printable ASCII chars; no `#`) |
-| `slider_min_1` | float units or `none` | 0 | Axis-1 soft-limit **envelope** min (`none` / `-` disables); boot → session `SL`; homing; synonym `soft_min_1` |
-| `slider_max_1` | float units or `none` | 600 | Axis-1 envelope max; boot → session `SR`; synonym `soft_max_1` |
+| `MOTOR_1_min` | float units or `none` | 0 | Motor-1 envelope min (`none` / `-` disables); boot → session `SL`; homing; packed `axis_min_1` / `soft_min_1` |
+| `MOTOR_1_max` | float units or `none` | 600 | Motor-1 envelope max; boot → session `SR`; packed `axis_max_1` / `soft_max_1` |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
 | `verbose_rate_hz` | int | 3 | Verbose push rate when session verbose is on |
 | `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](../contract/protocol.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
 | `WDT_use` | 0/1 | 1 | `1` = arm WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
-| `axis` | 1\|2\|3 | 1 | Live STEP/DIR axis count. `IA` / banner `- N Axis` follow this. **`RB` required** before extra PIO/SMs and pins init. |
+| `motors` | 1\|2\|3 | 1 | Live STEP/DIR count. `IA` / `CG axis` / banner use `motors+servos`. **Re-inits GPIO/PIO without `RB`.** |
+| `servos` | 0..3 | 0 | RC servo PWM channels. Pico GP26/27/18 (18 steals EXT_4 when `servos>=3`); Zero GP21–23. PWM 100 Hz, wrap 65535; ~**2.5′** / 0.04° per count over ±135°. |
+| `axis` | int (read) | 1 | Synthesized packed sum (`motors+servos`). `CG axis` and bare `CG` dump emit it. **`CS axis` is rejected.** |
 | `name` | string | *(empty)* | Optional device name in welcome banner (max 31 printable ASCII chars; no `#`) |
 | `DRV_STEP_1_active` | 0/1 | 1 | Axis-1 STEP active level (PIO program) |
 | `DRV_STEP_2_active` | 0/1 | 1 | Axis-2 STEP polarity. **No `DRV_STEP_3_active`** — axis 3 STEP follows axis 2 (PIO has two polarity programs). |
@@ -78,9 +80,13 @@ Default is **3**.
 | `home_speed_1` | float mm/s | 25 | Cruise speed during homing |
 | `home_accel_1` | float mm/s² | 20 | Acceleration during homing |
 | `steps_per_unit_2` / `_3` | float | 320 | Axis-2 / 3 steps per user unit (synonym `steps_per_mm_N`) |
-| `slider_min_2` / `_3` | float or `none` | 0 | Axis-2 / 3 envelope min (synonym `soft_min_N`) |
-| `slider_max_2` / `_3` | float or `none` | 600 | Axis-2 / 3 envelope max (synonym `soft_max_N`) |
-| `home_mode_2` / `home_mode_3` | 0..4 | 0 | Axis-2 / 3 homing mode |
+| `MOTOR_2_min` / `MOTOR_3_min` | float or `none` | 0 | Motor-2 / 3 envelope min (packed `axis_min_N`) |
+| `MOTOR_2_max` / `MOTOR_3_max` | float or `none` | 600 | Motor-2 / 3 envelope max |
+| `SERVO_1_min` / `_2` / `_3` | float or `none` | -135 | Servo envelope min (degrees; 1000–2000 µs). Packed after motors. |
+| `SERVO_1_max` / `_2` / `_3` | float or `none` | 135 | Servo envelope max |
+| `SERVO_N_max_speed` / `SERVO_N_max_accel` | float | *(servo defaults)* | Servo planner ceilings |
+| `SERVO_N_active` | 0/1 | 1 | `1` = high pulse |
+| `home_mode_2` / `home_mode_3` | 0..4 | 0 | Motor-2 / 3 homing mode (servos are not homed) |
 | `home_move_out_N` / `home_speed_N` / `home_accel_N` | float | *(same as axis 1)* | Homing parameters for axes 2 and 3 |
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
 | `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
@@ -155,20 +161,20 @@ There is no dedicated home-switch pin. Homing uses a hard limit (modes 1/2) or d
 | Value | Behavior |
 |-------|----------|
 | `0` | No homing. `MH` returns silently. Use `SP` to declare “here is zero.” |
-| `1` | Seek `SW_LIMIT_L` (needs `SW_LIMIT_L_N_use=1`); finish at `slider_min_N` |
-| `2` | Seek `SW_LIMIT_R` (needs `SW_LIMIT_R_N_use=1`); finish at `slider_max_N` |
-| `3` | Seek left until `DRV_ERROR`; EN pulse; wait clear; drive out; finish at `slider_min_N` |
-| `4` | Seek right until `DRV_ERROR`; same stall cycle; finish at `slider_max_N` |
+| `1` | Seek `SW_LIMIT_L` (needs `SW_LIMIT_L_N_use=1`); finish at `MOTOR_N_min` |
+| `2` | Seek `SW_LIMIT_R` (needs `SW_LIMIT_R_N_use=1`); finish at `MOTOR_N_max` |
+| `3` | Seek left until `DRV_ERROR`; EN pulse; wait clear; drive out; finish at `MOTOR_N_min` |
+| `4` | Seek right until `DRV_ERROR`; same stall cycle; finish at `MOTOR_N_max` |
 
 `SW_HOME_*` keys are gone (not remapped). `CS home_mode_N 3` / `4` means stall-home.
 
-`MH` / Move Home requires `SE 1`. Optional axis arg `1` (default), `2`, or `3` when that count is live. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out_N` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out_N`. Seek is capped at 110% of `(slider_max_N − slider_min_N)`. Abort: `MS`/`HT` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
+`MH` / Move Home requires `SE 1`. Optional motor arg `1` (default), `2`, or `3` when that motor is live. Servos cannot be homed. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out_N` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out_N`. Seek is capped at 110% of `(MOTOR_N_max − MOTOR_N_min)`. Abort: `MS`/`HT` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
 
-### Live axis count (`axis`)
+### Live counts (`motors` / `servos`)
 
-`axis` is `1`, `2`, or `3` (default `1`). Extra axes are independent STEP/DIR planner axes on Pico / Pico W / Pico 2 / Pico 2 W / RP2040-Zero / RP2350 Mini. Session cruise/accel (`SS`/`SA`) are shared; mechanics, envelopes, pin polarities, and homing use numbered keys (`max_speed_2`, `slider_min_3`, `home_mode_2`, …). Query `IA` / Is Axis → `IA:1|2|3`. Welcome banner gains `- N Axis`. `IP` returns one field per live axis. Pin reclaim / DBG coexistence: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md). Joystick: [motion-joy.md](motion-joy.md).
+`motors` is `1`, `2`, or `3` (default `1`). `servos` is `0`..`3` (default `0`). Packed `IA` / `CG axis` = sum (1..6). Extra motors are independent STEP/DIR planner axes; servos are PWM channels on the same packed protocol. Session cruise/accel (`SS`/`SA`) follow the **time-sync master**. Mechanics and envelopes use `MOTOR_N_*` / `SERVO_N_*`. Welcome banner is `{motors}+{servos} axis`. `IP` / `GL` / `GR` return pipe groups. Pin map: [pins.md](pins.md). Narrative: [dual-movement.md](dual-movement.md). Joystick: [motion-joy.md](motion-joy.md).
 
-`CS axis` updates RAM/`mc.ini` immediately (`IA` / banner reflect the new value), but **PIO state machines and extra-axis GPIO take effect only after reboot** (`RB` / `Reboot`, or power-cycle). Dual/triple `MT` before reboot can show targets while extra poses stay at 0. Same pattern as `WDT_use` (see above).
+`CS motors` / `CS servos` update RAM/`mc.ini` and **re-init GPIO / PIO / PWM immediately** (no `RB`). **`CS axis` is rejected.**
 
 ## Persistence
 

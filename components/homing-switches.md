@@ -17,12 +17,12 @@ SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/
 | `home_mode_N` | Reference | Finish pose | Needs |
 |-------------|-----------|-------------|-------|
 | `0` | none | — (`MH` no-op; use `SP`) | — |
-| `1` | `SW_LIMIT_L` | `slider_min_N` | `SW_LIMIT_L_N_use=1` |
-| `2` | `SW_LIMIT_R` | `slider_max_N` | `SW_LIMIT_R_N_use=1` |
-| `3` | stall / `DRV_ERROR` seek left | `slider_min_N` | stall line on `DRV_ERROR` |
-| `4` | stall / `DRV_ERROR` seek right | `slider_max_N` | stall line on `DRV_ERROR` |
+| `1` | `SW_LIMIT_L` | `MOTOR_N_min` | `SW_LIMIT_L_N_use=1` |
+| `2` | `SW_LIMIT_R` | `MOTOR_N_max` | `SW_LIMIT_R_N_use=1` |
+| `3` | stall / `DRV_ERROR` seek left | `MOTOR_N_min` | stall line on `DRV_ERROR` |
+| `4` | stall / `DRV_ERROR` seek right | `MOTOR_N_max` | stall line on `DRV_ERROR` |
 
-Pico axis 1: `PIN_SW_LIMIT_L` GP26, `PIN_SW_LIMIT_R` GP27, `PIN_DRV_ERROR` GP21. Axis 2 (`CS axis 2` then `RB`): LIMIT GP7/6, `DRV_ERROR2` GP10. Axis 3 (`CS axis 3`): GP0–5. Zero remap: see [pins.md](../mc/pins.md).
+Pico motor 1: `PIN_SW_LIMIT_L_1` GP2, `PIN_SW_LIMIT_R_1` GP3, `PIN_DRV_ERROR_1` GP12. Motor 2 (`CS motors 2`): LIMIT GP6/7, `DRV_ERROR_2` GP13. Motor 3 (`CS motors 3`): LIMIT GP10/11, `DRV_ERROR_3` GP14. Zero remap: see [pins.md](../mc/pins.md).
 
 ### Mechanical NC/NO to GND (limit-home)
 

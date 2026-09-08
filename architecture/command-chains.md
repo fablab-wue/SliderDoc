@@ -62,8 +62,8 @@ MT 500; WP 250; EO1 1; WT 0.15; EO1 0; WM
 | `EO1 1; MT 500; WM; EO1 0` | Hold record/start for the whole move |
 | `MH; WH; SA100; MT 300; WC; SA5; WM` | Home, then the soft-stop seek |
 | `SS20; MT 300; WP 100; SS50; BE; WP 200; SS20; WM` | 1/3–2/3 speed profile with a beep at the speed-up mark |
-| `MT 400 90; WP 200; SS 15; WM` | Dual-axis: after axis-1 halfway, slow both (`WP` is axis 1 only) |
+| `MT 400 90; WP 200; SS 15; WM` | Dual-axis: after master halfway, slow both (`WP` is the time-sync master) |
 
-`WP` watches **axis 1** only. A second number on `WP` is an optional **timeout**, not axis-2 position. See [dual-movement.md](../mc/dual-movement.md).
+`WP` watches the **time-sync master** (first motor with a distance, else first servo). A second number on `WP` is an optional **timeout**, not a second-axis position. See [dual-movement.md](../mc/dual-movement.md).
 
 Loops and take-counts stay on the UIC (JKSlider), not a longer chain.

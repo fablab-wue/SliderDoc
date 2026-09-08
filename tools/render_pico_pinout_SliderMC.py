@@ -34,26 +34,26 @@ OUT_TXT = DOCS / "assets"
 
 # Left / right edge, top→bottom (USB at top). Official 40-pin header map.
 LEFT = [
-    ("GP0", "SW_LIMIT_R3*"),
-    ("GP1", "SW_LIMIT_L3*"),
+    ("GP0", "DRV_STEP_1"),
+    ("GP1", "DRV_DIR_1"),
     ("GND", "GND"),
-    ("GP2", "DRV_ERROR3"),
-    ("GP3", "DRV_EN3"),
-    ("GP4", "DRV_DIR3"),
-    ("GP5", "DRV_STEP3"),
+    ("GP2", "SW_LIMIT_L_1*"),
+    ("GP3", "SW_LIMIT_R_1*"),
+    ("GP4", "DRV_STEP_2"),
+    ("GP5", "DRV_DIR_2"),
     ("GND", "GND"),
-    ("GP6", "SW_LIMIT_R2*"),
-    ("GP7", "SW_LIMIT_L2*"),
-    ("GP8", "EXT_0"),
-    ("GP9", "EXT_1"),
+    ("GP6", "SW_LIMIT_L_2*"),
+    ("GP7", "SW_LIMIT_R_2*"),
+    ("GP8", "DRV_STEP_3"),
+    ("GP9", "DRV_DIR_3"),
     ("GND", "GND"),
-    ("GP10", "DRV_ERROR2"),
-    ("GP11", "DRV_EN2"),
-    ("GP12", "DRV_DIR2"),
-    ("GP13", "DRV_STEP2"),
+    ("GP10", "SW_LIMIT_L_3*"),
+    ("GP11", "SW_LIMIT_R_3*"),
+    ("GP12", "DRV_ERROR_1"),
+    ("GP13", "DRV_ERROR_2"),
     ("GND", "GND"),
-    ("GP14", "EXT_2"),
-    ("GP15", "EXT_3"),
+    ("GP14", "DRV_ERROR_3"),
+    ("GP15", "DRV_ENABLE"),
 ]
 
 RIGHT = [
@@ -65,15 +65,15 @@ RIGHT = [
     ("ADC_VREF", "ADC_VREF"),
     ("GP28", "BUZZER*"),
     ("AGND", "ADC GND"),
-    ("GP27", "SW_LIMIT_R*"),
-    ("GP26", "SW_LIMIT_L*"),
+    ("GP27", "SERVO_2"),
+    ("GP26", "SERVO_1"),
     ("RUN", "RUN"),
     ("GP22", "CAMERA_CTRL"),
     ("GND", "GND"),
-    ("GP21", "DRV_ERROR"),
-    ("GP20", "DRV_EN"),
-    ("GP19", "DRV_DIR"),
-    ("GP18", "DRV_STEP"),
+    ("GP21", "EXT_1"),
+    ("GP20", "EXT_2"),
+    ("GP19", "EXT_3"),
+    ("GP18", "SERVO_3/EXT_4"),
     ("GND", "GND"),
     ("GP17", "UART_RX"),
     ("GP16", "UART_TX"),
@@ -113,10 +113,12 @@ def render_ascii() -> str:
         [
             "                         +-----------+",
             "",
-            "Legend: EXT_0…3 on GP8/9/14/15 (X0…X3); UART 115200 baud GP16/17; motor DRV on GP18–20.",
-            "CS axis 2 + RB: GP6/7 + GP10–13. CS axis 3: STEP3/DIR3/EN3/ERR3/L3/R3 on GP5–0.",
-            "SW_LIMIT_*_N off until CS …_use=1. GP21 DRV_ERROR always polled. GP22 CAMERA_CTRL reserved.",
-            "Pico 2 / Pico 2 W reuse this map (2 W LED GP28). Pin names match IX / VG.",
+            "Legend: motor1 GP0–3 STEP/DIR/LIMIT; motor2 GP4–7; motor3 GP8–11.",
+            "DRV_ERROR_1..3 GP12–14; shared DRV_ENABLE GP15. UART 115200 baud GP16/17.",
+            "EXT_1…3 on GP21/20/19. GP18 SERVO_3 when servos>=3 (steals EXT_4 / EO4).",
+            "SERVO_1/2 GP26/27 (100 Hz PWM, ~2.5' / 0.04 deg per count). SW_LIMIT_*_N off until CS …_use=1.",
+            "GP22 CAMERA_CTRL trigger (OC / pullup, low-active → status T). Pico 2 / 2 W reuse this map.",
+            "Pin names match IG / VG.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -137,7 +139,7 @@ def render_png(path: Path):
     margin = 24
     title_h = 56
     gap = 4
-    fun_w = 118
+    fun_w = 128
     gp_w = 52
     pin_w = 28
     box_h = min(22, _PIN_PITCH - 6)
@@ -146,6 +148,7 @@ def render_png(path: Path):
     legend = [
         ("EXT_*", C_EXT),
         ("DRV_*", C_DRV),
+        ("SERVO_*", C_CTRL),
         ("UART_*", C_UART),
         ("SW_*", C_SW),
         ("CAMERA_CTRL", C_CTRL),

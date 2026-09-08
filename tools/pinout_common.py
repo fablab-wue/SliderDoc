@@ -223,6 +223,8 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_GND
     if gpio == "3V3_EN" or lab == "3V3_EN" or gpio == "RUN":
         return C_CTRL_PIN
+    if lab.startswith("SERVO_"):
+        return C_CTRL
     if lab.startswith("EXT_"):
         return C_EXT
     if lab.startswith("DRV_"):

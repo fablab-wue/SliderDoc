@@ -15,7 +15,7 @@ App: [`B4Slider.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4Slider
 Shared motion / LED stack: [../../api/overview.md](../../api/overview.md). Installer hub: [../jkslider/technical/README.md](../jkslider/technical/README.md).  
 One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([HTML source](cheat-sheet/cheat-sheet.html)).
 
-B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. On a **2-axis** build add optional *MOVE_L2* and *MOVE_R2* (GP8/GP9) when SliderMC is `CS axis 2` then `RB` — typical **linear travel + pan**. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window per axis (see [Workflow: A / B](#workflow-a--b-working-window)).
+B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, one **SPEED** pot, and an RGB status LED. On a **2-motor** build add optional *MOVE_L2* and *MOVE_R2* (GP8/GP9) when SliderMC is `CS motors 2` — typical **linear travel + pan**. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window per axis (see [Workflow: A / B](#workflow-a--b-working-window)).
 
 > *Italic* in this manual = optional **2nd axis** (pan). Skip those rows if your build is 1-axis only.
 
@@ -23,14 +23,14 @@ Optional second pot (**ACCEL**) when `B4S_USE_ACCEL_POT=1`. OLED is not required
 
 The panel Pico talks to a **motion board** (SliderMC) over UART, or to an MKS SERVO via [MC_MKS_Client](../../libraries/mks-servo-rs485.md). If that link is unplugged, the UI may still start, but moves will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-**2-axis:** enable with `CS axis 2` on SliderMC and reboot (`RB`). B4Slider auto-detects `axis_count==2`, homes axis 1 then axis 2 at boot (`B4S_HOMING_ENABLED`), and exposes *MOVE_L2/R2* with the same tap/hold/latch semantics as axis 1. Dual moves (*MOVE_L*+*MOVE_L2* or *MOVE_R*+*MOVE_R2*) are [time-synced](../../../mc/dual-movement.md) after both *pan* soft limits are marked — see [2-axis mode](#2-axis-mode-pan). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
+**2-motor:** enable with `CS motors 2` on SliderMC (no reboot). B4Slider auto-detects `getMotorCount()>=2`, homes axis 1 then axis 2 at boot (`B4S_HOMING_ENABLED`), and exposes *MOVE_L2/R2* with the same tap/hold/latch semantics as axis 1. Dual moves (*MOVE_L*+*MOVE_L2* or *MOVE_R*+*MOVE_R2*) are [time-synced](../../../mc/dual-movement.md) after both *pan* soft limits are marked — see [2-axis mode](#2-axis-mode-pan). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
 
 ## Getting started
 
 1. Power on — status LED does a rainbow while locked (if unlock is enabled).
 2. **Unlock** — press **OPTION** (` * `). (Disable with `B4S_BOOT_UNLOCK = False`.)
-3. **Homing** (if `B4S_HOMING_ENABLED`) — axis 1, then *axis 2* when `axis_count==2`.
-4. Soft limits start at **full slider travel** (MC session window = `slider_min_1` / `slider_max_1` per axis). The shot window lives on the MC (`SL` / `SR`) until reboot — nothing is written to `mc.ini`.
+3. **Homing** (if `B4S_HOMING_ENABLED`) — axis 1, then *axis 2* when `getMotorCount()>=2`.
+4. Soft limits start at **full slider travel** (MC session window = `MOTOR_1_min` / `MOTOR_1_max` per motor). The shot window lives on the MC (`SL` / `SR`) until reboot — nothing is written to `mc.ini`.
 5. Dial **SPEED**, then use MOVE / SET as below.
 
 **OPTION** is a modifier: hold it with another control. Alone it does nothing (except unlock at boot).
@@ -130,7 +130,7 @@ While holding SET for accel, the LED flashes **white once per second** so you ca
 
 ## 2-axis mode (pan)
 
-Requires SliderMC `CS axis 2` and a reboot (`RB`). B4Slider wires *MOVE_L2* (GP8) and *MOVE_R2* (GP9).
+Requires SliderMC `CS motors 2`. B4Slider wires *MOVE_L2* (GP8) and *MOVE_R2* (GP9).
 
 ### Sync vs setup
 

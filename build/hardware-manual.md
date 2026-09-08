@@ -17,7 +17,7 @@ Panel wiring and firmware config: [../uic/projects/jkslider/technical/README.md]
 On-set operation: [../uic/projects/jkslider/user-manual.md](../uic/projects/jkslider/user-manual.md).  
 Electronics architecture (UIC + SliderMC): [../architecture/overview.md](../architecture/overview.md).
 
-JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. `CS axis 2` then `RB` optionally enables a **second** STEP/DIR axis (e.g. pan; `axis=3` also exists) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
+JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. `CS motors 2` optionally enables a **second** STEP/DIR motor (e.g. pan; `motors=3` also exists) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
 
 ---
 
@@ -177,7 +177,7 @@ Suggestions beyond the sections above — useful checklist when you design a kit
 | Hardware choice | Main config knobs |
 |-----------------|-------------------|
 | Pitch / belt / microsteps | `steps_per_unit_1` (and related keys) in **SliderMC** config |
-| Travel | MC `slider_min_1` / `slider_max_1` (UIC reads via `CG`) |
+| Travel | MC `MOTOR_1_min` / `MOTOR_1_max` (UIC reads via `CG`) |
 | Home end | `home_mode_1`, `SW_LIMIT_*_1_use` / polarity, or `SP` if no switch (MC) |
 | Speed / torque feel | driver current, MC `max_speed_1` / `max_accel_1`, ACCEL pot range |
 | Quiet vs aggressive stop | driver mode, MC halt / DRV_ERROR decel |

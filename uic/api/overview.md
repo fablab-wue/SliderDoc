@@ -70,7 +70,7 @@ await mc.wait()
 
 Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 115 200 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
 
-**Optional 2-axis** is a first-class capability: typical **axis 1 = linear travel**, **axis 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `CS axis 2` then reboot (`RB`). `axis=3` also exists. `mc.axis_count` / `getAxisCount()` come from CG `axis` (`1` until `fetchConfig`) — do **not** treat live `IA` as source of truth (config can say 2 before reboot). Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema for extra axes (`#I p1 | p2 | p3` when `axis=3`). Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Live axis count](../../contract/protocol.md#live-axis-count-axis).
+**Optional 2-motor** is a first-class capability: typical **motor 1 = linear travel**, **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `CS motors 2` (no `RB`). Packed `mc.axis_count` / `getAxisCount()` is motors+servos from CG `axis`; **`getMotorCount()`** is STEP/DIR. Do **not** send `CS axis`. Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema (`#I p1 | p2`; empty `||` = idle 0). Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Live axis count](../../contract/protocol.md#live-axis-count-axis).
 
 Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `MB`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `HT`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
 
@@ -83,7 +83,7 @@ mc.setSpeed(40)
 mc.enable(True)
 mc.moveTo(100)
 await mc.wait()
-# 2-axis example (axis_count == 2):
+# 2-motor example (getMotorCount() >= 2):
 # mc.set_axis_status_callback(on_axis)  # cb(axis, state, pos, speed, accel, dest)
 # mc.moveTo(100, 45)                   # MT 100 45  (time-synced)
 # mc.moveTo(None, 45)                  # MT _ 45
@@ -159,7 +159,7 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `moveTo(position, position2=None)` | Absolute move (mm). 2-axis: `moveTo(pos, pos2)` → `MT pos pos2` (time-synced); `moveTo(None, pos2)` → `MT _ pos2`. 1-axis ignores `position2`. Live-retargetable. |
 | `moveBy(dist, dist2=None)` | Relative move (mm). Same skip/`pos2` rules as `moveTo` (`MB`). Live-retargetable. |
 | `move(speed)` | Continuous velocity: `SS` then `MJ ±100` (`MS` at 0). See below. Analogue stick on SliderMC should stream protocol `MJ` instead — [motion-joy.md](../../mc/motion-joy.md). |
-| `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` / `home(3)` → `MH n`. Extra axes are a no-op if `axis_count` is below that n. Returns the asyncio task. |
+| `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` / `home(3)` → `MH n`. Extra motors are a no-op if `getMotorCount()` is below that n. Returns the asyncio task. |
 | `stop()` | Decelerate to standstill using `setAcceleration()`. Non-blocking. |
 | `halt()` | Emergency halt (`HT`) — hard abort, enable off. Non-blocking. |
 | `await wait()` | Wait until the current motion finishes. |
@@ -211,7 +211,9 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `isNearSoftLimit()` | `True` within `SOFT_LIMIT_WARN_MM` of a soft limit. |
 | `isAtHardLimit()` | `True` while a hard limit is active outside of homing. |
 | `isDRVErrorActive()` | `True` while the MC `DRV_ERROR` input is held (motion APIs ignored). |
-| `axis_count` / `getAxisCount()` | Live axis count from CG `axis` (`1` until `fetchConfig`). |
+| `axis_count` / `getAxisCount()` | Packed live channels from CG `axis` (`motors+servos`, `1` until `fetchConfig`). |
+| `motors` / `getMotorCount()` | STEP/DIR count from CG `motors`. Gate dual-motor UI on this, not packed `axis_count`. |
+| `servos` / `getServoCount()` | RC servo count from CG `servos`. |
 | `getPosition()` | Axis-1 position (user units, typically mm). |
 | `getPosition2()` | Axis-2 position (0.0 if unknown). |
 | `getSpeed()` | Axis-1 actual speed from verbose cache. |
@@ -604,7 +606,7 @@ Shipped defaults live in `MC_config.py` / `UIC_config.py` / `JKSliderConfig.py`.
 | `PIN_LED_ONBOARD` | `"LED"` | Pico onboard LED (heartbeat) |
 | `DEBUG_LEVEL` | 3 | USB debug verbosity |
 
-Mechanics (`steps_per_unit_1`), `max_speed_1` / `max_accel_1`, `unit_name`, `slider_min_1` / `slider_max_1`, and `slider_min_2` / `slider_max_2` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, `axis_count` from CG `axis`). Python object fields `mc.max_speed` / `mc.slider_min` stay filled from the `*_1` keys. `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
+Mechanics (`steps_per_unit_1`), `max_speed_1` / `max_accel_1`, `unit_name`, `MOTOR_1_min` / `MOTOR_1_max`, and `MOTOR_2_min` / `MOTOR_2_max` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, packed `axis_count` from CG `axis`, `motors`/`servos` from those keys). Python object fields `mc.max_speed` / `mc.slider_min` stay filled from motor 1 / packed channel 1. `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
 
 ### JKSlider panel (`JKSliderConfig.py`)
 

@@ -11,7 +11,7 @@ The project uses these terms deliberately and consistently:
 | Term | Meaning | Typical owner |
 |------|---------|---------------|
 | **Hard limit** | Physical end-stop or home/limit switch | MC hardware |
-| **Envelope** | Rail limits configured in `slider_min_1` / `slider_max_1` | Installer / `CS` |
+| **Envelope** | Rail limits configured in `MOTOR_1_min` / `MOTOR_1_max` | Installer / `CS` |
 | **Working window** | Session soft ends (`SL` / `SR`) that clip travel for a shot | B4Slider / MC session |
 | **Mark** | Waypoint stored in the app (A / B / C) | JKSlider |
 

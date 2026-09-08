@@ -10,7 +10,7 @@
 
 [← Components index](index.md)
 
-Standard NEMA17 (or similar) + separate STEP/DIR board. Wire STEP/DIR/EN to the **SliderMC** board — not the UIC. For a second motor when `CS axis 2` then `RB`, wire the second driver to the axis-2 pins for your board — see [pins.md](../mc/pins.md).
+Standard NEMA17 (or similar) + separate STEP/DIR board. Wire STEP/DIR/EN to the **SliderMC** board — not the UIC. For a second motor when `CS motors 2`, wire the second driver to the motor-2 pins for your board — see [pins.md](../mc/pins.md).
 
 SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
 
