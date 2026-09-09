@@ -52,7 +52,7 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`pico_pinout_mc.t
 | `PIN_EXT_1` | 21 | Extender `EO1` |
 | `PIN_CAMERA_CTRL` | 22 | Reserved camera control (inited inactive; no protocol command) |
 | `PIN_LED` | `LED_BUILTIN` (GP25) | Status / heartbeat LED (onboard) |
-| `PIN_SERVO_1` | 26 | RC servo 1 PWM (100 Hz, wrap 65535; ~2.5′ / 0.04° per count over ±135°) |
+| `PIN_SERVO_1` | 26 | RC servo 1 PWM (100 Hz, wrap 65535; ~1.25′ / 0.021° per count over ±135° at 500–2500 µs) |
 | `PIN_SERVO_2` | 27 | RC servo 2 PWM |
 | `PIN_BUZZER` | 28 | Optional piezo (`BE` / Beep); gated by `BUZZER_use` (default off) |
 
@@ -102,7 +102,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`rp2040zero
 | `PIN_EXT_2` | 18 | Extender `EO2` |
 | `PIN_EXT_3` | 19 | Extender `EO3` |
 | `PIN_EXT_4` | 20 | Extender `EO4` |
-| `PIN_SERVO_1` | 21 | RC servo 1 PWM (100 Hz, wrap 65535; ~2.5′ / 0.04° per count over ±135°) |
+| `PIN_SERVO_1` | 21 | RC servo 1 PWM (100 Hz, wrap 65535; ~1.25′ / 0.021° per count over ±135° at 500–2500 µs) |
 | `PIN_SERVO_2` | 22 | RC servo 2 PWM |
 | `PIN_SERVO_3` | 23 | RC servo 3 PWM |
 | `PIN_CAMERA_CTRL` | 25 | Reserved camera control (inited inactive; no protocol command) |
@@ -129,6 +129,6 @@ Optional **buzzer** is gated by `BUZZER_use` (default off); `BE` pulses `PIN_BUZ
 
 STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motor 3 STEP follows motor 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
 
-RC servos use hardware PWM at **100 Hz**, wrap **65535**. Default envelope ±135° (1000–2000 µs). Resolution ≈ **2.5 arc minutes (′)** / 0.04° per count. `SE 0` stops PWM (limp).
+RC servos use hardware PWM at **100 Hz**, wrap **65535**. Envelope ±135° maps linearly onto `SERVO_N_min_pulse`…`max_pulse` (default **500–2500 µs**; analog often 1000–2000). Default span resolution ≈ **1.25 arc minutes (′)** / 0.021° per count. `SERVO_N_swap` reverses sense; `SERVO_N_active` inverts the pulse. `SE 0` stops PWM (limp).
 
 Oscilloscope `DEBUG_HW` pins are **off by default** (commented out in `pins.h`) and are not shown on the pinout images. Define `DEBUG_HW` at compile time if you need them; they then appear in `IX`/`VG` only.

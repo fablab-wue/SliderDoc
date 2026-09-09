@@ -62,7 +62,7 @@ Default is **3**.
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
 | `WDT_use` | 0/1 | 1 | `1` = arm WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
 | `motors` | 1\|2\|3 | 1 | Live STEP/DIR count. `IA` / `CG axis` / banner use `motors+servos`. **Re-inits GPIO/PIO without `RB`.** |
-| `servos` | 0..3 | 0 | RC servo PWM channels. Pico GP26/27/18 (18 steals EXT_4 when `servos>=3`); Zero GP21–23. PWM 100 Hz, wrap 65535; ~**2.5′** / 0.04° per count over ±135°. |
+| `servos` | 0..3 | 0 | RC servo PWM channels. Pico GP26/27/18 (18 steals EXT_4 when `servos>=3`); Zero GP21–23. PWM 100 Hz, wrap 65535; default 500–2500 µs → ~**1.25′** / 0.021° per count over ±135°. |
 | `axis` | int (read) | 1 | Synthesized packed sum (`motors+servos`). `CG axis` and bare `CG` dump emit it. **`CS axis` is rejected.** |
 | `name` | string | *(empty)* | Optional device name in welcome banner (max 31 printable ASCII chars; no `#`) |
 | `DRV_STEP_1_active` | 0/1 | 1 | Axis-1 STEP active level (PIO program) |
@@ -82,10 +82,13 @@ Default is **3**.
 | `steps_per_unit_2` / `_3` | float | 320 | Axis-2 / 3 steps per user unit (synonym `steps_per_mm_N`) |
 | `MOTOR_2_min` / `MOTOR_3_min` | float or `none` | 0 | Motor-2 / 3 envelope min (packed `axis_min_N`) |
 | `MOTOR_2_max` / `MOTOR_3_max` | float or `none` | 600 | Motor-2 / 3 envelope max |
-| `SERVO_1_min` / `_2` / `_3` | float or `none` | -135 | Servo envelope min (degrees; 1000–2000 µs). Packed after motors. |
-| `SERVO_1_max` / `_2` / `_3` | float or `none` | 135 | Servo envelope max |
+| `SERVO_1_min` / `_2` / `_3` | float or `none` | -135 | Servo envelope min (degrees). Packed after motors. Maps onto `SERVO_N_min_pulse` unless `swap=1`. |
+| `SERVO_1_max` / `_2` / `_3` | float or `none` | 135 | Servo envelope max (maps onto `SERVO_N_max_pulse` unless swap) |
 | `SERVO_N_max_speed` / `SERVO_N_max_accel` | float | *(servo defaults)* | Servo planner ceilings |
-| `SERVO_N_active` | 0/1 | 1 | `1` = high pulse |
+| `SERVO_N_active` | 0/1 | 1 | Electrical PWM polarity: `1` = high pulse, `0` = invert |
+| `SERVO_N_min_pulse` | int µs | 500 | Pulse at envelope min (400–2600; must stay `< max_pulse`). Digital default; analog typically 1000. |
+| `SERVO_N_max_pulse` | int µs | 2500 | Pulse at envelope max. Analog typically 2000. |
+| `SERVO_N_swap` | 0/1 | 0 | `1` = reverse mechanical sense (min angle ↔ long pulse). Not the same as `active`. |
 | `home_mode_2` / `home_mode_3` | 0..4 | 0 | Motor-2 / 3 homing mode (servos are not homed) |
 | `home_move_out_N` / `home_speed_N` / `home_accel_N` | float | *(same as axis 1)* | Homing parameters for axes 2 and 3 |
 | `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
@@ -93,6 +96,8 @@ Default is **3**.
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
 | `path_buffer_size` | int | 32000 | Logical `PD` sample cap **per axis** (≤ pool/`n`); pool is 65536 samples split by live `axis`. See [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); session field set via `PS`; bare `PS` reloads this |
+
+RC servo pulse defaults are **500–2500 µs** (modern digital, ~1.25′ over ±135°). Classic analog: `CS SERVO_1_min_pulse 1000` / `CS SERVO_1_max_pulse 2000` (~2.5′). `SERVO_N_swap 1` reverses horn sense; `SERVO_N_active` only inverts the PWM level.
 
 ### Pin active levels
 

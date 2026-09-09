@@ -667,7 +667,7 @@ def build_markdown() -> str:
         "- Skip token `_` only (`MT`/`MB`/`PD`/`SL`/`SR`). Named `X`/`Y`/`Z`/`A`/`B`/`C` is an alternative (not mixed with positional). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md)."
     )
     lines.append(
-        "- Envelopes / units: `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`, `steps_per_unit_N`, `unit_name`. `CS axis` and `CS slider_*` are rejected."
+        "- Envelopes / units: `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`, `steps_per_unit_N`, `unit_name`. Servo pulse `SERVO_N_min_pulse`/`max_pulse` (default 500–2500 µs; analog 1000–2000); `SERVO_N_swap` reverses sense. `CS axis` and `CS slider_*` are rejected."
     )
     lines.append("")
     return "\n".join(lines)

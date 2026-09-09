@@ -8,7 +8,7 @@ Protocol 3 dropped `CS axis`. Use `CS motors 1|2|3` and `CS servos 0..3`. Packed
 
 ## How fine is RC servo PWM?
 
-A 270° (±135°) servo over ~6554 PWM counts in the 1–2 ms pulse is about **0.04° per count ≈ 2.5 arc minutes**, not arc seconds. PWM is 100 Hz, wrap 65535. See [pins.md](../mc/pins.md).
+A 270° (±135°) servo over the default **0.5–2.5 ms** pulse (~13107 PWM counts) is about **0.021° per count ≈ 1.25 arc minutes**, not arc seconds. Classic analog 1–2 ms stays ~2.5′ (`CS SERVO_1_min_pulse 1000` / `max_pulse 2000`). PWM is 100 Hz, wrap 65535. See [pins.md](../mc/pins.md) and [config.md](../mc/config.md).
 
 ## What happens to Pico EXT_4 when `servos>=3`?
 

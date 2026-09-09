@@ -18,7 +18,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **API** | Application programming interface | The documented methods and config for writing your own code on top of `MC_Client` / `UIC_Base` (see [`../uic/api/overview.md`](../uic/api/overview.md)). JKSlider is one application that uses this API. |
 | **IA** | IsAxis | SliderMC query `IA` → packed live count `motors+servos` (`CG axis` is the same sum). |
 | **motors** | STEP/DIR count | Config `motors` = `1\|2\|3`. Enable extras with `CS motors 2` or `CS motors 3` (no `RB`). Typical **linear travel + pan**, time-synced dual `MT`/`M` — not CNC. UIC: `MC_Client.getMotorCount()`. |
-| **servos** | RC PWM count | Config `servos` = `0..3`. Packed after motors (`A`/`B`/`C`). PWM ~2.5′ resolution over ±135°. |
+| **servos** | RC PWM count | Config `servos` = `0..3`. Packed after motors (`A`/`B`/`C`). PWM ~1.25′ over ±135° at 500–2500 µs. |
 | **axis** | Packed channel count | Read-only sum `motors+servos` (`IA` / `CG axis`). **`CS axis` is rejected.** UIC: `MC_Client.axis_count`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#live-axis-count-axis). |
 | **unit_name** | User-unit label | SliderMC config (`CG unit_name`); default `mm`. UIC readout for user units used with `steps_per_unit_1`. |
 | **DIR** | Direction | Digital STEP/DIR line that selects motor travel sense (forward vs reverse). SliderMC `PIN_DRV_DIR` (GP19); polarity via `DRV_DIR_1_active` / `CS`. |

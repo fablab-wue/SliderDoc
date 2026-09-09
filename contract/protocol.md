@@ -277,7 +277,7 @@ Verbose / `?` while in path-mode (state letter `P`) use the same layouts as othe
 | `CG` | Config Get | `key` or bare | Get key → `CG:key=value`; bare dumps all keys. |
 | `RB` | Reboot | — | Soft MCU reset (no power cycle): halt/EN off, then reboot. Next `IC` → `soft`. |
 
-Important keys: `init_speed`, `init_accel`, `max_speed_1`, `max_accel_1`, `max_speed_2`, `max_accel_2`, `max_speed_3`, `max_accel_3`, `steps_per_unit_1`, `unit_name`, `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`/`axis_max_N`, `motors`, `servos`, `axis` (read-only sum; dump emits it), `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin keys with the digit **before** the suffix (`DRV_STEP_1_active`, `SW_LIMIT_R_3_use`), `BUZZER_use`, `home_mode_1` / `home_move_out_1` / `home_speed_1` / `home_accel_1`, matching `_2` / `_3` keys, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Synonyms: `steps_per_mm_N`, `soft_min_N` / `soft_max_N` (aliases of packed `axis_min_N`). **`CS axis` and `CS slider_*` are rejected.** See [config.md](../mc/config.md).
+Important keys: `init_speed`, `init_accel`, `max_speed_1`, `max_accel_1`, `max_speed_2`, `max_accel_2`, `max_speed_3`, `max_accel_3`, `steps_per_unit_1`, `unit_name`, `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, `SERVO_N_min_pulse`/`SERVO_N_max_pulse`/`SERVO_N_swap`, synthesized `axis_min_N`/`axis_max_N`, `motors`, `servos`, `axis` (read-only sum; dump emits it), `name`, `init_verbose`, `init_terminal`, `init_debug_level`, pin keys with the digit **before** the suffix (`DRV_STEP_1_active`, `SW_LIMIT_R_3_use`), `BUZZER_use`, `home_mode_1` / `home_move_out_1` / `home_speed_1` / `home_accel_1`, matching `_2` / `_3` keys, `ramp_start_hz`, `stop_approach_hz`, `dir_change_pause_s`. Synonyms: `steps_per_mm_N`, `soft_min_N` / `soft_max_N` (aliases of packed `axis_min_N`). **`CS axis` and `CS slider_*` are rejected.** See [config.md](../mc/config.md).
 
 A UIC may shrink travel with session `SL` / `SR` (working window) — not by rewriting envelopes. See [working-window.md](../mc/working-window.md) and [marks vs working window](../architecture/marks-vs-working-window.md).
 
@@ -351,7 +351,7 @@ Allowed while error active: `IE`, `IA`, `ID`, `IC`, `IG`, `VA`/`VF`/`VP`, `VG`, 
 
 Packed live channels = `motors + servos` (1..6). `IA` replies that sum; bare `CG` dump includes synthesized `axis=<sum>`. Extra-arg `MT`/`MB`/`PD`/`MJ`/`SL`/`SR`/`SP` apply (motors then servos). `WP` uses the **time-sync master**. `IG` / `VG` list extra motor / servo pins only while fitted; `PIN_CAMERA_CTRL` is always listed (reserved, no protocol command). See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives packed channels independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
 
-**Servo PWM:** 100 Hz, wrap 65535. Default envelope ±135° (1000–2000 µs pulse). Resolution over that 270° span is **~2.5 arc minutes (′)** per PWM count (~0.04°). `SE 0` stops PWM (limp); `SE 1` restores the last pulse. Boot pose 0° is clamped to the envelope. Path buffer is split across packed channels (`PATH_AXES` 6).
+**Servo PWM:** 100 Hz, wrap 65535. Envelope ±135° maps onto `SERVO_N_min_pulse`…`max_pulse` (default **500–2500 µs**; analog 1000–2000). Default-span resolution is **~1.25 arc minutes (′)** per PWM count (~0.021°). `SERVO_N_swap` reverses mechanical sense; `SERVO_N_active` inverts polarity. `SE 0` stops PWM (limp); `SE 1` restores the last pulse. Boot pose 0° is clamped to the envelope. Path buffer is split across packed channels (`PATH_AXES` 6).
 
 ---
 
