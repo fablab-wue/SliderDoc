@@ -90,7 +90,7 @@ Not a third product — pick the UIC that matches the shoot and the plate.
 | Pick | When |
 |------|------|
 | **JKSlider / marks** | Narrative moves, timelapse with three poses, need to jog **past** the shot, OLED ETAs between marks, operators who want Kessler-style A/B **as waypoints** |
-| **B4Slider / working window** | 4-button plate, no OLED, “left and right **are** the A/B window,” ping-pong loops between ends, slim or budget remote |
+| **B4Slider / working window** | AXIS-select plate, optional OLED, “left and right **are** the A/B window” on the current mask, ping-pong loops between ends, slim or multi-axis remote |
 
 **Do not put both models on one panel without a mode switch.** Mixing “A is a mark” and “L is a wall” on the same keys is how operators overshoot or trap the carriage.
 

@@ -127,7 +127,7 @@ UART to SliderMC is on **GP16 (TX) / GP17 (RX)** on this UIC — wire **crossed*
 
 #### Button mode
 
-![Pico pinout button mode](../../../../assets/img/pico_pinout_button.png)
+![Pico pinout button mode](../../../../assets/img/JKS_Pico_pinout_button.png)
 
 ```
 Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
@@ -146,7 +146,7 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
   BTN_MOVE_L       GP6      9 |o         o| 32 GP27     POT_ACCEL
   BTN_MOVE_R       GP7     10 |o         o| 31 GP26     POT_SPEED
   BTN_FAST_L       GP8     11 |o         o| 30 RUN      RUN
-  BTN_FAST_R       GP9     12 |o         o| 29 GP22     CTRL_CAMERA
+  BTN_FAST_R       GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
   BTN_A            GP10    14 |o         o| 27 GP21     free
   BTN_B            GP11    15 |o         o| 26 GP20     free
@@ -161,19 +161,19 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
 Note: Do not use the RUN pin! Motion STEP/DIR/EN, SW_LIMIT_*, and DRV_ERROR live on the **SliderMC** Pico.  
 `GP16`/`GP17` are this board’s UART TX/RX — connect **crossed** to the MC (see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)).
 
-Also: [../../../../assets/pico_pinout_button.txt](../../../../assets/pico_pinout_button.txt).
+Also: [../../../../assets/JKS_Pico_pinout_button.txt](../../../../assets/JKS_Pico_pinout_button.txt).
 
 #### RP2040-Zero UIC (button mode)
 
 Compact alternative to a full Pico. Same JKSlider app; **GPIO numbers differ** — overlay via `SliderPins.py` (`RP2040_ZERO_*` dicts in [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/SliderPins.example.py)). `JKS_INPUT_MODE = "button"` (no keypad matrix on this map). UART0 is **GP12/13** (not Pico GP16/17); OLED is **I2C1** on GP14/15 (`DSP_I2C_ID = 1`). DELAY / TIMELAPSE sit on underside SMD pads GP25 / GP24.
 
-![RP2040-Zero pinout button mode](../../../../assets/img/JKSlider_rp2040zero_pinout_button.png)
+![RP2040-Zero pinout button mode](../../../../assets/img/JKS_RP2040zero_pinout_button.png)
 
-Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py button` → [`JKSlider_rp2040zero_pinout_button.txt`](../../../../assets/JKSlider_rp2040zero_pinout_button.txt) + PNG.
+Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py button` → [`JKS_RP2040zero_pinout_button.txt`](../../../../assets/JKS_RP2040zero_pinout_button.txt) + PNG.
 
 #### Keypad mode
 
-![Pico pinout keypad mode](../../../../assets/img/pico_pinout_keypad.png)
+![Pico pinout keypad mode](../../../../assets/img/JKS_Pico_pinout_keypad.png)
 
 ```
 Raspberry Pi Pico — JKSlider UIC pinout (top view, USB at top)
@@ -192,7 +192,7 @@ KEYPAD mode  |  defaults in UIC_config.py + JKSliderConfig.py
   KP_ROW1          GP6      9 |o         o| 32 GP27     POT_ACCEL
   KP_ROW2          GP7     10 |o         o| 31 GP26     POT_SPEED
   KP_ROW3          GP8     11 |o         o| 30 RUN      RUN
-  KP_ROW4          GP9     12 |o         o| 29 GP22     CTRL_CAMERA
+  KP_ROW4          GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
   KP_COL1          GP10    14 |o         o| 27 GP21     free
   KP_COL2          GP11    15 |o         o| 26 GP20     free
@@ -214,7 +214,7 @@ KEYPAD mode  |  defaults in UIC_config.py + JKSliderConfig.py
 Note: Do not use the RUN pin!  
 `GP16`/`GP17` are this board’s UART TX/RX — connect **crossed** to the MC (see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)).
 
-Also: [../../../../assets/pico_pinout_keypad.txt](../../../../assets/pico_pinout_keypad.txt).
+Also: [../../../../assets/JKS_Pico_pinout_keypad.txt](../../../../assets/JKS_Pico_pinout_keypad.txt).
 
 ### Button mode pins (summary)
 
@@ -235,7 +235,7 @@ Buttons: active-low to GND, internal pull-ups. Config names: `PIN_BTN_*`.
 
 12 mm (1U) grid; 12 mm pots and buttons; 5 mm RGB LED. Clear edge-to-edge gaps; 1U margin to the plate edge (8U × 9U / 96 × 108 mm).
 
-![Recommended discrete button layout](../../../../assets/img/JKSlider_button_layout.png)
+![Recommended discrete button layout](../../../../assets/img/JKS_button_layout.png)
 
 | Silk | Function |
 |------|----------|
@@ -311,6 +311,8 @@ Active-high output on **GP22** (`PIN_CTRL_CAMERA`). Drive a **4-pin optocoupler*
 
 Tip/ring/sleeve wiring depends on the camera body — check that remote pinout. Keep the phototransistor floating relative to the Pico unless your remote is designed to share grounds.
 
+On **SliderMC**, shutter is `PIN_CAMERA_CTRL` / `CT`: same opto (LED high-side) or a **FET 5 V level-shifter** — [mc/pins.md](../../../../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
+
 | Mode | CTRL_CAMERA |
 |------|-------------|
 | TL×1 (video) | High while moving; **stays high** during DELAY soft-pause; low when idle |
@@ -368,7 +370,7 @@ Note: For reducing ESD problems add a capacitor (100 nF) to GND and a capacitor 
 | GP10–GP12 | KP_COL1 … KP_COL3 |
 | GP13 | BTN_OPTION (also matrix `*`; ORed in software) |
 
-Freed vs button mode: **GP14, GP15**. UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 = CTRL_CAMERA. Optional NeoPixel: free GPIO (e.g. GP18–21) via `PIN_NEOPIXEL`.
+Freed vs button mode: **GP14, GP15**. UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 is **free** on the pinout (camera is SliderMC `PIN_CAMERA_CTRL`). Optional NeoPixel: free GPIO (e.g. GP18–21) via `PIN_NEOPIXEL`.
 
 #### Recommended key labeling
 

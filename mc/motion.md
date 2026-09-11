@@ -86,14 +86,14 @@ kept separate from the sine-ramp planner above. This is a **second planner**, no
   `motion_path_diffuse_cycles`, host-testable) so rounding per slice never
   biases the total distance or total playback time. A stand-still slice's
   owed time is carried forward and added ahead of the next real step word.
-- **Ending path-mode:** on buffer exhaustion, or on `MS`/`HT` while active,
+- **Ending path-mode:** on buffer exhaustion, or on `MS`/`ME` while active,
   `motion_path_abort_to_planner()` hands the current position/velocity to
   `planner_takeover_from_path()`, then the normal `planner_request_stop()` /
   `planner_request_halt()` decelerates from that speed exactly like a live
   move — path-mode never invents its own stop/halt ramp.
 - **Gating:** while `PG` is active, all other move/session commands are
-  rejected (`!E:busy`); only `MS`, `HT`, `PD` (live-move streaming), `PN`,
-  status queries, `HL`/`$`, and `CG` are allowed (`MJ` included in the busy
+  rejected (`!E:busy`); only `MS`, `ME`, `RB`, `PD` (live-move streaming), `PN`,
+  status queries, `HL`/`?`, `CG`, `BE`, and `CT` are allowed (`MJ` included in the busy
   set). Speed/accel limits are **not**
   checked — the host is
   trusted to deliver an already-limited path, same stance as elsewhere.
@@ -140,8 +140,8 @@ Enabled per side and axis with `SW_LIMIT_L_N_use` / `SW_LIMIT_R_N_use` (GPIOs fi
 
 ## Stop vs Halt
 
-- **`MS` / realtime `!` / `ESC`:** soft decelerate via stop-distance law; enable unchanged; normal jog/move workflow. Also **ends joy-mode** (`MJ`).
-- **`HT` / hard limit / `PIN_DRV_ERROR`:** `planner_halt()` — immediate FIFO abort, EN off, cancel waits/chain.
+- **`MS` / realtime `!`:** soft decelerate via stop-distance law; enable unchanged; normal jog/move workflow. Also **ends joy-mode** (`MJ`).
+- **`ME` / realtime `ESC` / hard limit / `PIN_DRV_ERROR`:** `planner_halt()` — immediate FIFO abort, EN off, cancel waits/chain.
 
 ## `PIN_DRV_ERROR`
 
@@ -169,7 +169,7 @@ The reference limit does not raise a hard-limit fault during seek (it ends seek)
 4. Drive out `home_move_out_N` (DIAG ignored for a short window after re-enable).
 5. Set pose to `MOTOR_N_min` (3) or `MOTOR_N_max` (4).
 
-A real EMO still applies if `DRV_ERROR` asserts while **not** in this stall seek/reset, or if the line stays asserted after the EN pulse times out. Hitting a hard limit during stall-home aborts (`!E:home hard`). `MS` soft-cancels; `HT` emergency-halts.
+A real EMO still applies if `DRV_ERROR` asserts while **not** in this stall seek/reset, or if the line stays asserted after the EN pulse times out. Hitting a hard limit during stall-home aborts (`!E:home hard`). `MS` soft-cancels; `ME` emergency-halts.
 
 Use stall-home only on drivers that expose a stall line on `DRV_ERROR` (TMC2209 DIAG; MKS SERVO57D `OUT_1`). TMC2208, SERVO42C, and SERVO42D STEP/DIR have no usable stall pin — use modes 1/2 or `SP`. See [homing-switches.md](../components/homing-switches.md) and [integrated-drivers.md](../components/integrated-drivers.md).
 

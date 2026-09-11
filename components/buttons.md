@@ -14,7 +14,7 @@
 
 Discrete one-GPIO-per-switch panel (`JKS_INPUT_MODE = "button"`). Active-low to GND; Pico internal pull-ups.
 
-![Pico pinout — button mode](../assets/img/pico_pinout_button.png)
+![Pico pinout — button mode](../assets/img/JKS_Pico_pinout_button.png)
 
 | Function | Default GP | Config |
 |----------|------------|--------|
@@ -28,7 +28,7 @@ Discrete one-GPIO-per-switch panel (`JKS_INPUT_MODE = "button"`). Active-low to 
 
 Recommended panel (12 mm / 1U grid; pots and buttons Ø12 mm; RGB LED Ø5 mm). Clear edge-to-edge gaps; 1U margin to the plate (8U × 9U). Wire both OPTION switches in parallel to `PIN_BTN_OPTION`.
 
-![Recommended discrete button layout](../assets/img/JKSlider_button_layout.png)
+![Recommended discrete button layout](../assets/img/JKS_button_layout.png)
 
 | Silk | Function |
 |------|----------|

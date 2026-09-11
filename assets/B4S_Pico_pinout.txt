@@ -13,24 +13,25 @@ BUTTON mode  |  defaults in UIC_config.py + B4SliderConfig.py
   GND              GND      8 |o         o| 33 AGND     ADC GND
   BTN_MOVE_L       GP6      9 |o         o| 32 GP27     POT_ACCEL
   BTN_MOVE_R       GP7     10 |o         o| 31 GP26     POT_SPEED
-  BTN_MOVE_L2      GP8     11 |o         o| 30 RUN      RUN
-  BTN_MOVE_R2      GP9     12 |o         o| 29 GP22     CTRL_CAMERA
+  BTN_AXIS_5       GP8     11 |o         o| 30 RUN      RUN
+  BTN_AXIS_4       GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
-  free             GP10    14 |o         o| 27 GP21     free
-  free             GP11    15 |o         o| 26 GP20     free
-  free             GP12    16 |o         o| 25 GP19     free
-  BTN_OPTION       GP13    17 |o         o| 24 GP18     free
+  BTN_AXIS_3       GP10    14 |o         o| 27 GP21     free
+  BTN_AXIS_2       GP11    15 |o         o| 26 GP20     free
+  BTN_AXIS_1       GP12    16 |o         o| 25 GP19     ENC_ACCEL_B
+  BTN_OPTION       GP13    17 |o         o| 24 GP18     ENC_ACCEL_A
   GND              GND     18 |o         o| 23 GND      GND
-  free             GP14    19 |o         o| 22 GP17     UART_RX
-  free             GP15    20 |o         o| 21 GP16     UART_TX
+  ENC_SPEED_A      GP14    19 |o         o| 22 GP17     UART_RX
+  ENC_SPEED_B      GP15    20 |o         o| 21 GP16     UART_TX
                          +-----------+
 
 Legend: SPEED on GP26; optional ACCEL on GP27; UART to SliderMC on GP16 (TX) / GP17 (RX) @ 115200 baud.
 Motion STEP/DIR/EN, SW_LIMIT_*, DRV_ERROR live on the SliderMC Pico — not on this UIC.
-B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION) on 1-axis;
-  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC CS motors 2.
-  SPEED pot, optional ACCEL pot (GP27, B4S_USE_ACCEL_POT).
-  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, or joystick.
-  SET on GP5 (was STOP on JKSlider).
-GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL.
+B4Slider: SET / MOVE_L / MOVE_R / OPTION plus AXIS_1..5 (GP12/11/10/9/8).
+  Legal AXIS chords: packed getAxisCount() (motors+servos, up to 6; no AXIS_6 key).
+  SPEED pot GP26; optional ACCEL pot GP27 (B4S_SPEED_INPUT / B4S_ACCEL_INPUT).
+  Optional QD: ENC_SPEED GP14/15, ENC_ACCEL GP18/19 (pin_b = pin_a+1).
+  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, joystick, or UIC camera pin.
+  SET on GP5 (was STOP on JKSlider). Shutter is SliderMC PIN_CAMERA_CTRL / CT.
+GP22 free (shutter is SliderMC PIN_CAMERA_CTRL / CT, not a UIC GPIO). Optional NeoPixel: use a free GPIO and set PIN_NEOPIXEL.
 Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …). Key silk: ` S `, ` < `, ` > `, ` * `.

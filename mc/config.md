@@ -173,7 +173,7 @@ There is no dedicated home-switch pin. Homing uses a hard limit (modes 1/2) or d
 
 `SW_HOME_*` keys are gone (not remapped). `CS home_mode_N 3` / `4` means stall-home.
 
-`MH` / Move Home requires `SE 1`. Optional motor arg `1` (default), `2`, or `3` when that motor is live. Servos cannot be homed. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out_N` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out_N`. Seek is capped at 110% of `(MOTOR_N_max − MOTOR_N_min)`. Abort: `MS`/`HT` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
+`MH` / Move Home requires `SE 1`. Optional motor arg `1` (default), `2`, or `3` when that motor is live. Servos cannot be homed. Limit-home cycle: optional drive-out of the opposite hard limit → seek toward the reference → reverse off the switch plus `home_move_out_N` → set pose. Stall-home: seek until `DRV_ERROR` → **do not** take the EMO halt path → pulse `DRV_EN` (~200 ms) → wait until the error line is stably clear → drive out `home_move_out_N`. Seek is capped at 110% of `(MOTOR_N_max − MOTOR_N_min)`. Abort: `MS`/`ME` (silent), `!E:home travel`, `!E:home hard` (wrong limit), `!E:home stall` (error never clears). Chip notes: [homing-switches.md](../components/homing-switches.md). See [MOTION.md](MOTION.md).
 
 ### Live counts (`motors` / `servos`)
 

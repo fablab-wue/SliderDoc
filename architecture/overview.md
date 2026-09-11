@@ -116,7 +116,7 @@ Optional USB debug to both Picos (see overview diagram). UIC uses the MicroPytho
 
 ## Pin budget
 
-- **UIC:** After GP16/17 UART (and default camera / OLED / RGB), remaining GPIOs are free for panel I/O — see [UIC button](../assets/img/pico_pinout_button.png) and [keypad](../assets/img/pico_pinout_keypad.png) pinouts.
+- **UIC:** After GP16/17 UART (and default OLED / RGB), remaining GPIOs are free for panel I/O — see [UIC button](../assets/img/JKS_Pico_pinout_button.png) and [keypad](../assets/img/JKS_Pico_pinout_keypad.png) pinouts. Camera shutter is SliderMC `PIN_CAMERA_CTRL`.
 - **MC:** Default map in [PINS.md](../mc/pins.md). GPIO assignment is fixed in SliderMC source (`include/pins.h`) and is **not** changeable via protocol commands.
 
 ## UIC platform path
@@ -207,17 +207,17 @@ flowchart LR
 
 | Board | Drawing |
 |-------|---------|
-| **UIC** (button) | [img/pico_pinout_button.png](../assets/img/pico_pinout_button.png) |
-| **UIC** (keypad) | [img/pico_pinout_keypad.png](../assets/img/pico_pinout_keypad.png) |
-| **MC** | [SliderMC `../assets/img/pico_pinout_mc.png`](../assets/img/pico_pinout_mc.png) (see [PINS.md](../mc/pins.md)) |
+| **UIC** (button) | [img/JKS_Pico_pinout_button.png](../assets/img/JKS_Pico_pinout_button.png) |
+| **UIC** (keypad) | [img/JKS_Pico_pinout_keypad.png](../assets/img/JKS_Pico_pinout_keypad.png) |
+| **MC** | [SliderMC `../assets/img/MC_Pico_pinout.png`](../assets/img/MC_Pico_pinout.png) (see [PINS.md](../mc/pins.md)) |
 
-Sibling clone paths: `../assets/img/pico_pinout_mc.png`, `../mc/pins.md`.
+Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../mc/pins.md`.
 
 ## Wire protocol (summary)
 
 - ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
 - **Startup:** a `\n` on UIC UART or USB unlocks the MC; MC replies with welcome `# …` banner; UIC then sends `SV 1`.
-- Commands: `MT`, `MB`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `HT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
+- Commands: `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
 - Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]` — extra packed channels append ` | ` groups (`#I p1 | p2`; empty `||` = idle 0)
 - Errors: `!E:<code> <text>`
 
@@ -227,4 +227,4 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 
 ## Camera pin
 
-`PIN_CTRL_CAMERA` defaults to **GP22** on the UIC. With SliderMC, EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**, so UIC GP22 remains independent and free for the shutter.
+Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC Pico **GP22** and Zero **GP29** are **free** on JKS and B4S pinouts. JKSlider firmware can still pulse `PIN_CTRL_CAMERA` if you wire it; B4Slider does not. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.

@@ -25,7 +25,7 @@ Competitive scan of commercial and DIY motorized sliders vs **JKSlider V1** (UIC
 | Strong | MicroPython UIC (maker / DIY panel) |
 | Gap | Remote; panel still primarily 1-axis |
 
-**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive a **2nd STEP/DIR motor** (`CS motors 2` on Pico or Zero; `motors=3` also exists); shipping JKSlider/B4Slider panels remain primarily **1-motor** UX. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
+**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive extra STEP/DIR motors (`CS motors 2` on Pico or Zero; `motors=3` also exists); shipping JKSlider remains primarily **1-motor** UX. B4Slider selects packed axes 1–5. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
 
 ---
 
@@ -162,7 +162,7 @@ Gaps vs what buyers expect from “motorized camera slider” products and from 
 | Priority | Missing capability | Why it matters | Who has it |
 |----------|--------------------|----------------|------------|
 | **P1** | Wireless / app remote | Tight spaces, solo interview B-cam, phone as joystick. Pico W could host BLE/Wi‑Fi later. | Edelkrone app, Accsoon TopRig, iFootage Moco (Nano 2 / Pico Pro), Neewer / GVM apps, Zeapon app, Rhino Arc II, Syrp, QuadMeUp ESP32 web UI |
-| **P1** | Dual-axis **panel** UX (pan orbit / tracking) | SliderMC optional 2nd STEP/DIR (`CS motors 2`) is available; JKSlider/B4Slider still drive primarily one motor. | Accsoon 55° pan, Zeapon AXIS (pan / Pro tilt), Nano 2 + DJI RS, Pico Pro 360° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
+| **P1** | Dual-axis **panel** UX (pan orbit / tracking) | SliderMC extra STEP/DIR (`CS motors 2`) is available; JKSlider stays 1-motor. B4Slider AXIS 1–5 is packed-channel selection (typical silk 1/2/3). | Accsoon 55° pan, Zeapon AXIS (pan / Pro tilt), Nano 2 + DJI RS, Pico Pro 360° pan, Rhino Arc, Edelkrone HeadONE/PLUS, DollyDuino orbit |
 | **P2** | More keyframes / path edit | A/B/C is strong for set work; VFX/macro wants 5+ keyframes and ease per segment. | Nano 2 (8 points), Rhino Arc II (5 KF), Edelkrone, Kessler CineDrive, ESP32 3-axis DIY |
 | **P2** | Incline / vertical mode + holding torque UX | Safety when hand-control or power loss could back-drive. | Edelkrone SliderONE v3, Kessler worm drives, Accsoon vertical rating, Zeapon / Nano 2 vertical payload ratings |
 | **P3** | Turnkey battery + mechanics SKU | Product gap vs controller-only positioning — not a firmware gap. | Accsoon NP-F kits, Pico Pro built-in pack, Neewer / GVM NP-F kits, Nano 2 PD/NP-F, Rhino/Syrp/Edelkrone/Zeapon complete systems |

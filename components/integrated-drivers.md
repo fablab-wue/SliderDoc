@@ -12,7 +12,7 @@
 
 JKSlider / SliderMC drive motion as **open-loop STEP/DIR** (plus EN and optional ERROR). Integrated closed-loop steppers / BLDC or servo drives that expose a STEP/DIR interface work the same way; the host does **not** read an encoder.
 
-Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
+Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/MC_Pico_pinout.png) · [CONFIG.md](../mc/config.md) · [ARCHITECTURE.md](../architecture/overview.md)
 
 ### Shared SliderMC nets (axis)
 

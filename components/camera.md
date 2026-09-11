@@ -10,7 +10,26 @@
 
 [← Components index](index.md)
 
-**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22). SliderMC GP22 is unused (free). Overview: [ARCHITECTURE.md](../architecture/overview.md).
+Shutter / intervalometer for timelapse and video. On the **split stack**, camera is **SliderMC** `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC Pico GP22 and Zero GP29 are free on JKS and B4S pinouts. Overview: [ARCHITECTURE.md](../architecture/overview.md) · MC wiring: [pins.md — PIN_CAMERA_CTRL](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
+
+## SliderMC (`PIN_CAMERA_CTRL`)
+
+Low-active open-collector sink. Two ways to reach the camera:
+
+| Path | Use when |
+|------|----------|
+| **Optocoupler (PC817)** | Isolated dry contact (typical shutter cable tip/sleeve); no shared ground required |
+| **FET level-shifter (BSS138 / 2N7000)** | Camera or box wants **5 V TTL/CMOS**; shared GND OK |
+
+![CTRL_CAMERA optocoupler wiring](../assets/img/camera_optocoupler_wiring.svg)
+
+![PIN_CAMERA_CTRL FET level-shifter](../assets/img/camera_fet_level_shifter.svg)
+
+Intended out-side pull-up is **5 V**. FET `V_DS`: BSS138 **50 V**, 2N7000 **60 V**. Pico pad is **3.3 V only** — never put 5 V on `PIN_CAMERA_CTRL`. Full ASCII, pinouts, and voltage notes: [mc/pins.md](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
+
+## UIC (`PIN_CTRL_CAMERA`) — JKSlider
+
+**UIC** wiring — `PIN_CTRL_CAMERA` is on the panel Pico (default GP22) if you still pulse the shutter from JKSlider firmware. B4Slider does not.
 
 Shutter / intervalometer output for timelapse and video move modes.
 

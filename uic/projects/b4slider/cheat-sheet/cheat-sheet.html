@@ -148,60 +148,59 @@
     padding: 0 1px;
     border-radius: 2px;
   }
-  em.axis2, td em, .note em, li em {
-    font-style: italic;
-    color: #1d4ed8;
-  }
 </style>
 </head>
 <body>
 
-<h1>B4Slider Cheat Sheet <span class="sub">set card · <em class="axis2">italic</em> = 2nd axis (pan)</span></h1>
+<h1>B4Slider Cheat Sheet <span class="sub">set card · AXIS 1–5 packed · silk 1 2 3 typical</span></h1>
 
-<img class="hero" src="../../../../assets/img/B4Slider_button_layout_2axis.svg" alt="Recommended B4Slider 2-axis panel layout">
+<img class="hero" src="../../../../assets/img/B4S_button_layout_3axis.svg" alt="Recommended B4Slider 3-axis panel layout">
 
 <div class="block">
 <h2>Panel</h2>
-<p class="note">Silk: <kbd>S</kbd> SET · <kbd>&lt;</kbd> MOVE_L · <kbd>&gt;</kbd> MOVE_R · <kbd>*</kbd> OPTION. <em class="axis2">2-axis: <kbd>&lt;2</kbd> MOVE_L2 · <kbd>&gt;2</kbd> MOVE_R2 below OPTION (GP8/GP9).</em> ACCEL pot optional. Unlock: OPTION (rainbow LED). Homing: axis 1 then <em class="axis2">axis 2</em> at boot.</p>
+<p class="note">Silk: <kbd>S</kbd> SET · <kbd>&lt;</kbd> MOVE_L · <kbd>&gt;</kbd> MOVE_R · <kbd>*</kbd> OPTION · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> AXIS (recommended plate). Firmware also wires AXIS_4/5. Legal chord: each key ≤ packed <code>getAxisCount()</code>. Invalid = blue blink. Boot = axis 1. OLED <kbd>Ax 1+5</kbd>. Unlock: OPTION. Homing: motors only. Shutter: SliderMC <code>CT</code>, not a UIC pin.</p>
+</div>
+
+<div class="block">
+<h2>AXIS select</h2>
+<table>
+  <tr><th>Action</th><th>Key</th><th>Description</th></tr>
+  <tr><td class="a">Hold AXIS keys</td><td class="k"><kbd>1</kbd>…<kbd>5</kbd></td><td class="d">Selection = currently pressed; white flash N times</td></tr>
+  <tr><td class="a">Release all AXIS</td><td class="k">—</td><td class="d">Keep last valid mask</td></tr>
+  <tr><td class="a">Illegal chord</td><td class="k">e.g. <kbd>5</kbd> on 2-axis MC</td><td class="d">Blue blink; mask unchanged</td></tr>
+</table>
+<p class="note">MOVE / SET+MOVE act on the selection. Unselected <code>MT</code> slots are skip <code>_</code> (time-synced). No AXIS_6 key.</p>
 </div>
 
 <div class="block">
 <h2>Move</h2>
 <table>
   <tr><th>Action</th><th>Key</th><th>Description</th></tr>
-  <tr><td class="a">(MOVE_L / MOVE_R) tap ≤⅓s</td><td class="k"><kbd>&lt;</kbd> / <kbd>&gt;</kbd> tap</td><td class="d">Locked cruise toward that soft end at SPEED</td></tr>
+  <tr><td class="a">(MOVE_L / MOVE_R) tap ≤⅓s</td><td class="k"><kbd>&lt;</kbd> / <kbd>&gt;</kbd> tap</td><td class="d">Locked cruise of selection toward that soft end</td></tr>
   <tr><td class="a">(MOVE_L / MOVE_R) hold &gt;⅓s</td><td class="k"><kbd>&lt;</kbd> / <kbd>&gt;</kbd> hold</td><td class="d">Hold-to-run; soft-stop on release</td></tr>
   <tr><td class="a">Same MOVE tip while locked</td><td class="k"><kbd>&lt;</kbd> or <kbd>&gt;</kbd> tip</td><td class="d">Soft-stop cruise</td></tr>
   <tr><td class="a">Opposite MOVE</td><td class="k"><kbd>&lt;</kbd> or <kbd>&gt;</kbd></td><td class="d">Reverse / retarget other soft end</td></tr>
   <tr><td class="a">OPTION + (MOVE_L / MOVE_R)</td><td class="k"><kbd>*</kbd> + <kbd>&lt;</kbd> / <kbd>&gt;</kbd></td><td class="d">Same as MOVE at panel max speed</td></tr>
-  <tr><td class="a">OPTION hold while moving</td><td class="k"><kbd>*</kbd> hold</td><td class="d">Boost to max speed; release → SPEED pot</td></tr>
+  <tr><td class="a">OPTION hold while moving</td><td class="k"><kbd>*</kbd> hold</td><td class="d">Boost to max speed; release → SPEED</td></tr>
   <tr><td class="a">SET while moving</td><td class="k"><kbd>S</kbd></td><td class="d">Soft-stop</td></tr>
   <tr><td class="a">MOVE_L + MOVE_R</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd></td><td class="d">Halt; driver off until any key</td></tr>
   <tr><td class="a">MOVE_L + MOVE_R hold ≥1s</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Swap left/right</td></tr>
   <tr><td class="a">All four (L+R+OPTION+SET)</td><td class="k"><kbd>&lt;</kbd> <kbd>&gt;</kbd> <kbd>*</kbd> <kbd>S</kbd></td><td class="d">Halt + reset like power-up</td></tr>
-  <tr><td class="a"><em>MOVE_L2 / MOVE_R2</em> tap ≤⅓s</td><td class="k"><em><kbd>&lt;2</kbd> / <kbd>&gt;2</kbd> tap</em></td><td class="d"><em>Locked cruise on pan axis</em></td></tr>
-  <tr><td class="a"><em>MOVE_L + MOVE_L2</em> tap</td><td class="k"><em><kbd>&lt;</kbd>+<kbd>&lt;2</kbd> tap</em></td><td class="d"><em>Dual cruise — time-sync after pan A+B set</em></td></tr>
-  <tr><td class="a"><em>MOVE_L + MOVE_L2</em> hold &gt;⅓s</td><td class="k"><em>both held</em></td><td class="d"><em>Dual hold; release either stops both</em></td></tr>
-  <tr><td class="a"><em>MOVE_L2 + MOVE_R2</em></td><td class="k"><em><kbd>&lt;2</kbd> <kbd>&gt;2</kbd></em></td><td class="d"><em>Halt</em></td></tr>
-  <tr><td class="a"><em>MOVE_L2 + MOVE_R2</em> hold ≥1s</td><td class="k"><em><kbd>&lt;2</kbd> <kbd>&gt;2</kbd> hold ≥1s</em></td><td class="d"><em>Swap pan L/R</em></td></tr>
 </table>
-<p class="note">Tap vs hold: <code>B4S_MOVE_TAP_MS</code> (333 ms). <em>Dual chord: timer starts when 2nd button joins — first button alone does not move while assembling L+L2.</em> OPTION before MOVE = max speed + max accel; OPTION during move = speed boost only.</p>
+<p class="note">Tap vs hold: <code>B4S_MOVE_TAP_MS</code> (333 ms). OPTION before MOVE = max speed + max accel; OPTION during move = speed boost only.</p>
 </div>
 
 <div class="block">
 <h2>Soft limits (A / B window)</h2>
 <table>
   <tr><th>Action</th><th>Key</th><th>Description</th></tr>
-  <tr><td class="a">SET + MOVE_L tap</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> tap</td><td class="d">Set soft_limit_L here</td></tr>
-  <tr><td class="a">SET + MOVE_R tap</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> tap</td><td class="d">Set soft_limit_R here</td></tr>
-  <tr><td class="a">SET + MOVE_L hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> hold ≥1s</td><td class="d">Reset L → slider min</td></tr>
-  <tr><td class="a">SET + MOVE_R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset R → slider max</td></tr>
-  <tr><td class="a">SET + L + R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset both ends</td></tr>
-  <tr><td class="a"><em>SET + MOVE_L2</em> tap</td><td class="k"><em><kbd>S</kbd> <kbd>&lt;2</kbd> tap</em></td><td class="d"><em>Set pan soft_limit_L2</em></td></tr>
-  <tr><td class="a"><em>SET + MOVE_R2</em> tap</td><td class="k"><em><kbd>S</kbd> <kbd>&gt;2</kbd> tap</em></td><td class="d"><em>Set pan soft_limit_R2</em></td></tr>
-  <tr><td class="a"><em>SET + L2 + R2</em> hold ≥1s</td><td class="k"><em><kbd>S</kbd> <kbd>&lt;2</kbd> <kbd>&gt;2</kbd> hold ≥1s</em></td><td class="d"><em>Reset both pan ends</em></td></tr>
+  <tr><td class="a">SET + MOVE_L tap</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> tap</td><td class="d">Set left end here on selected axes</td></tr>
+  <tr><td class="a">SET + MOVE_R tap</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> tap</td><td class="d">Set right end here on selected axes</td></tr>
+  <tr><td class="a">SET + MOVE_L hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> hold ≥1s</td><td class="d">Reset L → envelope min (or −2000)</td></tr>
+  <tr><td class="a">SET + MOVE_R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset R → envelope max (or +2000)</td></tr>
+  <tr><td class="a">SET + L + R hold ≥1s</td><td class="k"><kbd>S</kbd> <kbd>&lt;</kbd> <kbd>&gt;</kbd> hold ≥1s</td><td class="d">Reset both ends on selection</td></tr>
 </table>
-<p class="note">Travel only inside the working window. <em>Mark both pan limits → dual L+L2 / R+R2 finish together; before that, both axes run at pot speed.</em></p>
+<p class="note">Travel only inside the working window. Missing envelope side → ±2000 fallback.</p>
 </div>
 
 <div class="block">
@@ -209,9 +208,9 @@
 <table>
   <tr><th>Action</th><th>Key</th><th>Description</th></tr>
   <tr><td class="a">SET tap (idle)</td><td class="k"><kbd>S</kbd> tap</td><td class="d">Nothing</td></tr>
-  <tr><td class="a">SET hold ≥1s (idle)</td><td class="k"><kbd>S</kbd> hold ≥1s</td><td class="d">Accel preset L — no ACCEL pot</td></tr>
-  <tr><td class="a">SET hold ≥3s (idle)</td><td class="k"><kbd>S</kbd> hold ≥3s</td><td class="d">Accel preset H — no ACCEL pot</td></tr>
-  <tr><td class="a">SET hold ≥5s (idle)</td><td class="k"><kbd>S</kbd> hold ≥5s</td><td class="d">Accel learn from SPEED pot — no ACCEL pot</td></tr>
+  <tr><td class="a">SET hold ≥1s (idle)</td><td class="k"><kbd>S</kbd> hold ≥1s</td><td class="d">Accel preset L — only if accel is <code>set</code></td></tr>
+  <tr><td class="a">SET hold ≥3s (idle)</td><td class="k"><kbd>S</kbd> hold ≥3s</td><td class="d">Accel preset H — only if <code>set</code></td></tr>
+  <tr><td class="a">SET hold ≥5s (idle)</td><td class="k"><kbd>S</kbd> hold ≥5s</td><td class="d">Accel learn from SPEED pot — only if <code>set</code></td></tr>
   <tr><td class="a">OPTION + SET tap</td><td class="k"><kbd>*</kbd> <kbd>S</kbd> tap</td><td class="d">Disable driver</td></tr>
   <tr><td class="a">OPTION + SET hold ≥1s</td><td class="k"><kbd>*</kbd> <kbd>S</kbd> hold ≥1s</td><td class="d">Toggle loop armed</td></tr>
   <tr><td class="a">Any key while disabled</td><td class="k">—</td><td class="d">Re-enable driver</td></tr>
@@ -220,11 +219,11 @@
 </div>
 
 <div class="block">
-<h2>Pots</h2>
+<h2>Speed / accel</h2>
 <table>
   <tr><th>Control</th><th>Description</th></tr>
-  <tr><td class="a">SPEED</td><td class="d">Left → slower floor; right → faster (finer at low end)</td></tr>
-  <tr><td class="a">ACCEL</td><td class="d">If <code>B4S_USE_ACCEL_POT=1</code>: left gentler / right snappier. SET accel holds off.</td></tr>
+  <tr><td class="a">SPEED pot / rotary</td><td class="d"><code>B4S_SPEED_INPUT</code> pot (default) or rotary. Rotary boot vmax/8; clamp [vmax/128, vmax]; green blink on clamp enter.</td></tr>
+  <tr><td class="a">ACCEL pot / rotary / set</td><td class="d"><code>B4S_ACCEL_INPUT</code>. Pico ENC 14/15 + 18/19; Zero ENC 24/25 + 22/23.</td></tr>
 </table>
 </div>
 
@@ -234,24 +233,18 @@
   <li>Normal moving
     <ul>
       <li>Unlock with OPTION if LED is rainbow</li>
-      <li>Dial SPEED (and ACCEL pot, or SET 1s/3s presets if no pot)</li>
-      <li>Tap MOVE to cruise to a soft end; hold MOVE to jog</li>
+      <li>Select AXIS (or leave 1); dial SPEED</li>
+      <li>Tap MOVE to cruise; hold MOVE to jog</li>
       <li>Same tip stops; opposite reverses; SET stops; L+R halt</li>
     </ul>
   </li>
-  <li>Frame A / B
+  <li>Frame A / B on selection
     <ul>
-      <li>Jog to first pose; <kbd>S</kbd> <kbd>&lt;</kbd> tap → soft_limit_L</li>
-      <li>Jog to second pose; <kbd>S</kbd> <kbd>&gt;</kbd> tap → soft_limit_R</li>
+      <li>Hold the AXIS keys you are framing</li>
+      <li>Jog to first pose; <kbd>S</kbd> <kbd>&lt;</kbd> tap → left ends</li>
+      <li>Jog to second pose; <kbd>S</kbd> <kbd>&gt;</kbd> tap → right ends</li>
       <li>Rehearse: MOVE tap cruises to that end</li>
       <li>Optional loop: idle <kbd>*</kbd> <kbd>S</kbd> hold ≥1s, then MOVE tap</li>
-    </ul>
-  </li>
-  <li><em>Pan A / B (2-axis)</em>
-    <ul>
-      <li><em><kbd>S</kbd> <kbd>&lt;2</kbd> tap → pan soft_limit_L2; <kbd>S</kbd> <kbd>&gt;2</kbd> tap → soft_limit_R2</em></li>
-      <li><em>LED +blue idle = dual chords time-sync</em></li>
-      <li><em><kbd>&lt;</kbd>+<kbd>&lt;2</kbd> tap = coordinated travel + pan</em></li>
     </ul>
   </li>
 </ul>
@@ -268,11 +261,13 @@
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span>Green</td><td class="m">Steady speed</td></tr>
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#2563eb"></span>+30% / 100% blue</td><td class="m">Near / at soft end</td></tr>
   <tr><td class="c"><span class="dot" style="background:#22c55e"></span><span class="dot dim" style="background:#3b82f6"></span>+10% blue</td><td class="m">Loop running</td></tr>
-  <tr><td class="c"><span class="dot dim" style="background:#f5f5f5; border-color:#999"></span><span class="dot dim" style="background:#3b82f6"></span><em>+10% blue idle</em></td><td class="m"><em>Pan window set — dual sync armed</em></td></tr>
   <tr><td class="c"><span class="dot dim" style="background:#ff8c00"></span>Dim orange</td><td class="m">Driver off</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red fast blink</td><td class="m">Hard limit</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#ef4444"></span>Red blink</td><td class="m">Homing</td></tr>
   <tr><td class="c"><span class="dot" style="background:#ef4444"></span>Red</td><td class="m">DRV_ERROR / E-stop</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#f5f5f5; border-color:#999"></span>White flash ×N</td><td class="m">AXIS selection changed (N ≤ 5)</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#2563eb"></span>Blue blink</td><td class="m">Illegal AXIS chord</td></tr>
+  <tr><td class="c"><span class="dot blink" style="background:#22c55e"></span>Green blink</td><td class="m">Encoder clamp enter</td></tr>
   <tr><td class="c"><span class="dot" style="background:#f5f5f5; border-color:#999"></span>White blip</td><td class="m">Soft limit set / reset</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#f5f5f5; border-color:#999"></span>White flash /s</td><td class="m">SET hold second counter</td></tr>
   <tr><td class="c"><span class="dot blink" style="background:#7c3aed"></span>Violet ×1 / ×2 / ×3</td><td class="m">Accel preset L / H / learn</td></tr>
@@ -281,8 +276,8 @@
 </div>
 
 <div class="block">
-<img class="pinout" src="../panel-layouts/pico_pinout_B4.png" alt="Pico pinout — B4Slider">
-<p class="note">UART to SliderMC @ 115 200 baud (GP16/17 crossed). <em>GP8/GP9 = MOVE_L2/R2 when axis2 on.</em> Handshake: UIC <code>\n</code> → MC welcome <code># …</code> banner.</p>
+<img class="pinout" src="../panel-layouts/B4S_Pico_pinout.png" alt="Pico pinout — B4Slider">
+<p class="note">UART to SliderMC @ 115 200 baud (GP16/17 crossed). AXIS 12/11/10/9/8 · ENC 14/15 and 18/19 · GP22 free. Handshake: UIC <code>\n</code> → MC welcome <code># …</code> banner.</p>
 </div>
 
 <footer>

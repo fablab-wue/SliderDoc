@@ -30,7 +30,7 @@ Shipped defaults: [`MC_config.py`](../MC_config.py) (link) and [`UIC_config.py`]
 | `JKSliderConfig.py` | JKSlider panel defaults (`JKS_*`) |
 | `JKSlider.py` | Camera-slider control panel application |
 | `B4SliderConfig.py` | B4Slider panel defaults (`B4S_*`) |
-| `B4Slider.py` | 4-button slider app (L/R/OPTION/SET + SPEED pot) |
+| `B4Slider.py` | AXIS-select slider app (MOVE L/R, OPTION, SET, AXIS_1..5 + SPEED pot or rotary) |
 | `SliderPins.example.py` | Template for one full overlay file per slider HW |
 | `QD.py` | `QD` quadrature decoder + `Denoiser` — see [QD.md](../libraries/qd.md) |
 | `SpaceBall.py` | Serial SpaceMouse / Spaceball / SpaceOrb UART reader — see [SpaceBall.md](../libraries/spaceball.md) |
@@ -72,7 +72,7 @@ Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 115 200 baud
 
 **Optional 2-motor** is a first-class capability: typical **motor 1 = linear travel**, **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `CS motors 2` (no `RB`). Packed `mc.axis_count` / `getAxisCount()` is motors+servos from CG `axis`; **`getMotorCount()`** is STEP/DIR. Do **not** send `CS axis`. Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema (`#I p1 | p2`; empty `||` = idle 0). Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Live axis count](../../contract/protocol.md#live-axis-count-axis).
 
-Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `MB`, `MJ`, `MS`, `MH`, `SE`, `SS`, `SA`, `HT`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
+Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
 
 ```python
 from MC_client import MC_Client
@@ -161,7 +161,9 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `move(speed)` | Continuous velocity: `SS` then `MJ ±100` (`MS` at 0). See below. Analogue stick on SliderMC should stream protocol `MJ` instead — [motion-joy.md](../../mc/motion-joy.md). |
 | `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` / `home(3)` → `MH n`. Extra motors are a no-op if `getMotorCount()` is below that n. Returns the asyncio task. |
 | `stop()` | Decelerate to standstill using `setAcceleration()`. Non-blocking. |
-| `halt()` | Emergency halt (`HT`) — hard abort, enable off. Non-blocking. |
+| `halt()` | Emergency halt (`ME`) — hard abort, enable off. Non-blocking. |
+| `cameraTrigger(ms=100)` | Pulse MC `PIN_CAMERA_CTRL` (`CT` / `CT {ms}`); clamp 1..60000. Non-blocking; motion continues. |
+| `beep(ms=100)` | Pulse MC buzzer (`BE` / `BE {ms}`); clamp 1..1000. Non-blocking. |
 | `await wait()` | Wait until the current motion finishes. |
 
 ### Configuration
@@ -216,6 +218,9 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `servos` / `getServoCount()` | RC servo count from CG `servos`. |
 | `getPosition()` | Axis-1 position (user units, typically mm). |
 | `getPosition2()` | Axis-2 position (0.0 if unknown). |
+| `getPosition3()` | Axis-3 position (0.0 if unknown). |
+| `getPosition4()` | Axis-4 position (0.0 if unknown). |
+| `getPosition5()` | Axis-5 position (0.0 if unknown). |
 | `getSpeed()` | Axis-1 actual speed from verbose cache. |
 | `getSpeed2()` | Axis-2 actual speed from verbose cache. |
 | `getTarget()` | Axis-1 target, or `None` when idle. |
@@ -248,10 +253,10 @@ immediately while **keeping current speed**, then the axis accelerates / deceler
 (and reverses if needed) toward the new position using `setAcceleration()`.
 
 `home()` cancels the current motion and starts homing.  
-`stop()` / `halt()` convert the current motion into a decelerating stop (do not hard-abort).  
+`stop()` soft-decelerates (`MS`). `halt()` is an emergency abort (`ME`, enable off).  
 `move(speed)` repeated calls only update the speed target (see below).
 
-### Decelerating stop — `stop()` / `halt()`
+### Stop vs halt — `stop()` / `halt()`
 
 ```python
 mc.setAcceleration(200.0)
@@ -262,13 +267,14 @@ await mc.wait()
 
 mc.move(50.0)
 await asyncio.sleep_ms(500)
-mc.halt()                       # emergency HT — enable off
+mc.halt()                       # emergency ME — enable off
 await mc.wait()
 ```
 
-- `stop()` and `move(0)` soft-decelerate on the MC.
-- `halt()` sends emergency `HT` (enable off).
+- `stop()` and `move(0)` soft-decelerate on the MC (`MS`).
+- `halt()` sends emergency `ME` (enable off).
 - Both are non-blocking on the UIC.
+- `cameraTrigger()` / `beep()` are also non-blocking and do not stop motion.
 ### DRV_ERROR input pin
 
 | Config | Meaning |
@@ -279,7 +285,7 @@ await mc.wait()
 
 When `DRV_ERROR` becomes active:
 
-1. Same decelerating stop as `halt()`.
+1. Same immediate halt path as `halt()` / `ME`.
 2. After standstill, the driver is **disabled** (`enable(False)`).
 3. While `DRV_ERROR` remains active, `moveTo` / `moveBy` / `move` / `home` / `enable(True)` are ignored.
 
@@ -338,9 +344,9 @@ Priority (highest first): DRV_ERROR → cam blank → **timed effect** → hard 
 
 API RGB channels are **0…255**; docs often describe mixes as **percent**. Apps (JKSlider, B4Slider) own Delay/TL/loop panel colours via the effect API — not UIC status base.
 
-### B4Slider (4-button app)
+### B4Slider (AXIS-select app)
 
-Minimal panel: MOVE_L / MOVE_R / OPTION / SET + SPEED pot (optional ACCEL pot via `B4S_USE_ACCEL_POT`). Soft limits are the A/B working window ([marks vs working window](../../architecture/marks-vs-working-window.md)). Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`.
+Minimal panel: MOVE_L / MOVE_R / OPTION / SET / AXIS_1..5 + SPEED pot or rotary (optional ACCEL pot/rotary/`set`). Selection is packed `getAxisCount()` (legal iff `k ≤` that count; no AXIS_6 key). Soft limits are the A/B working window on the **selected** axes ([marks vs working window](../../architecture/marks-vs-working-window.md)). Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`. Shutter is SliderMC `PIN_CAMERA_CTRL` / `CT`, not a UIC GPIO.
 
 Homing / `home()` is **aborted** if the `DRV_ERROR` input becomes active (position is not forced to 0).
 

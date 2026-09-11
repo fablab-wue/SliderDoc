@@ -39,7 +39,7 @@ reintroduce rounding and phase drift. Motion Path instead:
 |-------|--------|------|-------------|
 | `PC` | Path Clear | — | Clear the path buffer (path count → 0). |
 | `PD` | Path Data | `um [um2 [um3]]` | Append signed 16-bit µm sample(s); extra samples for extra live axes (skip `_` → `0`; omitted extras → `0`). |
-| `PG` | Path Go | — | Play the buffer from sample 0 until path count is reached, or `MS`/`HT`. |
+| `PG` | Path Go | — | Play the buffer from sample 0 until path count is reached, or `MS`/`ME`. |
 | `PN` | Path Number | — | Reply `PN:<count>` — samples currently buffered. |
 | `PS` | Path Slice | `us` or bare | Set the slice length in µs (≥1000); bare reloads the config default. |
 
@@ -64,7 +64,7 @@ usual `!E:<code> <text>` form:
   PIO naturally holds its output level for the slice duration.
 - **Buffer:** a flat array, not a ring buffer. `PD` always appends; `PG`
   always starts playback at sample 0. The buffer is **retained** after
-  playback ends (naturally, or via `MS`/`HT`), so `PG` can replay the same
+  playback ends (naturally, or via `MS`/`ME`), so `PG` can replay the same
   data without resending it.
 - **Capacity:** `path_buffer_size` (config key, default 32000 samples,
   settable 1..32768 via `CS path_buffer_size <n>` / `CG path_buffer_size`).
@@ -92,7 +92,7 @@ PN                     # -> PN:<count>, sanity-check before playing
 PG                     # start playback
 ```
 
-While playback is in progress, verbose/`?` status lines report state letter
+While playback is in progress, verbose/`#` status lines report state letter
 `P` (see below). To stop early:
 
 ```text
@@ -102,7 +102,7 @@ MS                     # soft-decelerate from the current path speed
 or, for an emergency stop:
 
 ```text
-HT                     # immediate halt, EN off, cancels waits/chain
+ME                     # immediate halt, EN off, cancels waits/chain
 ```
 
 ### Live streaming (playing while still filling)
@@ -159,13 +159,13 @@ These are pure functions (`motion_path_diffuse_steps` /
 `motion_path_diffuse_cycles`) and are covered by host unit tests
 (`test/host/test_motion_path.cpp`).
 
-### End of path, `MS`, and `HT`
+### End of path, `MS`, and `ME`
 
-Whichever way playback stops — the buffer is exhausted, or `MS`/`HT` arrives
+Whichever way playback stops — the buffer is exhausted, or `MS`/`ME` arrives
 — SliderMC does the same thing: it takes the **current position and the
 velocity implied by the last issued STEP word**, hands both to the normal
 planner (`planner_takeover_from_path`), and then runs the ordinary
-soft-stop (`MS`) or hard-halt (`HT`) deceleration from that speed. There is no
+soft-stop (`MS`) or hard-halt (`ME`) deceleration from that speed. There is no
 separate "path deceleration" — the path player never invents its own ramp,
 it only ever plays constant-rate slices and then lets the main planner do
 what it already does for any other move.
@@ -176,15 +176,16 @@ While `PG` is active, SliderMC rejects most other commands with
 `!E:busy path active`, to guarantee the path player is the sole owner of the
 STEP FIFO until it ends. Allowed during playback:
 
-- `MS`, `HT` (the only ways to end playback early)
+- `MS`, `ME` (the only ways to end playback early)
 - `PD` / Path Data (live-move streaming — the only way to add more samples
   once `PG` is active; still rejected with `!E:full` at `path_buffer_size`)
 - `PN` / Path Number
 - All status/query commands: `IM`, `IH`, `IL`, `IE`, `IP`, `IT`, `IR`, `IW`,
   `ID`, `IC`, `IG`, `GS`, `GA`, `GE`, `GT`, `GV`, `GD`,
   `VA`/`VF`/`VP`/`VG`
-- `HL` / `$`
+- `HL` / `?`
 - `CG` / Config Get
+- `RB`, `BE`, `CT`
 
 Everything else — including another `PG`, `PC`, `PS`, and all
 move/session-set commands (`MT`, `MB`, `MJ`, `MH`, `SS`, `SA`, `SE`,
@@ -192,10 +193,10 @@ move/session-set commands (`MT`, `MB`, `MJ`, `MH`, `SS`, `SA`, `SE`,
 
 ## Status reporting
 
-- **State letter:** `P` (new, alongside `E`/`I`/`M`/`A`/`B`/`H`/`L`/`D` — see
+- **State letter:** `P` (new, alongside `E`/`I`/`M`/`A`/`B`/`H`/`L`/`D`/`T` — see
   [PROTOCOL.md](../contract/protocol.md#state-letters)). Verbose (`SV 1`) and realtime
-  `?` both report it the same way as any other state.
-- **Verbose/`?` payload:** `#P <pos> <vel> <accel>` — position and velocity
+  `#` both report it the same way as any other state.
+- **Verbose/`#` payload:** `#P <pos> <vel> <accel>` — position and velocity
   are live (`vel` is the rate implied by the most recently issued STEP
   word); `accel` is always reported as `0`, since path-mode plays each slice
   at a constant rate and never computes an acceleration ramp. There is no

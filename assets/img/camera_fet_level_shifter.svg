@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="200mm" height="145mm" viewBox="0 0 400 290"
+     role="img" aria-labelledby="title description">
+  <title id="title">PIN_CAMERA_CTRL FET level-shifter (BSS138 / 2N7000)</title>
+  <desc id="description">N-MOSFET 3.3 V to 5 V level shifter on SliderMC PIN_CAMERA_CTRL. Package pinouts: 2N7000 TO-92 flat-face S-G-D; BSS138 SOT-23 pin 1 Drain, pin 2 Source, pin 3 Gate. Gate to 3.3 V, source to the Pico pad, drain pulled up 10 kohm to 5 V. Shared GND. Pico pad is not 5 V-tolerant.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfcfd"/>
+      <stop offset="1" stop-color="#eef2f6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="400" height="290" rx="6" fill="url(#bg)" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="200" y="18" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="11" font-weight="600" fill="#111827">PIN_CAMERA_CTRL FET level-shifter (5 V logic)</text>
+
+  <text x="78" y="38" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" font-weight="600" fill="#111827">Package pinouts</text>
+  <text x="78" y="50" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7" fill="#64748b">Fairchild / ON views - label G / S / D</text>
+
+  <text x="78" y="66" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="600" fill="#334155">2N7000 (TO-92)</text>
+  <text x="78" y="76" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">flat toward you, leads down</text>
+  <path d="M 52 88 Q 52 80 60 80 H 96 Q 104 80 104 88 V 118 H 52 Z"
+        fill="#dbe4ee" stroke="#334155" stroke-width="1.2"/>
+  <path d="M 54 118 H 102" fill="none" stroke="#94a3b8" stroke-width="1.6"/>
+  <ellipse cx="70" cy="92" rx="5" ry="3" fill="#ffffff" opacity="0.55"/>
+  <text x="78" y="108" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="7" fill="#1f2937">2N7000</text>
+  <path d="M 62 118 V 142" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M 78 118 V 142" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M 94 118 V 142" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <text x="62" y="154" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="8" font-weight="700" fill="#1d4ed8">S</text>
+  <text x="78" y="154" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="8" font-weight="700" fill="#b45309">G</text>
+  <text x="94" y="154" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="8" font-weight="700" fill="#15803d">D</text>
+  <text x="62" y="164" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">1</text>
+  <text x="78" y="164" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">2</text>
+  <text x="94" y="164" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">3</text>
+
+  <text x="78" y="182" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="8" font-weight="600" fill="#334155">BSS138 (SOT-23)</text>
+  <text x="78" y="192" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">top view, marking up</text>
+  <rect x="54" y="198" width="48" height="28" rx="2.5"
+        fill="#1f2937" stroke="#030712" stroke-width="1.1"/>
+  <text x="78" y="215" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="6.5" fill="#e2e8f0">BSS138</text>
+  <path d="M 54 206 H 42" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M 102 206 H 114" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M 78 226 V 238" fill="none" stroke="#1f2937" stroke-width="1.8" stroke-linecap="round"/>
+  <text x="34" y="210" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="7.5" font-weight="700" fill="#15803d">D</text>
+  <text x="34" y="220" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">1</text>
+  <text x="122" y="210" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="7.5" font-weight="700" fill="#b45309">G</text>
+  <text x="122" y="220" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">3</text>
+  <text x="78" y="250" text-anchor="middle" font-family="Consolas, Menlo, monospace"
+        font-size="7.5" font-weight="700" fill="#1d4ed8">S</text>
+  <text x="90" y="250" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6" fill="#64748b">2</text>
+
+  <text x="78" y="268" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.2" fill="#64748b">No-name 2N7000 clones may swap S/D</text>
+  <text x="78" y="278" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.2" fill="#64748b">4-ch I2C modules already wire BSS138</text>
+
+  <path d="M 156 28 V 255" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <text x="278" y="38" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="9" font-weight="600" fill="#111827">Wiring (N-MOSFET shifter)</text>
+  <text x="278" y="50" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7" fill="#64748b">output follows CT - active-low</text>
+
+  <text x="178" y="68" font-family="Consolas, Menlo, monospace" font-size="8" font-weight="600" fill="#b45309">3.3 V</text>
+  <path d="M 210 64 H 250" fill="none" stroke="#b45309" stroke-width="1.3"/>
+  <path d="M 250 64 V 118" fill="none" stroke="#b45309" stroke-width="1.3"/>
+
+  <text x="318" y="68" font-family="Consolas, Menlo, monospace" font-size="8" font-weight="600" fill="#15803d">5 V</text>
+  <path d="M 310 64 H 348" fill="none" stroke="#15803d" stroke-width="1.3"/>
+  <path d="M 348 64 V 86" fill="none" stroke="#15803d" stroke-width="1.3"/>
+  <path d="M 348 86 L 344 90 L 352 96 L 344 102 L 352 108 L 348 112"
+        fill="none" stroke="#1f2937" stroke-width="1.4" stroke-linejoin="round"/>
+  <text x="358" y="104" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="7" fill="#334155">10 kohm</text>
+  <path d="M 348 112 V 130" fill="none" stroke="#15803d" stroke-width="1.3"/>
+
+  <path d="M 250 118 H 268" fill="none" stroke="#b45309" stroke-width="1.3"/>
+  <text x="236" y="122" font-family="Consolas, Menlo, monospace" font-size="7" font-weight="700" fill="#b45309">G</text>
+  <path d="M 268 108 V 148" fill="none" stroke="#1f2937" stroke-width="1.6"/>
+  <path d="M 274 108 V 148" fill="none" stroke="#1f2937" stroke-width="2.2"/>
+  <path d="M 274 114 H 292" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <path d="M 292 114 V 130 H 348" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="282" y="110" font-family="Consolas, Menlo, monospace" font-size="7" font-weight="700" fill="#15803d">D</text>
+  <path d="M 274 142 H 292" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <path d="M 292 142 V 168" fill="none" stroke="#1f2937" stroke-width="1.3"/>
+  <text x="282" y="158" font-family="Consolas, Menlo, monospace" font-size="7" font-weight="700" fill="#1d4ed8">S</text>
+  <path d="M 274 142 L 280 136 L 280 142 Z" fill="#1f2937"/>
+
+  <text x="300" y="124" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">BSS138 / 2N7000</text>
+
+  <path d="M 348 130 H 378" fill="none" stroke="#15803d" stroke-width="1.5"/>
+  <text x="380" y="128" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" fill="#15803d">camera</text>
+  <text x="380" y="138" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7.5" fill="#15803d">logic in</text>
+  <text x="380" y="148" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">5 V TTL</text>
+
+  <path d="M 292 168 H 210" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
+  <text x="168" y="166" font-family="Consolas, Menlo, monospace" font-size="7.5" fill="#1d4ed8">GP22</text>
+  <text x="168" y="176" font-family="Consolas, Menlo, monospace" font-size="6.5" fill="#64748b">Pico / GP25 Zero</text>
+  <text x="168" y="186" font-family="Consolas, Menlo, monospace" font-size="6.5" fill="#64748b">PIN_CAMERA_CTRL</text>
+  <text x="168" y="196" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.2" fill="#64748b">3.3 V pad only</text>
+
+  <path d="M 210 200 H 348" fill="none" stroke="#1f2937" stroke-width="1.2"/>
+  <path d="M 210 200 V 210" fill="none" stroke="#1f2937" stroke-width="1.2"/>
+  <path d="M 348 200 V 210" fill="none" stroke="#1f2937" stroke-width="1.2"/>
+  <path d="M 202 210 H 218 M 348 210 H 356" fill="none" stroke="#1f2937" stroke-width="1.2"/>
+  <path d="M 206 216 H 214 M 350 216 H 354" fill="none" stroke="#1f2937" stroke-width="1.1"/>
+  <text x="168" y="214" font-family="Consolas, Menlo, monospace" font-size="8" font-weight="600" fill="#334155">GND</text>
+  <text x="278" y="214" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">Pico GND = camera GND (not isolated)</text>
+
+  <text x="278" y="236" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7" fill="#334155">Idle: pad ~3.3 V, FET off, out 5 V</text>
+  <text x="278" y="248" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="7" fill="#334155">CT sink LOW, FET on, out 0 V</text>
+
+  <text x="278" y="268" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">Out-side pull-up: 5 V intended. FET VDS: BSS138 50 V,</text>
+  <text x="278" y="278" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="6.5" fill="#64748b">2N7000 60 V. Do not exceed the camera input rating. Never 5 V on the Pico pad.</text>
+</svg>

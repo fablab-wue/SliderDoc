@@ -8,19 +8,19 @@
 
 # Architecture — Command chains
 
-One UART/USB line of `;`-separated commands is a **lightweight moving script** on SliderMC. Live `SS` / `SA`, waypoints (`WP`), cruise edges (`WC` / `WN`), extender (`EO`), and beep (`BE`) run **during** a single seek. The carriage does not stop between A/B/C/D.
+One UART/USB line of `;`-separated commands is a **lightweight moving script** on SliderMC. Live `SS` / `SA`, waypoints (`WP`), cruise edges (`WC` / `WN`), extender (`EO`), beep (`BE`), and camera trigger (`CT`) run **during** a single seek. The carriage does not stop between A/B/C/D.
 
 That is the opposite of JKSlider **A/B/C marks**, which are goto targets that finish a move before the next action. Command reference: [protocol.md — W](../contract/protocol.md#w--wait-silent). Marks vs window: [marks-vs-working-window.md](marks-vs-working-window.md).
 
-It is **not** a full language: no loops, no branches, **one wait at a time**. The UIC can send the next line when `IW` clears. `HT` cancels the wait and the rest of the chain.
+It is **not** a full language: no loops, no branches, **one wait at a time**. The UIC can send the next line when `IW` clears. `ME` cancels the wait and the rest of the chain.
 
 ## How waits compose
 
-`MT` / `MJ` start motion and return immediately. The next wait (`WP` / `WC` / `WN` / `WM` / `WT`) pauses **only the chain**. Motion keeps running. Non-waits (`SS`, `SA`, `EO1 1`, `BE`) run the instant the previous wait completes.
+`MT` / `MJ` start motion and return immediately. The next wait (`WP` / `WC` / `WN` / `WM` / `WT`) pauses **only the chain**. Motion keeps running. Non-waits (`SS`, `SA`, `EO1 1`, `BE`, `CT`) run the instant the previous wait completes.
 
 Start `MT` **before** `WP` / `WC` / `WN`. Those three return immediately when idle (not moving).
 
-Optional timeout on `WP` / `WC` / `WN` / `WM` / `WH`: `!E:timeout`, remainder of the line dropped, motion **not** halted. Path-mode (`PG`) rejects these waits (`!E:busy`). `BE` never waits.
+Optional timeout on `WP` / `WC` / `WN` / `WM` / `WH`: `!E:timeout`, remainder of the line dropped, motion **not** halted. Path-mode (`PG`) rejects these waits (`!E:busy`). `BE` and `CT` never wait.
 
 ## Speed profile (no stop)
 
@@ -52,12 +52,23 @@ MT 500; WP 250; EO1 1; WT 0.15; EO1 0; WM
 
 `WT` after the mark is a chain delay; the axis **keeps moving**.
 
+## Camera trigger while moving
+
+`CT` pulses `PIN_CAMERA_CTRL` and returns immediately — motion continues:
+
+```text
+MT 500; CT; WP 250; CT
+```
+
+Bare `CT` is 100 ms. A UIC that maps status letter `T` to a key event will also see these command pulses when verbose is on.
+
 ## More examples
 
 | Chain | Intent |
 |-------|--------|
 | `SA200; MT 600; WP 400; SA 15; WM` | Fast most of the way; only the last third brakes softly |
 | `MT 300; WC; BE; WN; EO2 1; WM; EO2 0` | Beep at cruise; fire EXT_2 when braking starts |
+| `MT 500; CT; WP 250; CT` | Trigger at start of seek and again at midpoint |
 | `BE; WT 2; MT 300; WM` | Audible pre-roll, then go |
 | `EO1 1; MT 500; WM; EO1 0` | Hold record/start for the whole move |
 | `MH; WH; SA100; MT 300; WC; SA5; WM` | Home, then the soft-stop seek |

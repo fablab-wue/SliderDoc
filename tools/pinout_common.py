@@ -239,7 +239,7 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_BTN
     if lab.startswith("DSP_") or "DSP_I2C" in lab:
         return C_DSP
-    if lab.startswith("POT_"):
+    if lab.startswith("POT_") or lab.startswith("ENC_"):
         return C_POT
     if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab or lab == "CAMERA_CTRL":
         return C_CTRL

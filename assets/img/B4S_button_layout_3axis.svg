@@ -2,8 +2,8 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="108mm" height="110mm" viewBox="-18 -16 108 110"
      role="img" aria-labelledby="title description">
-  <title id="title">Recommended B4Slider 2-axis discrete button layout</title>
-  <desc id="description">A 72 by 78 millimetre front plate (6U x 6.5U) on a 12 millimetre grid. Same top as 1-axis B4; MOVE_L2 and MOVE_R2 on the row below OPTION, aligned under MOVE_L and MOVE_R.</desc>
+  <title id="title">Recommended B4Slider 3-axis discrete button layout</title>
+  <desc id="description">A 72 by 78 millimetre front plate (6U x 6.5U) on a 12 millimetre grid. Same top as 1-axis B4; AXIS_1/2/3 glued as a row centred under OPTION with a 1/2U gap.</desc>
 
   <defs>
     <pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -28,7 +28,7 @@
       <circle cx="0" cy="0" r="4.65" fill="#e8edf2" stroke="#697586" stroke-width="0.35"/>
       <circle cx="-1.35" cy="-1.35" r="1.05" fill="#ffffff" opacity="0.72"/>
     </g>
-    <g id="axis2Button">
+    <g id="axisButton">
       <rect x="-6" y="-6" width="12" height="12" rx="1.25"
             fill="#eef6ff" stroke="#1d4ed8" stroke-width="0.7"/>
       <circle cx="0" cy="0" r="4.65" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="0.35"/>
@@ -72,14 +72,15 @@
   <use href="#button" x="18" y="48"/>
   <use href="#button" x="54" y="48"/>
 
-  <!-- OPTION — centred between MOVE_L/R and MOVE_L2/R2 -->
+  <!-- OPTION -->
   <use href="#optionButton" x="36" y="54"/>
 
-  <!-- MOVE_L2 / MOVE_R2 — row below OPTION, under MOVE_L/R -->
-  <use href="#axis2Button" x="18" y="60"/>
-  <use href="#axis2Button" x="54" y="60"/>
+  <!-- AXIS_1 / AXIS_2 / AXIS_3 -- glued row, 1/2U below OPTION, centred on x=36 -->
+  <use href="#axisButton" x="24" y="72"/>
+  <use href="#axisButton" x="36" y="72"/>
+  <use href="#axisButton" x="48" y="72"/>
 
-  <!-- Labels (offsets match 1-axis B4Slider_button_layout.svg) -->
+  <!-- Labels: AXIS numbers on the caps; MOVE/OPTION/SET as 1-axis -->
   <g fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="3.1"
      font-weight="700" text-anchor="middle">
     <text x="18" y="28.5">SPEED</text>
@@ -94,8 +95,9 @@
 
     <text x="36" y="65.8" font-size="3.1">*</text>
 
-    <text x="18" y="71.8" font-style="italic" fill="#1d4ed8">&lt;2</text>
-    <text x="54" y="71.8" font-style="italic" fill="#1d4ed8">&gt;2</text>
+    <text x="24" y="73.2" font-size="3.4" fill="#1d4ed8">1</text>
+    <text x="36" y="73.2" font-size="3.4" fill="#1d4ed8">2</text>
+    <text x="48" y="73.2" font-size="3.4" fill="#1d4ed8">3</text>
   </g>
 
   <!-- Plate and grid dimensions -->

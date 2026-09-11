@@ -10,7 +10,7 @@
 
 How SliderMC coordinates **two STEP/DIR motors** when `motors=2`. Typical rig: **motor 1 = linear travel** (slider), **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is a **time-synced** dual move (both finish together), **not** a CNC-style diagonal feedrate. `motors=3` exists (third STEP/DIR, same protocol tokens); optional RC servos pack after motors. This page keeps the 2-motor timing story.
 
-UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `getMotorCount()`, packed `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_axis_status_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider stays 1-motor; B4Slider pan buttons gate on `getMotorCount() >= 2`. Verbose `#…` joins packed groups with ` | ` (`#I p1 | p2` — see [protocol — Verbose push](../contract/protocol.md#verbose-push-3-hz-when-session-verbose1)).
+UIC apps use [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `getMotorCount()`, packed `axis_count`, optional `moveTo(pos, pos2)` / `home(axis)`, `set_axis_status_callback` — see [UIC API](../uic/api/overview.md). Shipping JKSlider stays 1-motor; B4Slider selects packed axes **1–5** (`getAxisCount()`). Verbose `#…` joins packed groups with ` | ` (`#I p1 | p2` — see [protocol — Verbose push](../contract/protocol.md#verbose-push-3-hz-when-session-verbose1)).
 
 **Related:** [config.md](config.md) · [motion.md](motion.md) · [motion-joy.md](motion-joy.md) · [protocol — Live axis count](../contract/protocol.md#live-axis-count-axis) · [pins.md](pins.md)
 
@@ -120,7 +120,7 @@ Full tables: [config.md](config.md).
 4. **Prefer pan on motor 2** — keeps linear “mm” on motor 1 (`IP` first field / UIC habit). `WP` / Wait Pos is the **time-sync master** (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md). Homing: `MH 1|2|3` (motors only).
 5. **`max_speed_1` / `max_speed_2` clamp:** if `|d2| ≫ |d1|`, scaled `v2` may hit `max_speed_2` and **lose** perfect time sync — shorten the axis2 move, raise the cap, or move axes sequentially. Mid-move `SS`/`SA` stay time-synced while coordination is active (same clamp still applies).
 6. **Path mode (`PG`):** extra `PD` args are **slice-timed**, not the same as dual-`MT` distance scaling. See [motion-path.md](motion-path.md).
-7. **UIC:** JKSlider / B4Slider UIs are still mostly 1-axis; dual `MT` is driven by hosts/scripts. Use `CG unit_name` for the display unit.
+7. **UIC:** JKSlider stays 1-axis; B4Slider MOVE applies to the AXIS selection (skipped `MT`). Hosts/scripts can still send dual `MT` directly. Use `CG unit_name` for the display unit.
 
 ---
 

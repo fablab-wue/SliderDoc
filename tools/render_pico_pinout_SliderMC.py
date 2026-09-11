@@ -239,8 +239,8 @@ def render_png(path: Path):
 
 def main():
     OUT_PNG.mkdir(parents=True, exist_ok=True)
-    ascii_path = OUT_TXT / "pico_pinout_mc.txt"
-    png_path = OUT_PNG / "pico_pinout_mc.png"
+    ascii_path = OUT_TXT / "MC_Pico_pinout.txt"
+    png_path = OUT_PNG / "MC_Pico_pinout.png"
     ascii_path.write_text(render_ascii(), encoding="utf-8")
     render_png(png_path)
     print("wrote", ascii_path)

@@ -31,7 +31,7 @@ Discrete button / pot or rocker panel alternatives: [Distinct Buttons — recomm
 
 Ghosting / dual OPTION behaviour: [Technical Manual — Keypad ghosting](../uic/projects/jkslider/technical/panel.md#keypad-ghosting).
 
-![Pico pinout — keypad mode](../assets/img/pico_pinout_keypad.png)
+![Pico pinout — keypad mode](../assets/img/JKS_Pico_pinout_keypad.png)
 
 ### PCB 4×3 membrane keypad (9-pin header)
 

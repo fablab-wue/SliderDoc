@@ -46,10 +46,10 @@ Different **faces** on the same motion stack — pick the UIC that fits your sho
 | Project | What you get | Manual |
 |---------|--------------|--------|
 | **JKSlider** | Full panel — keypad or buttons, SPEED/ACCEL pots, OLED, marks, timelapse, DELAY | [user manual](../uic/projects/jkslider/user-manual.md) |
-| **B4Slider** | Minimal 4-button remote — MOVE L/R, SET, OPTION, one SPEED pot; no OLED or timelapse | [user manual](../uic/projects/b4slider/user-manual.md) |
+| **B4Slider** | AXIS-select remote — MOVE L/R, SET, OPTION, AXIS_1..5, SPEED pot or rotary; no keypad or timelapse | [user manual](../uic/projects/b4slider/user-manual.md) |
 | *More coming* | Custom rigs on `MC_Client` / UART | [project template](../uic/projects/_template/README.md) |
 
-**JKSlider** when you need the full shoot feature set (marks, timelapse, DELAY). **B4Slider** when you want the smallest wired remote — MOVE L/R **is** the A/B working window. Philosophy: [marks vs working window](marks-vs-working-window.md).
+**JKSlider** when you need the full shoot feature set (marks, timelapse, DELAY). **B4Slider** when you want a small wired remote with packed-axis selection — MOVE L/R **is** the A/B working window on the current AXIS mask. Philosophy: [marks vs working window](marks-vs-working-window.md).
 
 Source: [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) (`JKSlider.py`, `B4Slider.py`).
 
@@ -69,7 +69,7 @@ API and composition: [uic/api/overview.md](../uic/api/overview.md) · new panel 
 
 SliderMC can run a **second** STEP/DIR motor (`CS motors 2`). The usual pairing is **motor 1 = linear travel** and **motor 2 = pan** (tilt or turn also work). Dual `MT` / `M` finishes both axes together — **time-synced**, not a CNC diagonal feedrate. Config `motors=3` also exists. Timing: [dual-movement.md](../mc/dual-movement.md).
 
-**JKSlider** and **B4Slider** stay **1-axis operator faces** (they drive and display axis 1). A custom UIC uses [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(2)`, and `set_axis_status_callback` — see [uic/api/overview.md](../uic/api/overview.md).
+**JKSlider** stays a **1-axis operator face** (it drives and displays axis 1). **B4Slider** selects packed axes **1–5** (`getAxisCount()`). A custom UIC uses [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(2)`, and `set_axis_status_callback` — see [uic/api/overview.md](../uic/api/overview.md).
 
 ---
 

@@ -80,7 +80,7 @@ The first `MJ` enters **joy-mode** and ramps toward the commanded velocity
 setpoint.
 
 These **exit** joy-mode and take over motion: `MT`, `MB`, `MH`,
-`MS`, realtime `!` / `ESC`, `HT`, path `PG`.
+`MS`, realtime `!`, `ME` / realtime `ESC`, path `PG`.
 
 `SS` / `SA` (including bare reset to `init_*`) do **not** exit joy-mode.
 `SS` updates the 100 % reference; live cruise becomes

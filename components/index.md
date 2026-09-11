@@ -23,7 +23,7 @@ JKSlider is a **UIC + SliderMC** split: panel I/O on the UIC Pico, motion axis o
 | **UIC** | Buttons, keypad, OLED, RGB/NeoPixel, pots, joystick, camera shutter |
 | **SliderMC** | Motor / STEP·DIR driver, hard limits (also home), Ext, DRV_ERROR |
 
-SliderMC pins: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md)
+SliderMC pins: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/MC_Pico_pinout.png) · [CONFIG.md](../mc/config.md)
 
 Installer wiring and firmware: [../uic/projects/jkslider/technical/README.md](../uic/projects/jkslider/technical/README.md) ([Panel](../uic/projects/jkslider/technical/panel.md), [Motion](../uic/projects/jkslider/technical/motion-installer.md)).  
 MC protocol (sibling clone): [PROTOCOL.md](../contract/protocol.md).  

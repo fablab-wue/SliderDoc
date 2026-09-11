@@ -12,7 +12,7 @@
 
 There is **no dedicated home-switch pin**. Homing uses a hard limit (`home_mode_N` 1/2) or driver stall on `DRV_ERROR` (`home_mode_N` 3/4). With no switch, set `home_mode_1=0` (or `_2` / `_3`) and declare origin with `SP`.
 
-SliderMC pinout: [PINS.md](../mc/pins.md) · [pico_pinout_mc.png](../assets/img/pico_pinout_mc.png) · [CONFIG.md](../mc/config.md) · [MOTION.md](../mc/motion.md)
+SliderMC pinout: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/MC_Pico_pinout.png) · [CONFIG.md](../mc/config.md) · [MOTION.md](../mc/motion.md)
 
 | `home_mode_N` | Reference | Finish pose | Needs |
 |-------------|-----------|-------------|-------|

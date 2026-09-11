@@ -57,7 +57,7 @@ RIGHT = [
     ("GP27", "POT_ACCEL"),
     ("GP26", "POT_SPEED"),
     ("RUN", "RUN"),
-    ("GP22", "CTRL_CAMERA"),
+    ("GP22", "free"),
     ("GND", "GND"),
     ("GP21", "free"),
     ("GP20", "free"),
@@ -86,16 +86,19 @@ KEYPAD_LEFT_OVERRIDE = {
 # B4Slider button panel (B4SliderConfig.py). SET occupies JKSlider's STOP GPIO.
 B4_LEFT_OVERRIDE = {
     "GP5": "BTN_SET",
-  "GP8": "BTN_MOVE_L2",
-  "GP9": "BTN_MOVE_R2",
-    "GP10": "free",
-    "GP11": "free",
-    "GP12": "free",
-    "GP14": "free",
-    "GP15": "free",
+    "GP8": "BTN_AXIS_5",
+    "GP9": "BTN_AXIS_4",
+    "GP10": "BTN_AXIS_3",
+    "GP11": "BTN_AXIS_2",
+    "GP12": "BTN_AXIS_1",
+    "GP14": "ENC_SPEED_A",
+    "GP15": "ENC_SPEED_B",
 }
 B4_RIGHT_OVERRIDE = {
     "GP28": "free",
+    "GP22": "free",
+    "GP19": "ENC_ACCEL_B",
+    "GP18": "ENC_ACCEL_A",
 }
 
 # Group palette
@@ -155,7 +158,7 @@ def _color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_DSP
     if lab.startswith("LED_") or "NEOPIXEL" in lab:
         return C_LED
-    if lab.startswith("POT_"):
+    if lab.startswith("POT_") or lab.startswith("ENC_"):
         return C_POT
     if lab.startswith("UART_"):
         return C_UART
@@ -231,11 +234,12 @@ def render_ascii(mode: str) -> str:
     elif mode == "b4":
         lines.extend(
             [
-                "B4Slider: four buttons (SET / MOVE_L / MOVE_R / OPTION) on 1-axis;",
-                "  optional MOVE_L2 / MOVE_R2 on GP8/GP9 when SliderMC CS motors 2.",
-                "  SPEED pot, optional ACCEL pot (GP27, B4S_USE_ACCEL_POT).",
-                "  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, or joystick.",
-                "  SET on GP5 (was STOP on JKSlider).",
+                "B4Slider: SET / MOVE_L / MOVE_R / OPTION plus AXIS_1..5 (GP12/11/10/9/8).",
+                "  Legal AXIS chords: packed getAxisCount() (motors+servos, up to 6; no AXIS_6 key).",
+                "  SPEED pot GP26; optional ACCEL pot GP27 (B4S_SPEED_INPUT / B4S_ACCEL_INPUT).",
+                "  Optional QD: ENC_SPEED GP14/15, ENC_ACCEL GP18/19 (pin_b = pin_a+1).",
+                "  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, joystick, or UIC camera pin.",
+                "  SET on GP5 (was STOP on JKSlider). Shutter is SliderMC PIN_CAMERA_CTRL / CT.",
             ]
         )
     else:
@@ -244,8 +248,8 @@ def render_ascii(mode: str) -> str:
             'JKS_INPUT_MODE = "button".'
         )
     lines.append(
-        "GP22 CTRL_CAMERA = shutter / intervalometer (PIN_CTRL_CAMERA). "
-        "Optional NeoPixel: use a free GPIO (GP18–21) and set PIN_NEOPIXEL."
+        "GP22 free (shutter is SliderMC PIN_CAMERA_CTRL / CT, not a UIC GPIO). "
+        "Optional NeoPixel: use a free GPIO and set PIN_NEOPIXEL."
     )
     if mode == "b4":
         lines.append(
@@ -447,7 +451,7 @@ def render_png(mode: str, path: Path):
         ("UART_*", C_UART),
         ("DSP_*", C_DSP),
         ("LED_*", C_LED),
-        ("CTRL_*", C_CTRL),
+        ("ENC_*", C_POT),
         ("POT_*", C_POT),
         ("free", C_FREE),
         ("GND", C_GND),
@@ -597,22 +601,31 @@ def main():
 
     if any(m in modes for m in ("button", "keypad")):
         OUT_PNG.mkdir(parents=True, exist_ok=True)
+        OUT_IMG.mkdir(parents=True, exist_ok=True)
+        names = {
+            "button": "JKS_Pico_pinout_button",
+            "keypad": "JKS_Pico_pinout_keypad",
+        }
         for mode in ("button", "keypad"):
             if mode not in modes:
                 continue
-            ascii_path = OUT_TXT / ("pico_pinout_%s.txt" % mode)
-            png_path = OUT_PNG / ("pico_pinout_%s.png" % mode)
+            stem = names[mode]
+            ascii_path = OUT_TXT / ("%s.txt" % stem)
+            png_path = OUT_PNG / ("%s.png" % stem)
+            assets_png = OUT_IMG / ("%s.png" % stem)
             ascii_path.write_text(render_ascii(mode), encoding="utf-8")
             render_png(mode, png_path)
+            shutil.copyfile(png_path, assets_png)
             print("wrote", ascii_path)
             print("wrote", png_path)
+            print("wrote", assets_png)
 
     if "b4" in modes:
         OUT_PNG_B4.mkdir(parents=True, exist_ok=True)
         OUT_IMG.mkdir(parents=True, exist_ok=True)
-        ascii_path = OUT_TXT / "pico_pinout_B4.txt"
-        png_path = OUT_PNG_B4 / "pico_pinout_B4.png"
-        assets_png = OUT_IMG / "pico_pinout_B4.png"
+        ascii_path = OUT_TXT / "B4S_Pico_pinout.txt"
+        png_path = OUT_PNG_B4 / "B4S_Pico_pinout.png"
+        assets_png = OUT_IMG / "B4S_Pico_pinout.png"
         ascii_path.write_text(render_ascii("b4"), encoding="utf-8")
         render_png("b4", png_path)
         shutil.copyfile(png_path, assets_png)

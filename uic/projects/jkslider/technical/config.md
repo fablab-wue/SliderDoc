@@ -29,9 +29,9 @@ Typical UIC defaults for the **SliderMC split** (edit via `SliderPins.py`):
 | GP2 / 3 / 4 | LED_R / LED_G / LED_B |
 | GP0 / 1 | DSP_I2C_SDA / DSP_I2C_SCL |
 
-STEP/DIR/EN, DRV_ERROR, and hard limits (`SW_LIMIT_*`) are on the **SliderMC** Pico — see [PINS.md](../../../../mc/pins.md) and [pico_pinout_mc.png](../../../../assets/img/pico_pinout_mc.png).
+STEP/DIR/EN, DRV_ERROR, and hard limits (`SW_LIMIT_*`) are on the **SliderMC** Pico — see [PINS.md](../../../../mc/pins.md) and [MC_Pico_pinout.png](../../../../assets/img/MC_Pico_pinout.png).
 
-**RP2040-Zero as UIC** (button mode): copy the `RP2040_ZERO_*` keys from `SliderPins.example.py` into `SliderPins.py`. UART GP12/13, I2C1 GP14/15, pinout [JKSlider_rp2040zero_pinout_button.png](../../../../assets/img/JKSlider_rp2040zero_pinout_button.png). Details: [panel.md](panel.md#rp2040-zero-uic-button-mode).
+**RP2040-Zero as UIC** (button mode): copy the `RP2040_ZERO_*` keys from `SliderPins.example.py` into `SliderPins.py`. UART GP12/13, I2C1 GP14/15, pinout [JKS_RP2040zero_pinout_button.png](../../../../assets/img/JKS_RP2040zero_pinout_button.png). Details: [panel.md](panel.md#rp2040-zero-uic-button-mode).
 
 Also set `DSP_ENABLED`, LED polarity, etc. Motion ceilings (`max_speed_1`, `max_accel_1`) and envelope (`MOTOR_1_min` / `MOTOR_1_max`) live on **SliderMC** and are read by UIC via `CG` after the welcome banner (Python `mc.max_speed` / `mc.slider_min` stay filled from motor 1 / packed channel 1). Full list: [../../../api/overview.md](../../../api/overview.md). Architecture: [../../../../architecture/overview.md](../../../../architecture/overview.md).
 

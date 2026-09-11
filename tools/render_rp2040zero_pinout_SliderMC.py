@@ -49,7 +49,7 @@ _BOT_CROP = (321, 593, 509, 841)
 _SCALE = 2
 
 # Label geometry: 2x the Pico renderer so proportions against the 2x board photo
-# match img/pico_pinout_mc.png (box height 44 at pad pitch ~54 -> comparable gap).
+# match img/MC_Pico_pinout.png (box height 44 at pad pitch ~54 -> comparable gap).
 _LBL_SCALE = 2
 _PITCH = 52
 _BOX_H = 44
@@ -113,12 +113,12 @@ BOT_PADS = [
     ("GP17", "EXT_1"),
 ]
 
-# JKSlider UIC on RP2040-Zero, button mode (assets/JKSlider_rp2040zero_pinout_button.txt).
+# JKSlider UIC on RP2040-Zero, button mode (assets/JKS_RP2040zero_pinout_button.txt).
 BUTTON_LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
     ("3V3", "3V3"),
-    ("GP29", "CTRL_CAMERA"),
+    ("GP29", "free"),
     ("GP28", "POT_JOYSTICK"),
     ("GP27", "POT_ACCEL"),
     ("GP26", "POT_SPEED"),
@@ -156,12 +156,12 @@ BUTTON_BOT_PADS = [
     ("GP17", "free"),
 ]
 
-# B4Slider UIC on RP2040-Zero (assets/B4Slider_rp2040zero_pinout_button.txt).
+# B4Slider UIC on RP2040-Zero (assets/B4S_RP2040zero_pinout.txt).
 B4_LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
     ("3V3", "3V3"),
-    ("GP29", "CTRL_CAMERA"),
+    ("GP29", "free"),
     ("GP28", "free"),
     ("GP27", "POT_ACCEL"),
     ("GP26", "POT_SPEED"),
@@ -172,11 +172,11 @@ B4_RIGHT = [
     ("GP0", "BTN_SET"),
     ("GP1", "BTN_MOVE_L"),
     ("GP2", "BTN_MOVE_R"),
-    ("GP3", "BTN_MOVE_L2"),
-    ("GP4", "BTN_MOVE_R2"),
-    ("GP5", "free"),
-    ("GP6", "free"),
-    ("GP7", "free"),
+    ("GP3", "BTN_AXIS_1"),
+    ("GP4", "BTN_AXIS_2"),
+    ("GP5", "BTN_AXIS_3"),
+    ("GP6", "BTN_AXIS_4"),
+    ("GP7", "BTN_AXIS_5"),
     ("GP8", "BTN_OPTION"),
 ]
 B4_BOTTOM = [
@@ -188,10 +188,10 @@ B4_BOTTOM = [
 ]
 B4_BOT_PADS = [
     ("GND", "GND"),
-    ("GP25", "free"),
-    ("GP24", "free"),
-    ("GP23", "free"),
-    ("GP22", "free"),
+    ("GP25", "ENC_SPEED_B"),
+    ("GP24", "ENC_SPEED_A"),
+    ("GP23", "ENC_ACCEL_B"),
+    ("GP22", "ENC_ACCEL_A"),
     ("GP21", "free"),
     ("GP20", "free"),
     ("GP19", "free"),
@@ -217,7 +217,7 @@ BUTTON_LEGEND = [
     ("UART_*", C_UART),
     ("DSP_*", C_DSP),
     ("LED_*", C_LED),
-    ("CTRL_*", C_CTRL),
+    ("ENC_*", C_POT),
     ("POT_*", C_POT),
     ("free", C_FREE),
     ("GND", C_GND),
@@ -242,15 +242,15 @@ def _layout(mode: str):
             "ascii_notes": [
                 "Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
-                "CTRL_CAMERA on GP29. DELAY / TIMELAPSE on underside GP25 / GP24.",
+                "GP29 free (shutter is SliderMC PIN_CAMERA_CTRL / CT). DELAY / TIMELAPSE on underside GP25 / GP24.",
                 "Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = \"button\".",
                 "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17–23 free SMD pads.",
                 "Naming: BTN_* = electronics/pinout; User Manual uses plain names (STOP, MOVE_L, …).",
             ],
             "png_title": "RP2040-Zero JKSlider UIC pinout",
             "png_sub": "Top + bottom view  USB at top  BUTTON mode  SliderPins overlay",
-            "txt_name": "JKSlider_rp2040zero_pinout_button.txt",
-            "png_name": "JKSlider_rp2040zero_pinout_button.png",
+            "txt_name": "JKS_RP2040zero_pinout_button.txt",
+            "png_name": "JKS_RP2040zero_pinout_button.png",
         }
     if mode == "b4":
         return {
@@ -267,15 +267,15 @@ def _layout(mode: str):
             "ascii_notes": [
                 "Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
-                "CTRL_CAMERA on GP29. Six buttons: SET GP0, MOVE_L/R GP1/2, MOVE_L2/R2 GP3/4, OPTION GP8.",
-                "MOVE_L2/R2 when SliderMC CS motors 2 (no RB). Button mode: active-low pull-ups.",
-                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–25 free.",
+                "GP29 free (shutter is SliderMC PIN_CAMERA_CTRL / CT). AXIS_1..5 on GP3..7; SET GP0; MOVE_L/R GP1/2; OPTION GP8.",
+                "Optional QD: ENC_SPEED GP24/25, ENC_ACCEL GP22/23 underside (pin_b = pin_a+1).",
+                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–21 free.",
                 "Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).",
             ],
             "png_title": "RP2040-Zero B4Slider UIC pinout",
-            "png_sub": "Top + bottom view  USB at top  6-button 2-axis  SliderPins overlay",
-            "txt_name": "B4Slider_rp2040zero_pinout_button.txt",
-            "png_name": "B4Slider_rp2040zero_pinout_button.png",
+            "png_sub": "Top + bottom view  USB at top  AXIS_1..5  SliderPins overlay",
+            "txt_name": "B4S_RP2040zero_pinout.txt",
+            "png_name": "B4S_RP2040zero_pinout.png",
         }
     return {
         "left": LEFT,
@@ -297,8 +297,8 @@ def _layout(mode: str):
         ],
         "png_title": "RP2040-Zero SliderMC pinout",
         "png_sub": "Top + bottom view  USB at top  BOARD_RP2040_ZERO  pins.h defaults",
-        "txt_name": "rp2040zero_pinout_mc.txt",
-        "png_name": "rp2040zero_pinout_mc.png",
+        "txt_name": "MC_RP2040zero_pinout.txt",
+        "png_name": "MC_RP2040zero_pinout.png",
     }
 
 
@@ -467,7 +467,7 @@ def render_png(path: Path, mode: str = "mc"):
     _draw_column(c, bot_pads, pad_ys, board_left + board_col_w + _GAP, "right", fun_w)
     gp16_note = (
         "GP16 = onboard WS2812 (optional PIN_NEOPIXEL)"
-        if mode == "button"
+        if mode in ("button", "b4")
         else "GP16 = onboard RGB LED (unused by firmware)"
     )
     c.text(gp16_note, board_left, bot_sec_y + bot_sec_h + 6, sub_c, 1)
