@@ -24,8 +24,8 @@ Typical UIC defaults for the **SliderMC split** (edit via `SliderPins.py`):
 | GPIO | Signal |
 |------|--------|
 | GP16 / 17 | UART_TX / UART_RX to SliderMC @ 115200 baud |
-| GP22 | CTRL_CAMERA shutter / intervalometer |
-| GP18–21 | free (optional NeoPixel / future IO) |
+| GP22 | free on JKSlider (shutter is SliderMC `CT`) |
+| GP21..18 | AXIS_1..4 (Pico) |
 | GP2 / 3 / 4 | LED_R / LED_G / LED_B |
 | GP0 / 1 | DSP_I2C_SDA / DSP_I2C_SCL |
 
@@ -54,11 +54,12 @@ Later panel apps can add another dict (e.g. `OtherApp = { ... }`) in the same `S
 | Option | Meaning |
 |--------|---------|
 | `JKS_INPUT_MODE` | `"button"` or `"keypad"` |
-| `PIN_POT_SPEED` / `PIN_POT_ACCEL` / `PIN_POT_JOYSTICK` | ADC pots; joystick `None` = off |
-| `PIN_BTN_*` | Discrete buttons (button mode) |
+| `PIN_POT_SPEED` / `PIN_POT_ACCEL` / `PIN_POT_JOYSTICK_1` / `_2` | ADC pots; joystick `None` = off |
+| `PIN_BTN_*` | Discrete buttons (button mode) including `PIN_BTN_AXIS_1`..`6` |
 | `PIN_KEYPAD_ROWS` / `PIN_KEYPAD_COLS` | Keypad matrix |
 | `PIN_BTN_STOP` | Always; ORed with matrix BTN_STOP in keypad mode |
-| `PIN_BTN_OPTION` | Always; ORed with matrix OPTION (`*`) in keypad mode |
+| `PIN_BTN_OPTION` | Button mode GP13 |
+| `PIN_BTN_OPTION_KEYPAD` | Keypad discrete OPTION GP14; ORed with matrix `*` |
 
 ### Behaviour
 
@@ -66,9 +67,9 @@ Later panel apps can add another dict (e.g. `OtherApp = { ... }`) in the same `S
 |--------|---------|
 | `JKS_MOVE_TAP_MS` | MOVE release ≤ this (ms) → locked cruise; longer hold → stop on release (default 333) |
 | `JKS_SWAP_LR` | Initial L/R swap (also toggled at runtime) |
-| `JKS_CAMERA_FPS` | Default shutter FPS for CTRL_CAMERA (30) |
+| `JKS_CAMERA_FPS` | Default shutter FPS for MSM `CT` (30) |
 | `JKS_CAMERA_FPS_STEPS` | FPS cycle list `(24, 25, 30, 48, 50, 60)` |
-| `JKS_TL_MODE` | Default TL≠1 style if file has no `tl_mode`: `"msm"` or `"continuous"` (Cont = ÷N crawl + hold-high). Runtime: `T`+`D`+`*` |
+| `JKS_TL_MODE` | Default TL≠1 style if file has no `tl_mode`: `"msm"` or `"continuous"` (Cont = ÷N crawl, no shutter). Runtime: `T`+`D`+`*` |
 | `JKS_MSM_EXPOSURE_MS` | MSM wait after pulse before hop (default 200) |
 | `JKS_MSM_SETTLE_MS` | MSM wait after hop before next shoot (default 50) |
 | `JKS_MSM_MIN_STEP_MM` | MSM minimum planned hop (default 0.1) |

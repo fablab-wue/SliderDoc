@@ -62,7 +62,7 @@ Software is the same for all builds. Omit unused switches (leave GPIOs unwired �
 
 | Include | Omit |
 |---------|------|
-| SPEED, ACCEL; full keypad; discrete BTN_STOP GP5; discrete BTN_OPTION GP13 | Discrete GP14–15; joystick optional |
+| SPEED, ACCEL; full keypad; discrete BTN_STOP GP5; discrete BTN_OPTION GP14 | Discrete GP15; joystick optional |
 | `JKS_INPUT_MODE = "keypad"` | High-Z row scan (no row diodes) |
 
 ### Custom - All you want / need
@@ -141,17 +141,17 @@ BUTTON mode  |  defaults in UIC_config.py + JKSliderConfig.py
   LED_R            GP2      4 |o         o| 37 3V3_EN   3V3_EN
   LED_G            GP3      5 |o         o| 36 3V3      3V3 OUT
   LED_B            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
-  BTN_STOP         GP5      7 |o         o| 34 GP28     POT_JOYSTICK
+  BTN_STOP         GP5      7 |o         o| 34 GP28     POT_JOYSTICK_1
   GND              GND      8 |o         o| 33 AGND     ADC GND
   BTN_MOVE_L       GP6      9 |o         o| 32 GP27     POT_ACCEL
   BTN_MOVE_R       GP7     10 |o         o| 31 GP26     POT_SPEED
   BTN_FAST_L       GP8     11 |o         o| 30 RUN      RUN
   BTN_FAST_R       GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
-  BTN_A            GP10    14 |o         o| 27 GP21     free
-  BTN_B            GP11    15 |o         o| 26 GP20     free
-  BTN_C            GP12    16 |o         o| 25 GP19     free
-  BTN_OPTION       GP13    17 |o         o| 24 GP18     free
+  BTN_A            GP10    14 |o         o| 27 GP21     BTN_AXIS_1
+  BTN_B            GP11    15 |o         o| 26 GP20     BTN_AXIS_2
+  BTN_C            GP12    16 |o         o| 25 GP19     BTN_AXIS_3
+  BTN_OPTION       GP13    17 |o         o| 24 GP18     BTN_AXIS_4
   GND              GND     18 |o         o| 23 GND      GND
   BTN_DELAY        GP14    19 |o         o| 22 GP17     UART_RX
   BTN_TIMELAPSE    GP15    20 |o         o| 21 GP16     UART_TX
@@ -165,7 +165,7 @@ Also: [../../../../assets/JKS_Pico_pinout_button.txt](../../../../assets/JKS_Pic
 
 #### RP2040-Zero UIC (button mode)
 
-Compact alternative to a full Pico. Same JKSlider app; **GPIO numbers differ** — overlay via `SliderPins.py` (`RP2040_ZERO_*` dicts in [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/SliderPins.example.py)). `JKS_INPUT_MODE = "button"` (no keypad matrix on this map). UART0 is **GP12/13** (not Pico GP16/17); OLED is **I2C1** on GP14/15 (`DSP_I2C_ID = 1`). DELAY / TIMELAPSE sit on underside SMD pads GP25 / GP24.
+Compact alternative to a full Pico. Same JKSlider app; **GPIO numbers differ** — overlay via `SliderPins.py` (`RP2040_ZERO_*` dicts in [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/SliderPins.example.py)). `JKS_INPUT_MODE = "button"` (no keypad matrix on this map). UART0 is **GP12/13** (not Pico GP16/17); OLED is **I2C1** on GP14/15 (`DSP_I2C_ID = 1`). DELAY / TIMELAPSE sit on underside SMD pads GP25 / GP24. AXIS_1..6 on GP23..18; JOYSTICK_1/2 on GP28/GP29.
 
 ![RP2040-Zero pinout button mode](../../../../assets/img/JKS_RP2040zero_pinout_button.png)
 
@@ -187,19 +187,19 @@ KEYPAD mode  |  defaults in UIC_config.py + JKSliderConfig.py
   LED_R            GP2      4 |o         o| 37 3V3_EN   3V3_EN
   LED_G            GP3      5 |o         o| 36 3V3      3V3 OUT
   LED_B            GP4      6 |o         o| 35 ADC_VREF ADC_VREF
-  BTN_STOP         GP5      7 |o         o| 34 GP28     POT_JOYSTICK
+  BTN_STOP         GP5      7 |o         o| 34 GP28     POT_JOYSTICK_1
   GND              GND      8 |o         o| 33 AGND     ADC GND
   KP_ROW1          GP6      9 |o         o| 32 GP27     POT_ACCEL
   KP_ROW2          GP7     10 |o         o| 31 GP26     POT_SPEED
   KP_ROW3          GP8     11 |o         o| 30 RUN      RUN
   KP_ROW4          GP9     12 |o         o| 29 GP22     free
   GND              GND     13 |o         o| 28 GND      GND
-  KP_COL1          GP10    14 |o         o| 27 GP21     free
-  KP_COL2          GP11    15 |o         o| 26 GP20     free
-  KP_COL3          GP12    16 |o         o| 25 GP19     free
-  BTN_OPTION       GP13    17 |o         o| 24 GP18     free
+  KP_COL1          GP10    14 |o         o| 27 GP21     BTN_AXIS_1
+  KP_COL2          GP11    15 |o         o| 26 GP20     BTN_AXIS_2
+  KP_COL3          GP12    16 |o         o| 25 GP19     BTN_AXIS_3
+  KP_COL_4         GP13    17 |o         o| 24 GP18     BTN_AXIS_4
   GND              GND     18 |o         o| 23 GND      GND
-  free             GP14    19 |o         o| 22 GP17     UART_RX
+  BTN_OPTION       GP14    19 |o         o| 22 GP17     UART_RX
   free             GP15    20 |o         o| 21 GP16     UART_TX
                          +-----------+
 
@@ -208,7 +208,8 @@ KEYPAD mode  |  defaults in UIC_config.py + JKSliderConfig.py
   KP_ROW2 (GP7): FAST_L, TIMELAPSE, FAST_R
   KP_ROW3 (GP8): A, B, C
   KP_ROW4 (GP9, lower): OPTION, STOP, OPTION
-  Discrete: BTN_STOP GP5; BTN_OPTION GP13 (ORed with matrix).
+  Discrete: BTN_STOP GP5; BTN_OPTION GP14 (ORed with matrix).
+  AXIS_1..4 ORed on GP21..18. KP_COL_4 used only with LAYOUT_4X4.
 ```
 
 Note: Do not use the RUN pin!  
@@ -221,26 +222,29 @@ Also: [../../../../assets/JKS_Pico_pinout_keypad.txt](../../../../assets/JKS_Pic
 | GPIO | Signal |
 |------|--------|
 | GP26 / GP27 | POT_SPEED / POT_ACCEL |
-| GP28 | POT_JOYSTICK (`None` to disable) |
+| GP28 | POT_JOYSTICK_1 (`None` to disable) |
 | GP5 | BTN_STOP |
 | GP6 / GP7 | BTN_MOVE_L / BTN_MOVE_R |
 | GP8 / GP9 | BTN_FAST_L / BTN_FAST_R |
 | GP10 / GP11 / GP12 | BTN_A / BTN_B / BTN_C |
-| GP13 | BTN_OPTION |
+| GP13 | BTN_OPTION (button mode) |
 | GP14 / GP15 | BTN_DELAY / BTN_TIMELAPSE |
+| GP21 / 20 / 19 / 18 | AXIS_1..4 (AXIS_5/6 unwired on Pico) |
 
 Buttons: active-low to GND, internal pull-ups. Config names: `PIN_BTN_*`.
 
 #### Recommended discrete panel layout
 
-12 mm (1U) grid; 12 mm pots and buttons; 5 mm RGB LED. Clear edge-to-edge gaps; 1U margin to the plate edge (8U × 9U / 96 × 108 mm).
+12 mm (1U) grid; 12 mm pots and buttons; 5 mm RGB LED. Clear edge-to-edge gaps; 1U margin to the plate edge (8U × 12U / 96 × 144 mm). Symbolic OLED above the RGB LED; AXIS 1–6 glued row above FAST/MOVE. Pico firmware still only has AXIS_1..4 GPIOs.
 
 ![Recommended discrete button layout](../../../../assets/img/JKS_button_layout.png)
 
 | Silk | Function |
 |------|----------|
+| OLED | Status display (symbolic on the plate) |
 | SPEED / ACCEL | `POT_SPEED` / `POT_ACCEL` (centred over left / right OPTION) |
 | RGB LED | Status NeoPixel (plate centre) |
+| `1` … `6` | AXIS_1..6 (sticky selection) |
 | ` << ` / ` < ` / STOP / ` > ` / ` >> ` | FAST_L / MOVE_L / STOP / MOVE_R / FAST_R |
 | OPTION | Both buttons → `BTN_OPTION` (wire in parallel) |
 | A / B / C / T / D | A / B / C / TIMELAPSE / DELAY |
@@ -301,26 +305,20 @@ Driven by a dedicated PIO state machine @ 8 MHz — does **not** steal motor STE
 
 Many “5 V” NeoPixel modules accept 3.3 V logic on DIN from the Pico. If the module needs 5 V power, still share GND with the Pico. Optional: ~300–470 Ω in series on DIN; 100 nF close to VDD–GND on the LED. RGB LED (GP2/3/4) remains wired as above — NeoPixel is additional, not a replacement.
 
-### Wiring schematics — CTRL_CAMERA (shutter / intervalometer)
+### Wiring schematics — camera shutter (SliderMC `CT`)
 
-Active-high output on **GP22** (`PIN_CTRL_CAMERA`). Drive a **4-pin optocoupler** LED at **≈ 5 mA**; the phototransistor is an open-collector contact for the camera remote shutter.
+Do **not** wire a shutter on the UIC Pico. `PIN_CTRL_CAMERA` is `None`. MSM pulses SliderMC `PIN_CAMERA_CTRL` via `mc.cameraTrigger` / `CT`. Drive a **4-pin optocoupler** from the **motion board** at **≈ 5 mA**; the phototransistor is an open-collector contact for the camera remote shutter.
 
-`R = (3.3 V − Vf) / 5 mA` — typical opto IR LED Vf ≈ 1.2 V → ≈ 420 Ω → **390 Ω** E12 (~5.4 mA).
+On **SliderMC**, shutter is `PIN_CAMERA_CTRL` / `CT`: same opto (LED high-side) or a **FET 5 V level-shifter** — [mc/pins.md](../../../../mc/pins.md#pin_camera_ctrl-low-active-open-collector) · [components/camera.md](../../../../components/camera.md).
 
-![CTRL_CAMERA optocoupler wiring](../../../../assets/img/camera_optocoupler_wiring.svg)
+| Mode | Shutter |
+|------|---------|
+| TL×1 | None — no `CT` during normal moves |
+| TL×N + MSM (default) | One `CT` pulse per frame while **stopped**; then hop; interval = **N / FPS** |
+| TL×N + Cont (`continuous`) | SPEED÷N crawl only; **no** shutter |
+| Idle | None |
 
-Tip/ring/sleeve wiring depends on the camera body — check that remote pinout. Keep the phototransistor floating relative to the Pico unless your remote is designed to share grounds.
-
-On **SliderMC**, shutter is `PIN_CAMERA_CTRL` / `CT`: same opto (LED high-side) or a **FET 5 V level-shifter** — [mc/pins.md](../../../../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
-
-| Mode | CTRL_CAMERA |
-|------|-------------|
-| TL×1 (video) | High while moving; **stays high** during DELAY soft-pause; low when idle |
-| TL×N + MSM (default) | One pulse per frame while **stopped**; then hop; interval = **N / FPS**. RGB status LED off during each pulse |
-| TL×N + Cont (`continuous`) | Same hold-high policy as TL×1 (÷N crawl for motion). Not intervalometer pulses |
-| Idle | Low |
-
-Pulse width: `CTRL_CAMERA_PULSE_MS` (default 100). FPS: `JKS_CAMERA_FPS` / runtime cycle (24…60) in **MSM** (OPTION+STOP). MSM exposure/settle: `JKS_MSM_EXPOSURE_MS` / `JKS_MSM_SETTLE_MS`. Hop size is planned so `estimateMoveTime(Δ)` fits the interval; refuse start if not (`TL too fast`); stretch at runtime if a hop overruns (`Step slow`). Toggle MSM ↔ Cont at runtime with **TIMELAPSE + DELAY + OPTION** (` T ` ` D ` ` * `); saved in `jks_positions.txt`.
+Pulse width: `CTRL_CAMERA_PULSE_MS` (default 100) passed to `CT`. FPS: `JKS_CAMERA_FPS` / runtime cycle (24…60) in **MSM** (OPTION+STOP). MSM exposure/settle: `JKS_MSM_EXPOSURE_MS` / `JKS_MSM_SETTLE_MS`. Hop size is planned so `estimateMoveTime(Δ)` fits the interval; refuse start if not (`TL too fast`); stretch at runtime if a hop overruns (`Step slow`). Toggle MSM ↔ Cont at runtime with **TIMELAPSE + DELAY + OPTION** (` T ` ` D ` ` * `); saved in `jks_positions.txt`.
 
 ### Wiring schematics — buttons (button mode)
 
@@ -344,6 +342,10 @@ Each `BTN_*` is active-low: switch to **GND**, Pico internal pull-up enabled. Sa
   GP13 ----[ ]---- GND     BTN_OPTION
   GP14 ----[ ]---- GND     BTN_DELAY
   GP15 ----[ ]---- GND     BTN_TIMELAPSE
+  GP21 ----[ ]---- GND     BTN_AXIS_1
+  GP20 ----[ ]---- GND     BTN_AXIS_2
+  GP19 ----[ ]---- GND     BTN_AXIS_3
+  GP18 ----[ ]---- GND     BTN_AXIS_4
 ```
 
 No external pull-up required. Optionally share one GND bus for all switches.
@@ -356,7 +358,7 @@ Linear potentiometers (pots) (typically 10 kΩ). Wiper → ADC; outer legs **3V3
 
 ![Potentiometer wiring](../../../../assets/img/potentiometer_wiring.svg)
 
-Joystick: single-axis pot or one axis of a joystick module wired the same way. Centre = mid ADC; calibrate with OPTION+A+B+C when idle (see User Manual). MC side: stream `MJ` (percent of session `SS`) — [Joystick control](../../../../mc/motion-joy.md); skip unchanged values.
+Joystick: `POT_JOYSTICK_1` (Pico GP28) moves the **lowest** selected axis; `POT_JOYSTICK_2` (Zero GP29; Pico `None`) moves the second selected axis if the mask has ≥2 axes. Centre = mid ADC; calibrate **each fitted stick** with OPTION+A+B+C when idle (see User Manual). Packed `MJ` percent of session `SS` — [Joystick control](../../../../mc/motion-joy.md).
 
 Note: For reducing ESD problems add a capacitor (100 nF) to GND and a capacitor (100 nF) to 3V3 for each pot on the Pico side.
 
@@ -364,13 +366,15 @@ Note: For reducing ESD problems add a capacitor (100 nF) to GND and a capacitor 
 
 | GPIO | Signal |
 |------|--------|
-| GP26 / GP27 / GP28 | POT_SPEED / POT_ACCEL / POT_JOYSTICK |
+| GP26 / GP27 / GP28 | POT_SPEED / POT_ACCEL / POT_JOYSTICK_1 |
 | GP5 | BTN_STOP (also matrix key; ORed in software) |
 | GP6–GP9 | KP_ROW1 … KP_ROW4 (`KP_ROW1` = upper keys on GP6) |
 | GP10–GP12 | KP_COL1 … KP_COL3 |
-| GP13 | BTN_OPTION (also matrix `*`; ORed in software) |
+| GP13 | KP_COL_4 (scanned only if LAYOUT has 4 columns) |
+| GP14 | BTN_OPTION (also matrix `*`; ORed in software) |
+| GP21..18 | AXIS_1..4 (ORed with matrix) |
 
-Freed vs button mode: **GP14, GP15**. UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 is **free** on the pinout (camera is SliderMC `PIN_CAMERA_CTRL`). Optional NeoPixel: free GPIO (e.g. GP18–21) via `PIN_NEOPIXEL`.
+UART to SliderMC: **GP16 TX / GP17 RX** (wire **crossed** to the MC — see [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic)). GP22 is **free** on the pinout (camera is SliderMC `PIN_CAMERA_CTRL` / `CT`). Optional NeoPixel: a remaining free GPIO via `PIN_NEOPIXEL`.
 
 #### Recommended key labeling
 
@@ -410,11 +414,11 @@ KP_ROW3 GP8   ` A `             ` B `             ` C `
 KP_ROW4 GP9   ` * `             ` 0 `             ` * `
 ```
 
-Both bottom ` * ` keys are one logical OPTION. Matrix ` 0 ` (STOP) and discrete GP5 **BTN_STOP** share one logical STOP. Matrix ` * ` and discrete GP13 **BTN_OPTION** share one logical OPTION (`DOUBLE_OPTION` stays matrix-only when both `*` are down).
+Both bottom ` * ` keys are one logical OPTION. Matrix ` 0 ` (STOP) and discrete GP5 **BTN_STOP** share one logical STOP. Matrix ` * ` and discrete GP14 **BTN_OPTION** share one logical OPTION (`DOUBLE_OPTION` stays matrix-only when both `*` are down).
 
 #### Keypad wiring — High-Z row scan
 
-Scan: idle **rows** are inputs (Hi-Z); the scanned row is set **OUT/LOW**; read **columns** with pull-ups. No row diodes — Hi-Z idle avoids GPIO fights when several keys are down. Discrete **BTN_STOP**: GP5 — switch — GND. Discrete **BTN_OPTION**: GP13 — switch — GND.
+Scan: idle **rows** are inputs (Hi-Z); the scanned row is set **OUT/LOW**; read **columns** with pull-ups. No row diodes — Hi-Z idle avoids GPIO fights when several keys are down. Discrete **BTN_STOP**: GP5 — switch — GND. Discrete **BTN_OPTION**: GP14 — switch — GND.
 
 ![Keypad matrix wiring (High-Z row scan)](../../../../assets/img/keypad_matrix_wiring.svg)
 
@@ -430,7 +434,8 @@ Without per-key diodes, three corners of a matrix rectangle can make a fourth **
 | ` A `+` B `+` C ` on one row | No rectangle |
 | Firmware | Filters ghost matrix STOP when OPTION+≥2 of A/B/C; ignores OPTION+pair loops; joy-cal only when stopped; `DOUBLE_OPTION`+STOP → immediate halt |
 | Discrete GP5 BTN_STOP | Applied after the ghost filter |
-| Discrete GP13 BTN_OPTION | ORed after scan (does not create DOUBLE_OPTION) |
+| Discrete GP14 BTN_OPTION | ORed after scan (does not create DOUBLE_OPTION) |
+| Optional 4×4 col4 AXIS_1..4 | AXIS_1+AXIS_2+MOVE_L can ghost FAST_L on a diode-less pad |
 
 ### Documented chords
 

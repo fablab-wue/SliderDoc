@@ -8,24 +8,24 @@
 
 # B4Slider — User Manual
 
-**B4Slider** — AXIS-select camera slider panel (1–5 packed axes)
+**B4Slider** — AXIS-select camera slider panel (1–6 packed axes)
 
 How to operate a **ready-configured** B4Slider on set.  
 App: [`B4Slider.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4Slider.py) · config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`).  
 Shared motion / LED stack: [../../api/overview.md](../../api/overview.md). Installer hub: [../jkslider/technical/README.md](../jkslider/technical/README.md).  
 One-page set card: [cheat-sheet/cheat-sheet.pdf](cheat-sheet/cheat-sheet.pdf) ([HTML source](cheat-sheet/cheat-sheet.html)).
 
-B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, **AXIS_1..5**, SPEED/ACCEL (pot or rotary), RGB LED, optional OLED. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window on the **selected** axes (see [Workflow: A / B](#workflow-a--b-working-window)).
+B4Slider is a **minimal** UIC: **MOVE_L**, **MOVE_R**, **OPTION**, **SET**, **AXIS_1..6**, SPEED/ACCEL (pot or rotary), RGB LED, optional OLED. There is no keypad A/B/C, STOP key, DELAY, or TIMELAPSE. Soft travel limits **are** the A/B working window on the **selected** axes (see [Workflow: A / B](#workflow-a--b-working-window)).
 
-Firmware always wires **AXIS_1..5**. A chord is legal iff every held key `k` is `≤ mc.getAxisCount()` (packed motors+servos, up to 6). There is **no AXIS_6** button. Illegal chords flash **blue** and keep the last valid mask. Boot selection is axis **1**. OLED shows `Ax 1+5` (and similar).
+Firmware wires **AXIS_1..6**. Pico AXIS_6 is **GP22**; Zero AXIS_6 is **GP17**. A selection is legal iff every axis is `≤ mc.getAxisCount()` (packed motors+servos, cap 6). Illegal N flashes **blue** and keeps the last valid mask. Boot selection is axis **1**. OLED shows `Ax 1+5` (and similar).
 
-**Recommended silk** is `1` `2` `3` on [`B4S_button_layout_3axis.svg`](../../../assets/img/B4S_button_layout_3axis.svg) — typical slider + pan + tilt. AXIS_4/5 are optional extras on the pinout; they are **not** drawn on this plate.
+**Recommended silk** is `1` `2` `3` on [`B4S_button_layout_3axis.svg`](../../../assets/img/B4S_button_layout_3axis.svg) — typical slider + pan + tilt. AXIS_4/5/6 are optional extras on the pinout; they are **not** drawn on this plate.
 
 MOVE_L/R apply to the **current selection**. One `moveTo` uses skip `_` on unselected slots so SliderMC [time-syncs](../../../mc/dual-movement.md) the selected axes. Homing at boot is motors `1..getMotorCount()` only (no servos).
 
 The panel Pico talks to a **motion board** (SliderMC) over UART, or to an MKS SERVO via [MC_MKS_Client](../../libraries/mks-servo-rs485.md). If that link is unplugged, the UI may still start, but moves will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-**Shutter** is SliderMC `CT` / `PIN_CAMERA_CTRL` — not a UIC GPIO. Pico **GP22** and Zero **GP29** are free on the B4 pinout.
+**Shutter** is SliderMC `CT` / `PIN_CAMERA_CTRL` — not a UIC GPIO. Pico **GP22** is AXIS_6 on B4; Zero **GP29** is free.
 
 ## Getting started
 
@@ -38,7 +38,7 @@ The panel Pico talks to a **motion board** (SliderMC) over UART, or to an MKS SE
 
 **OPTION** is a modifier: hold it with another control. Alone it does nothing (except unlock at boot).
 
-The **Key** column uses silk labels: ` < ` MOVE_L, ` > ` MOVE_R, ` * ` OPTION, ` S ` SET, `1`…`5` AXIS.
+The **Key** column uses silk labels: ` < ` MOVE_L, ` > ` MOVE_R, ` * ` OPTION, ` S ` SET, `1`…`6` AXIS.
 
 ## Panel layout
 
@@ -48,22 +48,24 @@ The **Key** column uses silk labels: ` < ` MOVE_L, ` > ` MOVE_R, ` * ` OPTION, `
 
 Silk: `S` SET, `<` MOVE_L, `>` MOVE_R, `*` OPTION.
 
-**Typical 3-axis** — same 6U width; plate height **6.5U (78 mm)**. AXIS `1` `2` `3` are a glued row centred under OPTION (½U gap). SET, SPEED, and ACCEL unchanged. AXIS_4/5 are optional hardware, not on this silk.
+**Typical 3-axis** — same 6U width; plate height **7.5U (90 mm)**. AXIS `1` `2` `3` are a glued row centred under OPTION (½U gap). SET, SPEED, and ACCEL unchanged. AXIS_4/5/6 are optional hardware, not on this silk.
 
 ![Recommended B4Slider 3-axis panel layout](../../../assets/img/B4S_button_layout_3axis.svg)
 
 ## Axis selection
 
-Selection is the set of **currently pressed** AXIS keys. Releasing all AXIS keys **keeps** the last valid mask.
+Same gestures as JKSlider. Timing uses `B4S_LONG_PRESS_MS` (default 1 s). OLED flashes `Ax …`; LED white-flashes once per selected axis (1–6).
 
-| Situation | Result |
-|-----------|--------|
+| Gesture | Mask |
+|---------|------|
 | Boot | Axis 1 |
-| Hold `1` | Axis 1 |
-| Hold `1`+`3` | Axes 1 and 3 — OLED `Ax 1+3`, white flash twice |
-| Hold `1`+`4`+`5` | Axes 1, 4, 5 if `getAxisCount() ≥ 5` |
-| Hold `5` when `getAxisCount() == 2` | **Invalid** — blue fast blink; mask unchanged |
+| Short AXIS_N | **only N** (sticky) |
+| Long AXIS_N | **N..last** fitted axis |
+| OPTION + short AXIS_N | **toggle** N (refuse empty — blue blink) |
+| OPTION + long AXIS_N | **1..N** |
+| Two+ AXIS held | preview those keys; on release the chord sticks |
 | All AXIS released | Keep last valid mask |
+| N > `getAxisCount()` | **Invalid** — blue fast blink; mask unchanged |
 
 You may change the mask while moving. MOVE then retargets the new selection on the next cruise start.
 
@@ -142,7 +144,7 @@ Requires SliderMC packed channels (`CS motors` / `CS servos`; banner `{motors}+{
 
 Select the axes you want, then MOVE. One skipped `MT` keeps idle axes still and [time-syncs](../../../mc/dual-movement.md) the rest.
 
-Typical 3-axis kit: AXIS `1` travel, `2` pan, `3` tilt on the recommended plate. Larger kits add AXIS_4/5 on the extra GPIOs.
+Typical 3-axis kit: AXIS `1` travel, `2` pan, `3` tilt on the recommended plate. Larger kits add AXIS_4/5/6 on the extra GPIOs.
 
 ## Color codes
 
@@ -162,7 +164,7 @@ RGB status LED (shared [`UIC_Base`](https://github.com/fablab-wue/SliderCtrl/blo
 | Red fast blink | Hard limit |
 | Red blink | Homing (if used on the motion board) |
 | Solid red | DRV_ERROR / EMO |
-| White flash ×N (N ≤ 5) | Valid AXIS selection changed (N = how many keys in the mask) |
+| White flash ×N (N ≤ 6) | Valid AXIS selection changed (N = how many keys in the mask) |
 | Blue fast blink | Illegal AXIS chord (kept previous mask) |
 | Green blink | Rotary SPEED/ACCEL **entered** min or max clamp |
 | White blip | Soft limit set or reset confirm |
@@ -220,7 +222,7 @@ There is **no** UIC camera pin and **no** MOVE_L2/R2.
 | Key | Default (Pico) | Meaning |
 |-----|----------------|---------|
 | `PIN_BTN_MOVE_L` / `MOVE_R` | 6 / 7 | `<` / `>` (Zero overlay: 1 / 2) |
-| `PIN_BTN_AXIS_1` … `AXIS_5` | 12 / 11 / 10 / 9 / 8 | AXIS keys (Zero: GP3…7) |
+| `PIN_BTN_AXIS_1` … `AXIS_6` | 12 / 11 / 10 / 9 / 8 / **22** | AXIS keys (Zero: GP3…7 / **GP17**) |
 | `PIN_BTN_OPTION` | 13 | `*` (Zero: GP8) |
 | `PIN_BTN_SET` | 5 | `S` (Zero: GP0; was STOP on JKSlider discrete map) |
 | `PIN_POT_SPEED` / `POT_ACCEL` | 26 / 27 | SPEED / ACCEL ADC |
@@ -239,7 +241,7 @@ There is **no** UIC camera pin and **no** MOVE_L2/R2.
 | `B4S_EXTRA_LONG_MS` | 3000 | ≥ 3 s |
 | `B4S_LEARN_HOLD_MS` | 5000 | ≥ 5 s accel learn |
 | `B4S_LEFT_IS_NEGATIVE` | `True` | Left toward decreasing mm |
-| `B4S_LEFT2_IS_NEGATIVE` … `LEFT5` | `True` | Same per extra axis |
+| `B4S_LEFT2_IS_NEGATIVE` … `LEFT6` | `True` | Same per extra axis |
 | `B4S_HOMING_ENABLED` | `True` | Boot homing motors `1..getMotorCount()` |
 | `B4S_NEAR_SOFT_MM` | 3.0 | Near-soft LED distance (also sets UIC warn) |
 | `B4S_LOOP_BLUE_ADD` | 26 | ~10% blue while looping (0…255) |

@@ -20,8 +20,8 @@ JKSlider is a **UIC + SliderMC** split: panel I/O on the UIC Pico, motion axis o
 
 | Board | Typical components |
 |-------|-------------------|
-| **UIC** | Buttons, keypad, OLED, RGB/NeoPixel, pots, joystick, camera shutter |
-| **SliderMC** | Motor / STEP·DIR driver, hard limits (also home), Ext, DRV_ERROR |
+| **UIC** | Buttons, keypad, OLED, RGB/NeoPixel, pots, joystick |
+| **SliderMC** | Motor / STEP·DIR, servos, hard limits (also home), camera `CT`, Ext, DRV_ERROR |
 
 SliderMC pins: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/MC_Pico_pinout.png) · [CONFIG.md](../mc/config.md)
 

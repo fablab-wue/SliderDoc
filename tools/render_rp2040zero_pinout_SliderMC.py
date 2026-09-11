@@ -118,8 +118,8 @@ BUTTON_LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
     ("3V3", "3V3"),
-    ("GP29", "free"),
-    ("GP28", "POT_JOYSTICK"),
+    ("GP29", "POT_JOYSTICK_2"),
+    ("GP28", "POT_JOYSTICK_1"),
     ("GP27", "POT_ACCEL"),
     ("GP26", "POT_SPEED"),
     ("GP15", "DSP_I2C_SCL"),
@@ -147,12 +147,12 @@ BUTTON_BOT_PADS = [
     ("GND", "GND"),
     ("GP25", "BTN_DELAY"),
     ("GP24", "BTN_TIMELAPSE"),
-    ("GP23", "free"),
-    ("GP22", "free"),
-    ("GP21", "free"),
-    ("GP20", "free"),
-    ("GP19", "free"),
-    ("GP18", "free"),
+    ("GP23", "BTN_AXIS_1"),
+    ("GP22", "BTN_AXIS_2"),
+    ("GP21", "BTN_AXIS_3"),
+    ("GP20", "BTN_AXIS_4"),
+    ("GP19", "BTN_AXIS_5"),
+    ("GP18", "BTN_AXIS_6"),
     ("GP17", "free"),
 ]
 
@@ -196,7 +196,7 @@ B4_BOT_PADS = [
     ("GP20", "free"),
     ("GP19", "free"),
     ("GP18", "free"),
-    ("GP17", "free"),
+    ("GP17", "BTN_AXIS_6"),
 ]
 
 LEGEND = [
@@ -242,9 +242,10 @@ def _layout(mode: str):
             "ascii_notes": [
                 "Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
-                "GP29 free (shutter is SliderMC PIN_CAMERA_CTRL / CT). DELAY / TIMELAPSE on underside GP25 / GP24.",
+                "JOYSTICK_1 GP28 / JOYSTICK_2 GP29. No UIC camera pin (SliderMC CT).",
+                "AXIS_1..6 on underside GP23..18. DELAY / TIMELAPSE on GP25 / GP24.",
                 "Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = \"button\".",
-                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17–23 free SMD pads.",
+                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17 free SMD pad.",
                 "Naming: BTN_* = electronics/pinout; User Manual uses plain names (STOP, MOVE_L, …).",
             ],
             "png_title": "RP2040-Zero JKSlider UIC pinout",
@@ -267,13 +268,13 @@ def _layout(mode: str):
             "ascii_notes": [
                 "Legend: SPEED on GP26; optional ACCEL on GP27; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.",
                 "OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.",
-                "GP29 free (shutter is SliderMC PIN_CAMERA_CTRL / CT). AXIS_1..5 on GP3..7; SET GP0; MOVE_L/R GP1/2; OPTION GP8.",
+                "No UIC camera pin (SliderMC CT). AXIS_1..5 on GP3..7; AXIS_6 GP17; SET GP0; MOVE_L/R GP1/2; OPTION GP8.",
                 "Optional QD: ENC_SPEED GP24/25, ENC_ACCEL GP22/23 underside (pin_b = pin_a+1).",
-                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP17–21 free.",
+                "GP16 = onboard WS2812 (optional PIN_NEOPIXEL). Underside GP18–21 free.",
                 "Naming: BTN_* = electronics/pinout; User Manual uses plain names (SET, MOVE_L, …).",
             ],
             "png_title": "RP2040-Zero B4Slider UIC pinout",
-            "png_sub": "Top + bottom view  USB at top  AXIS_1..5  SliderPins overlay",
+            "png_sub": "Top + bottom view  USB at top  AXIS_1..6  SliderPins overlay",
             "txt_name": "B4S_RP2040zero_pinout.txt",
             "png_name": "B4S_RP2040zero_pinout.png",
         }

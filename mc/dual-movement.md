@@ -120,7 +120,7 @@ Full tables: [config.md](config.md).
 4. **Prefer pan on motor 2** — keeps linear “mm” on motor 1 (`IP` first field / UIC habit). `WP` / Wait Pos is the **time-sync master** (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md). Homing: `MH 1|2|3` (motors only).
 5. **`max_speed_1` / `max_speed_2` clamp:** if `|d2| ≫ |d1|`, scaled `v2` may hit `max_speed_2` and **lose** perfect time sync — shorten the axis2 move, raise the cap, or move axes sequentially. Mid-move `SS`/`SA` stay time-synced while coordination is active (same clamp still applies).
 6. **Path mode (`PG`):** extra `PD` args are **slice-timed**, not the same as dual-`MT` distance scaling. See [motion-path.md](motion-path.md).
-7. **UIC:** JKSlider stays 1-axis; B4Slider MOVE applies to the AXIS selection (skipped `MT`). Hosts/scripts can still send dual `MT` directly. Use `CG unit_name` for the display unit.
+7. **UIC:** both JKSlider and B4Slider select packed axes 1–6 (`getAxisCount()`). JKSlider MOVE/FAST send packed `MJ` with **0** on unselected live channels; B4Slider MOVE uses skipped `MT`. JKSlider A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Hosts/scripts can still send dual `MT` directly. Use `CG unit_name` for the display unit.
 
 ---
 

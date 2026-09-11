@@ -1,9 +1,9 @@
 # B4Slider
 
-AXIS-select camera slider panel (`B4Slider.py`) — packed axes **1–5**.
+AXIS-select camera slider panel (`B4Slider.py`) — packed axes **1–6**.
 
-**Always:** MOVE_L/R, SET, OPTION, AXIS_1..5, SPEED (pot or rotary).  
-**Typical silk:** AXIS `1` `2` `3` on [`B4S_button_layout_3axis.svg`](../../../assets/img/B4S_button_layout_3axis.svg) (slider + pan + tilt). AXIS_4/5 are optional extras, not drawn. Legal chords use packed `getAxisCount()`. MOVE on the selection is one skipped `MT` ([time-synced](../../../mc/dual-movement.md)).
+**Always:** MOVE_L/R, SET, OPTION, AXIS_1..6, SPEED (pot or rotary).  
+**Typical silk:** AXIS `1` `2` `3` on [`B4S_button_layout_3axis.svg`](../../../assets/img/B4S_button_layout_3axis.svg) (slider + pan + tilt). AXIS_4/5/6 are optional extras, not drawn. Legal selection uses packed `getAxisCount()` (cap 6). MOVE on the selection is one skipped `MT` ([time-synced](../../../mc/dual-movement.md)).
 
 A/B in the [user manual](user-manual.md) is the **working window** (travel clip + MOVE target), not JKSlider marks. Philosophy: [Architecture — Marks vs working window](../../../architecture/marks-vs-working-window.md).
 

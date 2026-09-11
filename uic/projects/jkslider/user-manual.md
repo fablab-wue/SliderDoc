@@ -20,7 +20,7 @@ Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED
 
 The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-The stack **supports** an optional **2nd STEP/DIR motor** (`CS motors 2`) — typical **linear travel + pan**, [time-synced](../../../mc/dual-movement.md). **This panel** is a **1-motor** operator UI (`set_axis_status_callback`, axis 1). A custom 2-motor face uses `MC_Client` — [UIC API](../../api/overview.md). Wire: [protocol.md](../../../contract/protocol.md#live-axis-count-axis).
+The stack **supports** extra STEP/DIR motors (`CS motors` 2 or 3) plus packed servos — [time-synced](../../../mc/dual-movement.md). **This panel** selects packed axes **1–6** for MOVE/FAST/joysticks. A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Idle OLED numbers follow the lowest selected axis.
 
 ## Getting started
 
@@ -33,6 +33,21 @@ The stack **supports** an optional **2nd STEP/DIR motor** (`CS motors 2`) — ty
 **PosA / PosB / PosC**, timelapse divider, MSM/continuous mode, camera FPS, left/right swap, delay, and joystick centre are remembered after power-off when they were saved before.
 
 **OPTION** is a modifier: hold it together with another control. Alone it does nothing.
+
+## Axis selection
+
+Boot selection is axis **1**. Timing uses `JKS_LONG_PRESS_MS` (default 1 s). OLED flashes `Ax …` and the LED white-flashes once per selected axis (1–6). Invalid N (above live `getAxisCount()`, cap 6) keeps the mask and blinks **blue**.
+
+| Gesture | Mask |
+|---------|------|
+| Short AXIS_N | **only N** (sticky) |
+| Long AXIS_N | **N..last** fitted axis |
+| OPTION + short AXIS_N | **toggle** N (refuse empty — blue blink) |
+| OPTION + long AXIS_N | **1..N** |
+| Two+ AXIS held | preview those keys; on release the chord sticks |
+| All AXIS up | keep current |
+
+MOVE/FAST jog **all** selected axes (packed `MJ`; other live channels 0). Joystick 1 moves the **lowest** selected axis; joystick 2 (if fitted) moves the second. Marks A/B/C stay axis 1.
 
 On **keypad** panels, the **Key** column shows the recommended silk labels (e.g. `` ` < ` `` for MOVE_L). Button panels use the Action names only.
 
@@ -75,7 +90,7 @@ Cruise, jog, stop, boost, halt, home, soft travel chords, and mid-move pause.
 
 Tap vs hold uses `JKS_MOVE_TAP_MS` (default **333 ms**). Locked cruise also ends on STOP, A/B/C goto, FAST, joystick, soft limit, or the hard-limit home switch. OPTION alone does not stop cruise.
 
-During pause, goto elapsed time keeps counting (wall clock). In **TL ×1 video** and **continuous**, `CTRL_CAMERA` **stays high** while soft-paused (recording continues). In **MSM**, pause freezes the take (no extra pulses) until you release DELAY. STOP ends the move, clears pause, and drops the camera pin (idle).
+During pause, goto elapsed time keeps counting (wall clock). In **MSM**, pause freezes the take (no extra `CT` pulses) until you release DELAY. STOP ends the move and clears pause. Cont does not fire the shutter.
 
 ## A / B / C
 
@@ -123,14 +138,14 @@ Armed delay: cyan idle LED; OLED keeps showing **Delay**.
 | **OPTION + DELAY + TIMELAPSE** | ` * ` ` D ` ` T ` | Toggle **MSM ↔ continuous** (saved) |
 | **OPTION + STOP** (MSM, TL ≠ 1) | ` * ` ` 0 ` | Cycle camera FPS: 24 → 25 → 30 → 48 → 50 → 60 |
 
-**TL ×1 (video)** — `CTRL_CAMERA` high while moving; stays high during DELAY soft-pause; low when idle.
+**TL ×1** — normal SPEED/ACCEL; **no** shutter on the UIC or via `CT` during the move.
 
 **TL ≠ 1** — style from saved `tl_mode` (default **`msm`**; toggle with **OPTION + DELAY + TIMELAPSE**):
 
 | Mode | Behaviour |
 |------|-----------|
-| **MSM** (default) | Stop–shoot–move: pulse while stopped, then hop with full SPEED/ACCEL. Interval = N/FPS. OLED **`MSM xN @Ffps`** + video time + frame count. RGB LED off during each shutter pulse. |
-| **continuous** | ÷N crawl (SPEED/ACCEL ÷ N); `CTRL_CAMERA` **hold-high** like video (not pulses). OLED **`Cont xN @Ffps`** + video time = wall-time÷TL. |
+| **MSM** (default) | Stop–shoot–move: SliderMC `CT` while stopped, then hop with full SPEED/ACCEL. Interval = N/FPS. OLED **`MSM xN @Ffps`** + video time + frame count. |
+| **continuous** | ÷N crawl (SPEED/ACCEL ÷ N); **no** shutter. OLED **`Cont xN @Ffps`** + video time = wall-time÷TL. |
 
 Yellow badge **TL** whenever N ≠ 1; idle LED magenta (between MSM pulses).
 
@@ -144,13 +159,15 @@ If an MSM hop cannot fit in the interval (accel too slow / TL too aggressive), s
 
 ## Joystick (if present)
 
+Stick 1 moves the lowest selected axis; stick 2 (Zero GP29) moves the second selected axis if the mask has ≥2 axes.
+
 | Action | Key | Result |
 |--------|-----|--------|
 | Centre | — | Stop |
-| Deflect | — | Move; full deflection = SPEED knob |
+| Deflect | — | Move that stick’s axis; full deflection = SPEED knob |
 | While deflected | — | Overrides MOVE / FAST / loop |
 | **OPTION** + joystick hold | ` * ` hold | Full deflection = max speed; accel = max accel while OPTION held |
-| **OPTION + A + B + C** hold ≥ 1 s | ` * ` ` A ` ` B ` ` C ` hold ≥ 1 s | Calibrate centre (stick at rest, slider stopped) → **Joy 0 set** (or **Stop first** if still moving) |
+| **OPTION + A + B + C** hold ≥ 1 s | ` * ` ` A ` ` B ` ` C ` hold ≥ 1 s | Calibrate centre of **each fitted** stick (at rest, slider stopped) → **Joy 0 set** (or **Stop first** if still moving) |
 | **FAST_L + FAST_R** hold ≥ 1 s | ` << ` ` >> ` hold ≥ 1 s | Swap L/R including joystick (same swap as under Move) |
 
 ## Other
@@ -232,21 +249,21 @@ Use TL ×1 first so you can *see* the move at real speed, then decide how that m
 
 #### Timelapse - MSM mode
 
-1. **Wire the camera** — GP22 (`CTRL_CAMERA`) through a 4-pin optocoupler to the remote shutter (see Technical Manual). Manual exposure / focus as needed.
+1. **Wire the camera** — SliderMC `PIN_CAMERA_CTRL` / `CT` through a 4-pin optocoupler to the remote shutter (see Technical Manual / [camera.md](../../../components/camera.md)). Manual exposure / focus as needed.
 2. **Plan the path** — Rehearse A→B at TL ×1. SPEED/ACCEL set how fast each MSM hop runs (not the frame interval).
 3. **Optional DELAY** — Arm a walk-in delay if needed. During the take, **DELAY** hold to soft-pause (freezes MSM); release to resume.
 4. **Enable MSM + TL** — Ensure mode is MSM (**OPTION + DELAY + TIMELAPSE** if needed). **TIMELAPSE** tap to the divider. OLED **`MSM x25 @30fps`**. Set playback FPS with **OPTION + STOP**. Interval between frames = N/FPS.
-5. **Start recording on the camera** — Arm stills / intervalometer on the body as required for your shutter cable (slider pulses `CTRL_CAMERA` each frame).
+5. **Start recording on the camera** — Arm stills / intervalometer on the body as required for your shutter cable (slider sends `CT` each MSM frame).
 6. **Shoot** — **B** tap (or MOVE / loop). Carriage shoots, waits exposure, hops, settles, repeats until the mark (or STOP). OLED shows video **`MM:SS`** and frame count.
 7. **Stop recording on the camera** — When the take ends or after STOP. **TIMELAPSE** hold ≥ 1 s for ×1 video mode if needed.
 
 #### Timelapse - Continuous mode
 
-1. **Wire the camera** — Same GP22 optocoupler path; continuous uses **hold-high** (like video REC), not shutter pulses.
+1. **Wire the camera** — Same SliderMC `CT` path if you still want a live record trigger on the body; **continuous does not send `CT`**. Motion is SPEED÷N crawl.
 2. **Plan the path** — Rehearse at TL ×1; dial SPEED so the crawl (SPEED÷N) will match the final timelapse look you want.
 3. **Match camera TL to the slider** — Set the **camera’s own timelapse / interval setting to the same TL** as the slider (e.g. both ×25). Mismatched TL makes the clip and the move disagree.
 4. **Enable continuous + TL** — Toggle continuous with **OPTION + DELAY + TIMELAPSE**. **TIMELAPSE** tap to the divider. OLED **`Cont x25 @30fps`**. **OPTION + STOP** peeks marks (does **not** change FPS).
-5. **Start recording on the camera** — Start the camera recording / timelapse **before** the move (`CTRL_CAMERA` will go high while moving and stay high during DELAY soft-pause).
+5. **Start recording on the camera** — Start the camera recording / timelapse **before** the move. Cont does **not** send `CT`; it only crawls at SPEED÷N.
 6. **Shoot** — **B** tap (or MOVE / loop). Carriage crawls at SPEED÷N. OLED video time = wall-time ÷ TL.
 7. **Stop recording on the camera** — When idle after the move, or after STOP (pin goes low).
 
@@ -288,7 +305,7 @@ PWM RGB and optional NeoPixel (WS2812) show the **same** colors. Soft-limit blue
 | Cyan blink | Delay wait / armed while holding a move key |
 | Dim magenta | Timelapse (TL ≠ 1), idle |
 | Dim white ↔ dim blue | Loop idle (AB / AC / BC dwell) |
-| Off (brief) | MSM shutter pulse (`CTRL_CAMERA` high) |
+| Off (brief) | MSM shutter pulse (`CT` on SliderMC) |
 | Yellow | Speeding up or slowing down |
 | Green | Steady speed |
 | Base + ~30% blue | Near soft limit (rail end) |

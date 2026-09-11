@@ -52,17 +52,17 @@ RIGHT = [
     ("3V3_EN", "3V3_EN"),
     ("3V3", "3V3 OUT"),
     ("ADC_VREF", "ADC_VREF"),
-    ("GP28", "POT_JOYSTICK"),
+    ("GP28", "POT_JOYSTICK_1"),
     ("AGND", "ADC GND"),
     ("GP27", "POT_ACCEL"),
     ("GP26", "POT_SPEED"),
     ("RUN", "RUN"),
     ("GP22", "free"),
     ("GND", "GND"),
-    ("GP21", "free"),
-    ("GP20", "free"),
-    ("GP19", "free"),
-    ("GP18", "free"),
+    ("GP21", "BTN_AXIS_1"),
+    ("GP20", "BTN_AXIS_2"),
+    ("GP19", "BTN_AXIS_3"),
+    ("GP18", "BTN_AXIS_4"),
     ("GND", "GND"),
     ("GP17", "UART_RX"),
     ("GP16", "UART_TX"),
@@ -78,8 +78,8 @@ KEYPAD_LEFT_OVERRIDE = {
     "GP10": "KP_COL1",
     "GP11": "KP_COL2",
     "GP12": "KP_COL3",
-    "GP13": "BTN_OPTION",
-    "GP14": "free",
+    "GP13": "KP_COL_4",
+    "GP14": "BTN_OPTION",
     "GP15": "free",
 }
 
@@ -96,7 +96,9 @@ B4_LEFT_OVERRIDE = {
 }
 B4_RIGHT_OVERRIDE = {
     "GP28": "free",
-    "GP22": "free",
+    "GP22": "BTN_AXIS_6",
+    "GP21": "free",
+    "GP20": "free",
     "GP19": "ENC_ACCEL_B",
     "GP18": "ENC_ACCEL_A",
 }
@@ -224,7 +226,9 @@ def render_ascii(mode: str) -> str:
                 "Keypad nets: GP6–9 = KP_ROW1..KP_ROW4 (High-Z idle / drive LOW to scan);",
                 "  GP10–12 = KP_COL1..KP_COL3;",
                 "  BTN_STOP on GP5 (+ matrix key on KP_ROW4/KP_COL2);",
-                "  BTN_OPTION on GP13 (+ matrix * keys on KP_ROW4/KP_COL1 & KP_COL3).",
+                "  BTN_OPTION on GP14 (+ matrix * keys on KP_ROW4/KP_COL1 & KP_COL3).",
+                "  Optional KP_COL_4 GP13 when LAYOUT_4X4 (AXIS_1..4).",
+                "  AXIS_1..4 on GP21..18 (ORed with matrix). Pico AXIS_5/6 unwired.",
                 "  KP_ROW1 (GP6, upper): MOVE_L, DELAY, MOVE_R",
                 "  KP_ROW2 (GP7): FAST_L, TIMELAPSE, FAST_R",
                 "  KP_ROW3 (GP8): A, B, C",
@@ -234,8 +238,8 @@ def render_ascii(mode: str) -> str:
     elif mode == "b4":
         lines.extend(
             [
-                "B4Slider: SET / MOVE_L / MOVE_R / OPTION plus AXIS_1..5 (GP12/11/10/9/8).",
-                "  Legal AXIS chords: packed getAxisCount() (motors+servos, up to 6; no AXIS_6 key).",
+                "B4Slider: SET / MOVE_L / MOVE_R / OPTION plus AXIS_1..6 (GP12/11/10/9/8/22).",
+                "  Legal AXIS selection: packed getAxisCount() (motors+servos, up to 6).",
                 "  SPEED pot GP26; optional ACCEL pot GP27 (B4S_SPEED_INPUT / B4S_ACCEL_INPUT).",
                 "  Optional QD: ENC_SPEED GP14/15, ENC_ACCEL GP18/19 (pin_b = pin_a+1).",
                 "  No keypad, FAST, A/B/C, DELAY, TIMELAPSE, joystick, or UIC camera pin.",
@@ -245,12 +249,18 @@ def render_ascii(mode: str) -> str:
     else:
         lines.append(
             "Button mode: one GPIO per BTN_* (active-low). "
-            'JKS_INPUT_MODE = "button".'
+            'JKS_INPUT_MODE = "button". AXIS_1..4 on GP21..18; JOYSTICK_1 on GP28.'
         )
-    lines.append(
-        "GP22 free (shutter is SliderMC PIN_CAMERA_CTRL / CT, not a UIC GPIO). "
-        "Optional NeoPixel: use a free GPIO and set PIN_NEOPIXEL."
-    )
+    if mode == "b4":
+        lines.append(
+            "Shutter is SliderMC PIN_CAMERA_CTRL / CT (not a UIC GPIO). "
+            "Optional NeoPixel: use a free GPIO and set PIN_NEOPIXEL."
+        )
+    else:
+        lines.append(
+            "GP22 free (shutter is SliderMC PIN_CAMERA_CTRL / CT, not a UIC GPIO). "
+            "Optional NeoPixel: use a free GPIO and set PIN_NEOPIXEL."
+        )
     if mode == "b4":
         lines.append(
             "Naming: BTN_* = electronics/pinout; User Manual uses plain names "

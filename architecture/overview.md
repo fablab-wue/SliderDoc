@@ -16,7 +16,7 @@ JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated moti
 
 ## Philosophy
 
-- Each controller has a **dedicated purpose**: the MC runs motion only; the UIC runs the panel, display, camera shutter, and optional WLAN.
+- Each controller has a **dedicated purpose**: the MC runs motion, limits, servos, and the camera shutter GPIO; the UIC runs the panel, display, and optional WLAN.
 - The MC is **not disturbed** by OLED redraws, switch/keypad scanning, WLAN, or other UIC work — STEP timing never shares that CPU.
 - This project prefers **Pico + MicroPython** on the UIC for DIY/maker friendliness (Thonny, REPL, `mpremote`, edit-on-device). A compact **RP2040-Zero** (or similar RP2040 mini board) is fine for smaller enclosures — use the same GPIO numbers as the Pico pinouts; silk and USB differ, so flash a matching MicroPython UF2.
 - Forks may use ESP8266/ESP32, Raspberry Pi / Linux SBCs, or other DIY boards (large or touch displays) as long as they speak the SliderMC UART protocol — same motion board, replaceable face.
@@ -48,15 +48,16 @@ What may attach to each board (same ownership as the overview diagram):
 - RGB_LEDs / NeoPixel
 - Potentiometers
 - JoySticks
-- Camera (`CTRL_CAMERA`)
 - Optional WLAN / network (Pico W or fork host)
 - USB debug (host PC)
 - UART to MC
 
 ### MC — may connect
 
-- Motor / STEP·DIR driver (integrated or external); optional **2nd** STEP·DIR when `CS motors 2` (`motors=3` also exists) — typical **linear travel (motor 1) + pan (motor 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
-- Hard limit switch(es) (`SW_LIMIT_*`; optional extra-axis pins when `axis` ≥ 2) — also used as the homing reference (`home_mode_N` 1/2)
+- Motor / STEP·DIR driver (integrated or external); optional extra STEP·DIR when `CS motors 2` (`motors=3` also exists) — typical **linear travel (motor 1) + pan (motor 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
+- RC **servos** (packed PWM axes)
+- Hard limit switch(es) (`SW_LIMIT_*`) — also the homing reference (`home_mode_N` 1/2). There is **no** separate home-switch pin
+- Camera shutter (`PIN_CAMERA_CTRL` / `CT`)
 - Optional stall-home via `DRV_ERROR` (`home_mode_N` 3/4)
 - Ext outputs (`EXT_0`…`EXT_3`); optional piezo (`PIN_BUZZER` / `BE`)
 - `DRV_ERROR` / E-stop interlock
@@ -67,8 +68,8 @@ What may attach to each board (same ownership as the overview diagram):
 
 | Side | Responsibility |
 |------|----------------|
-| **Must not run on MC** | Display I2C, button/keypad scan, ADC pots, NeoPixel / UI LED effects, WLAN, camera shutter timing |
-| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, `DRV_ERROR`, EXT, optional buzzer |
+| **Must not run on MC** | Display I2C, button/keypad scan, ADC pots, NeoPixel / UI LED effects, WLAN |
+| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, servos, camera `CT`, `DRV_ERROR`, EXT, optional buzzer |
 | **Contract** | UIC talks **millimetres** over UART; MC owns steps and ramps |
 
 ## Software stacks
@@ -176,8 +177,8 @@ Hardware `DRV_ERROR` and hard limits are handled on the **MC**. The UIC is infor
 
 | Board | Firmware | Owns |
 |-------|----------|------|
-| **UIC** | MicroPython: `JKSlider` + `MC_Client` / `UIC_Base` | Pots, buttons/keypad, OLED, RGB/NeoPixel, camera shutter, UART host, optional WLAN |
-| **MC** | C++/PlatformIO: SliderMC | STEP/DIR/EN, home/limits, DRV_ERROR, EXT outputs, planner, UART device |
+| **UIC** | MicroPython: `JKSlider` + `MC_Client` / `UIC_Base` | Pots, buttons/keypad, OLED, RGB/NeoPixel, UART host, optional WLAN |
+| **MC** | C++/PlatformIO: SliderMC | STEP/DIR/EN, servos, home/limits, camera `CT`, DRV_ERROR, EXT outputs, planner, UART device |
 
 ```mermaid
 flowchart LR
@@ -227,4 +228,4 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 
 ## Camera pin
 
-Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC Pico **GP22** and Zero **GP29** are **free** on JKS and B4S pinouts. JKSlider firmware can still pulse `PIN_CTRL_CAMERA` if you wire it; B4Slider does not. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.
+Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.

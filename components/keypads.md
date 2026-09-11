@@ -12,14 +12,14 @@
 
 **UIC** wiring (panel Pico). Motion axis is on SliderMC — see [ARCHITECTURE.md](../architecture/overview.md).
 
-4×3 matrix mode: `JKS_INPUT_MODE = "keypad"`. Rows use **High-Z idle scan** (no row diodes): idle rows are inputs; the scanned row is driven LOW; columns read with pull-ups. Discrete **STOP** on GP5 is ORed with matrix `0`. Discrete **OPTION** on GP13 is ORed with matrix `*`.
+4×3 matrix mode: `JKS_INPUT_MODE = "keypad"`. Rows use **High-Z idle scan** (no row diodes): idle rows are inputs; the scanned row is driven LOW; columns read with pull-ups. Discrete **STOP** on GP5 is ORed with matrix `0`. Discrete **OPTION** on GP14 is ORed with matrix `*`. Optional `LAYOUT_4X4` scans KP_COL_4 GP13 as AXIS_1..4. Pico also ORs discrete AXIS_1..4 on GP21..18.
 
 | Matrix | Default | Config |
 |--------|---------|--------|
 | Rows KP_ROW1…4 | GP6…9 | `PIN_KEYPAD_ROWS = (6, 7, 8, 9)` |
 | Cols KP_COL1…3 | GP10…12 | `PIN_KEYPAD_COLS = (10, 11, 12)` |
 | STOP (discrete) | GP5 | `PIN_BTN_STOP` |
-| OPTION (discrete) | GP13 | `PIN_BTN_OPTION` |
+| OPTION (discrete) | GP14 | `PIN_BTN_OPTION_KEYPAD` |
 
 Recommended silk (Technical Manual):
 
@@ -70,5 +70,5 @@ JKS_INPUT_MODE = "keypad"
 PIN_KEYPAD_ROWS = (6, 7, 8, 9)   # KP_ROW1..4, upper row = GP6
 PIN_KEYPAD_COLS = (10, 11, 12)   # KP_COL1..3
 PIN_BTN_STOP = 5                 # discrete STOP; ORed with matrix 0
-PIN_BTN_OPTION = 13              # discrete OPTION; ORed with matrix *
+PIN_BTN_OPTION_KEYPAD = 14      # discrete OPTION; ORed with matrix *
 ```

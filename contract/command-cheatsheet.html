@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <title>SliderMC Command Cheat Sheet</title>
 <style>
-@page { size: A4; margin: 7mm; }
+@page { size: 210mm 297mm; margin: 6mm; }
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 7.2pt;
+  font-size: 6.6pt;
   color: #111;
   background: #fff;
 }
 .sheet {
-  width: 196mm;
+  width: 198mm;
   margin: 0 auto;
   padding: 0;
 }
@@ -22,40 +22,42 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  border-bottom: 1.2pt solid #222;
-  padding-bottom: 1.2mm;
-  margin-bottom: 2mm;
+  border-bottom: 1.1pt solid #222;
+  padding-bottom: 0.8mm;
+  margin-bottom: 1.2mm;
 }
 header h1 {
   margin: 0;
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 header .meta {
-  font-size: 7pt;
+  font-size: 6.4pt;
   color: #444;
   text-align: right;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 4mm;
-  align-content: start;
+  column-count: 2;
+  column-gap: 3.5mm;
+  column-fill: balance;
 }
 .group {
   break-inside: avoid;
   page-break-inside: avoid;
-  margin-bottom: 1.4mm;
+  -webkit-column-break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 1mm 0;
 }
 .group h2 {
-  margin: 0 0 0.4mm 0;
-  font-size: 7pt;
+  margin: 0 0 0.3mm 0;
+  font-size: 6.5pt;
   font-weight: 700;
   color: #fff;
   background: #333;
-  padding: 0.4mm 1.2mm;
+  padding: 0.3mm 1mm;
   letter-spacing: 0.02em;
 }
 table {
@@ -63,65 +65,60 @@ table {
   border-collapse: collapse;
   table-layout: fixed;
 }
-th, td {
-  padding: 0.35mm 0.6mm;
+td {
+  padding: 0.18mm 0.5mm;
   vertical-align: top;
   border-bottom: 0.25pt solid #ddd;
-  line-height: 1.22;
-}
-th {
-  text-align: left;
-  font-size: 6.2pt;
-  color: #555;
-  font-weight: 600;
-  border-bottom: 0.5pt solid #999;
+  line-height: 1.16;
 }
 col.sh { width: 8mm; }
-col.ln { width: 22mm; }
+col.ln { width: 26mm; }
 col.ds { width: auto; }
 td.sh {
   font-family: Consolas, "Courier New", monospace;
   font-weight: 700;
-  font-size: 7pt;
+  font-size: 6.6pt;
   white-space: nowrap;
 }
 td.ln {
   font-family: Consolas, "Courier New", monospace;
-  font-size: 6.8pt;
+  font-size: 6.3pt;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-td.ds { font-size: 7pt; }
+td.ds { font-size: 6.5pt; }
 footer {
-  margin-top: 1.8mm;
-  padding-top: 1.4mm;
+  margin-top: 1.2mm;
+  padding-top: 1mm;
   border-top: 1pt solid #222;
-  font-size: 6.6pt;
-  line-height: 1.28;
+  font-size: 6.1pt;
+  line-height: 1.22;
   color: #222;
   break-inside: avoid;
   page-break-inside: avoid;
 }
 footer strong { font-weight: 700; }
-footer .row { margin: 0.25mm 0; }
+footer .row { margin: 0.15mm 0; }
 code {
   font-family: Consolas, "Courier New", monospace;
-  font-size: 6.5pt;
+  font-size: 6pt;
   background: #f0f0f0;
   padding: 0 1pt;
 }
 @media screen {
   body { background: #e8e8e8; padding: 8mm; }
   .sheet {
+    width: 210mm;
+    min-height: 297mm;
     background: #fff;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-    padding: 7mm;
+    padding: 6mm;
   }
 }
 @media print {
   body { background: #fff; }
-  .sheet { box-shadow: none; padding: 0; }
+  .sheet { width: auto; box-shadow: none; padding: 0; min-height: 0; }
 }
 </style>
 </head>
@@ -132,12 +129,10 @@ code {
 <div class="meta">Firmware V1.0<br>DIN A4 · ASCII protocol</div>
 </header>
 <div class="columns">
-<div class="col">
 <section class="group">
 <h2>S — Set (session)</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">SS</td><td class="ln">Set Speed</td><td class="ds">Cruise speed mm/s (≤ max_speed_1); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.</td></tr>
 <tr><td class="sh">SA</td><td class="ln">Set Accel</td><td class="ds">Peak accel mm/s² (≤ max_accel_1); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
@@ -153,7 +148,6 @@ code {
 <h2>G — Get (session)</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">GS</td><td class="ln">Get Speed</td><td class="ds">Current session cruise speed.</td></tr>
 <tr><td class="sh">GA</td><td class="ln">Get Accel</td><td class="ds">Current session acceleration.</td></tr>
@@ -168,7 +162,6 @@ code {
 <h2>I — Is / Info</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">IM</td><td class="ln">Is Moving</td><td class="ds">Moving or settling on any active axis.</td></tr>
 <tr><td class="sh">IH</td><td class="ln">Is Homing</td><td class="ds">Homing cycle active.</td></tr>
@@ -187,7 +180,6 @@ code {
 <h2>M — Movement</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">MT</td><td class="ln">Move To</td><td class="ds">Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip).</td></tr>
 <tr><td class="sh">MB</td><td class="ln">Move By</td><td class="ds">Relative move; same skip/named XYZABC rules as MT.</td></tr>
@@ -200,7 +192,6 @@ code {
 <h2>P — Path</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">PC</td><td class="ln">Path Clear</td><td class="ds">Clear path buffer (count→0); !E:busy while PG active.</td></tr>
 <tr><td class="sh">PD</td><td class="ln">Path Data</td><td class="ds">Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream).</td></tr>
@@ -208,13 +199,10 @@ code {
 <tr><td class="sh">PN</td><td class="ln">Path Number</td><td class="ds">Samples in buffer; allowed during PG.</td></tr>
 <tr><td class="sh">PS</td><td class="ln">Path Slice</td><td class="ds">Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG.</td></tr>
 </tbody></table></section>
-</div>
-<div class="col">
 <section class="group">
 <h2>W — Wait</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">WT</td><td class="ln">Wait Time</td><td class="ds">Delay then continue ; chain; bare→1 s; never !E:timeout.</td></tr>
 <tr><td class="sh">WM</td><td class="ln">Wait Moving</td><td class="ds">Pause chain until move ends; optional timeout → !E:timeout, cancel rest of chain.</td></tr>
@@ -227,7 +215,6 @@ code {
 <h2>E — Extender</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">EO</td><td class="ln">Ext Out</td><td class="ds">Ext out n logical 0|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected.</td></tr>
 </tbody></table></section>
@@ -235,7 +222,6 @@ code {
 <h2>Special</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">RB</td><td class="ln">Reboot</td><td class="ds">Soft MCU reset (no power cycle); EN off first. CS motors/servos do not need RB.</td></tr>
 <tr><td class="sh">BE</td><td class="ln">Beep</td><td class="ds">Pulse PIN_BUZZER; bare 100 ms; clamp 1..1000; not a wait. No-op if BUZZER_use=0. OK during EMO/path.</td></tr>
@@ -246,7 +232,6 @@ code {
 <h2>C — Config</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">CS</td><td class="ln">Config Set</td><td class="ds">Persist key to mc.ini; silent ok. CS motors/servos re-init GPIO immediately (no RB). CS axis rejected.</td></tr>
 <tr><td class="sh">CR</td><td class="ln">Config Reset</td><td class="ds">Reset all config to compiled defaults and save mc.ini.</td></tr>
@@ -256,7 +241,6 @@ code {
 <h2>V — Version</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">VA</td><td class="ln">Version About</td><td class="ds">About string (name, version, author).</td></tr>
 <tr><td class="sh">VF</td><td class="ln">Version FW</td><td class="ds">Firmware version.</td></tr>
@@ -267,13 +251,12 @@ code {
 <h2>Now Commands</h2>
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
-<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>
 <tbody>
 <tr><td class="sh">#</td><td class="ln">Status now</td><td class="ds">Realtime compact status line (no newline).</td></tr>
 <tr><td class="sh">!</td><td class="ln">Soft Stop now</td><td class="ds">Realtime soft stop (same urgency as MS).</td></tr>
 <tr><td class="sh">ESC</td><td class="ln">E-Stop now</td><td class="ds">Realtime halt (same urgency as ME): STEP abort, EN off, cancel waits/chain.</td></tr>
 </tbody></table></section>
-</div></div>
+</div>
 <footer>
 <div class="row"><strong>Wire:</strong> one command per line (<code>\n</code>); chain with <code>;</code>; axis args positional or named <code>X</code>/<code>Y</code>/<code>Z</code> (glued <code>MTX20Y50Z100</code> ok); <code>#</code> is realtime status, not a comment; <code>/</code> comments to end of line; bare bool setters toggle; motion/settings silent on success; errors <code>!E:code message</code>.</div>
 <div class="row"><strong>Realtime</strong> (no newline): <code>#</code> status · <code>!</code> soft stop · <code>ESC</code> halt (same as ME) · <code>Ctrl-X</code> (0x18) soft reset. <code>?</code> is help (needs newline), not status.</div>

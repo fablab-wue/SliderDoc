@@ -26,13 +26,15 @@ Discrete one-GPIO-per-switch panel (`JKS_INPUT_MODE = "button"`). Active-low to 
 | DELAY | 14 | `PIN_BTN_DELAY` (optional) |
 | TIMELAPSE | 15 | `PIN_BTN_TIMELAPSE` (optional) |
 
-Recommended panel (12 mm / 1U grid; pots and buttons Ø12 mm; RGB LED Ø5 mm). Clear edge-to-edge gaps; 1U margin to the plate (8U × 9U). Wire both OPTION switches in parallel to `PIN_BTN_OPTION`.
+Recommended panel (12 mm / 1U grid; pots and buttons Ø12 mm; RGB LED Ø5 mm). Clear edge-to-edge gaps; 1U margin to the plate (8U × 12U / 96 × 144 mm). Silk shows AXIS 1–6 above the buttons; Pico button-mode firmware only wires AXIS_1..4. Wire both OPTION switches in parallel to `PIN_BTN_OPTION`.
 
 ![Recommended discrete button layout](../assets/img/JKS_button_layout.png)
 
 | Silk | Function |
 |------|----------|
+| OLED | Symbolic display (above the RGB LED) |
 | SPEED / ACCEL | Speed / accel pots |
+| `1` … `6` | AXIS_1..6 (sticky selection; Pico GPIOs 1–4 only) |
 | ` << ` ` < ` STOP ` > ` ` >> ` | FAST_L / MOVE_L / STOP / MOVE_R / FAST_R |
 | OPTION | Modifier (both pads) |
 | A / B / C / T / D | Marks / timelapse / delay |
@@ -72,6 +74,12 @@ PIN_BTN_C = 12
 PIN_BTN_OPTION = 13
 PIN_BTN_DELAY = 14
 PIN_BTN_TIMELAPSE = 15
+PIN_BTN_AXIS_1 = 21
+PIN_BTN_AXIS_2 = 20
+PIN_BTN_AXIS_3 = 19
+PIN_BTN_AXIS_4 = 18
+PIN_BTN_AXIS_5 = None
+PIN_BTN_AXIS_6 = None
 JKS_BTN_DEBOUNCE_MS = 30
 ```
 

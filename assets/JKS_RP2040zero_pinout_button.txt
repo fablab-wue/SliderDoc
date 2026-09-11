@@ -6,8 +6,8 @@ BUTTON mode  |  overlay in SliderPins.py (RP2040_ZERO_JKSlider)
   5V             5V     |o           o| GP0    BTN_STOP
   GND            GND    |o           o| GP1    BTN_MOVE_L
   3V3            3V3    |o           o| GP2    BTN_MOVE_R
-  free           GP29   |o           o| GP3    BTN_FAST_L
-  POT_JOYSTICK   GP28   |o           o| GP4    BTN_FAST_R
+  POT_JOYSTICK_2 GP29   |o           o| GP3    BTN_FAST_L
+  POT_JOYSTICK_1 GP28   |o           o| GP4    BTN_FAST_R
   POT_ACCEL      GP27   |o           o| GP5    BTN_A
   POT_SPEED      GP26   |o           o| GP6    BTN_B
   DSP_I2C_SCL    GP15   |o           o| GP7    BTN_C
@@ -26,17 +26,18 @@ Bottom-side SMD pads (top→bottom):
   GND    GND
   GP25   BTN_DELAY
   GP24   BTN_TIMELAPSE
-  GP23   free
-  GP22   free
-  GP21   free
-  GP20   free
-  GP19   free
-  GP18   free
+  GP23   BTN_AXIS_1
+  GP22   BTN_AXIS_2
+  GP21   BTN_AXIS_3
+  GP20   BTN_AXIS_4
+  GP19   BTN_AXIS_5
+  GP18   BTN_AXIS_6
   GP17   free
 
 Legend: pots on ADC GP26–28; UART0 to SliderMC on GP12 (TX) / GP13 (RX) @ 115200 baud.
 OLED I2C1 SDA/SCL on GP14/15 (set DSP_I2C_ID = 1). RGB LED on GP11/10/9.
-GP29 free (shutter is SliderMC PIN_CAMERA_CTRL / CT). DELAY / TIMELAPSE on underside GP25 / GP24.
+JOYSTICK_1 GP28 / JOYSTICK_2 GP29. No UIC camera pin (SliderMC CT).
+AXIS_1..6 on underside GP23..18. DELAY / TIMELAPSE on GP25 / GP24.
 Button mode: one GPIO per BTN_* (active-low). JKS_INPUT_MODE = "button".
-GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17–23 free SMD pads.
+GP16 = onboard WS2812 (optional PIN_NEOPIXEL). GP17 free SMD pad.
 Naming: BTN_* = electronics/pinout; User Manual uses plain names (STOP, MOVE_L, …).

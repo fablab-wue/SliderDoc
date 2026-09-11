@@ -431,17 +431,17 @@ NOW_COMMANDS = [
 
 
 CSS = """
-@page { size: A4; margin: 7mm; }
+@page { size: 210mm 297mm; margin: 6mm; }
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 7.2pt;
+  font-size: 6.6pt;
   color: #111;
   background: #fff;
 }
 .sheet {
-  width: 196mm;
+  width: 198mm;
   margin: 0 auto;
   padding: 0;
 }
@@ -449,40 +449,42 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  border-bottom: 1.2pt solid #222;
-  padding-bottom: 1.2mm;
-  margin-bottom: 2mm;
+  border-bottom: 1.1pt solid #222;
+  padding-bottom: 0.8mm;
+  margin-bottom: 1.2mm;
 }
 header h1 {
   margin: 0;
-  font-size: 11pt;
+  font-size: 10pt;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 header .meta {
-  font-size: 7pt;
+  font-size: 6.4pt;
   color: #444;
   text-align: right;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 4mm;
-  align-content: start;
+  column-count: 2;
+  column-gap: 3.5mm;
+  column-fill: balance;
 }
 .group {
   break-inside: avoid;
   page-break-inside: avoid;
-  margin-bottom: 1.4mm;
+  -webkit-column-break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 1mm 0;
 }
 .group h2 {
-  margin: 0 0 0.4mm 0;
-  font-size: 7pt;
+  margin: 0 0 0.3mm 0;
+  font-size: 6.5pt;
   font-weight: 700;
   color: #fff;
   background: #333;
-  padding: 0.4mm 1.2mm;
+  padding: 0.3mm 1mm;
   letter-spacing: 0.02em;
 }
 table {
@@ -490,70 +492,64 @@ table {
   border-collapse: collapse;
   table-layout: fixed;
 }
-th, td {
-  padding: 0.35mm 0.6mm;
+td {
+  padding: 0.18mm 0.5mm;
   vertical-align: top;
   border-bottom: 0.25pt solid #ddd;
-  line-height: 1.22;
-}
-th {
-  text-align: left;
-  font-size: 6.2pt;
-  color: #555;
-  font-weight: 600;
-  border-bottom: 0.5pt solid #999;
+  line-height: 1.16;
 }
 col.sh { width: 8mm; }
-col.ln { width: 22mm; }
+col.ln { width: 26mm; }
 col.ds { width: auto; }
 td.sh {
   font-family: Consolas, "Courier New", monospace;
   font-weight: 700;
-  font-size: 7pt;
+  font-size: 6.6pt;
   white-space: nowrap;
 }
 td.ln {
   font-family: Consolas, "Courier New", monospace;
-  font-size: 6.8pt;
+  font-size: 6.3pt;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-td.ds { font-size: 7pt; }
+td.ds { font-size: 6.5pt; }
 footer {
-  margin-top: 1.8mm;
-  padding-top: 1.4mm;
+  margin-top: 1.2mm;
+  padding-top: 1mm;
   border-top: 1pt solid #222;
-  font-size: 6.6pt;
-  line-height: 1.28;
+  font-size: 6.1pt;
+  line-height: 1.22;
   color: #222;
   break-inside: avoid;
   page-break-inside: avoid;
 }
 footer strong { font-weight: 700; }
-footer .row { margin: 0.25mm 0; }
+footer .row { margin: 0.15mm 0; }
 code {
   font-family: Consolas, "Courier New", monospace;
-  font-size: 6.5pt;
+  font-size: 6pt;
   background: #f0f0f0;
   padding: 0 1pt;
 }
 @media screen {
   body { background: #e8e8e8; padding: 8mm; }
   .sheet {
+    width: 210mm;
+    min-height: 297mm;
     background: #fff;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-    padding: 7mm;
+    padding: 6mm;
   }
 }
 @media print {
   body { background: #fff; }
-  .sheet { box-shadow: none; padding: 0; }
+  .sheet { width: auto; box-shadow: none; padding: 0; min-height: 0; }
 }
 """
 
-# Left: S, G, I, M, Path   Right: W, E, Special, C, V + Now
-COL_SPLIT = 5
+# Print sheet: all groups flow in two balanced CSS columns (one A4 page).
 
 
 def build_html() -> str:
@@ -572,7 +568,6 @@ def build_html() -> str:
         f'<div class="meta">Firmware V{html.escape(FW_VERSION)}<br>DIN A4 · ASCII protocol</div>',
         "</header>",
         '<div class="columns">',
-        '<div class="col">',
     ]
 
     def emit_group(title: str, rows: list) -> None:
@@ -581,9 +576,6 @@ def build_html() -> str:
         parts.append("<table>")
         parts.append(
             '<colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>'
-        )
-        parts.append(
-            "<thead><tr><th>Short</th><th>Phrase</th><th>Description</th></tr></thead>"
         )
         parts.append("<tbody>")
         for sh, lng, _call, _reply, desc in rows:
@@ -596,14 +588,10 @@ def build_html() -> str:
             )
         parts.append("</tbody></table></section>")
 
-    for title, rows in GROUPS[:COL_SPLIT]:
-        emit_group(title, rows)
-    parts.append("</div>")
-    parts.append('<div class="col">')
-    for title, rows in GROUPS[COL_SPLIT:]:
+    for title, rows in GROUPS:
         emit_group(title, rows)
     emit_group("Now Commands", NOW_COMMANDS)
-    parts.append("</div></div>")  # col + columns
+    parts.append("</div>")  # columns
 
     parts.append("<footer>")
     parts.append(
@@ -759,9 +747,11 @@ def export_pdf(html_path: Path, pdf_path: Path) -> bool:
         return False
     url = html_path.resolve().as_uri()
     cmd = browser + [
-        "--headless",
+        "--headless=new",
         "--disable-gpu",
         "--no-pdf-header-footer",
+        "--no-first-run",
+        "--disable-extensions",
         f"--print-to-pdf={pdf_path.resolve()}",
         url,
     ]

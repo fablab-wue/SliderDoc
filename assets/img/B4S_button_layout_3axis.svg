@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="108mm" height="110mm" viewBox="-18 -16 108 110"
+     width="108mm" height="122mm" viewBox="-18 -16 108 122"
      role="img" aria-labelledby="title description">
   <title id="title">Recommended B4Slider 3-axis discrete button layout</title>
-  <desc id="description">A 72 by 78 millimetre front plate (6U x 6.5U) on a 12 millimetre grid. Same top as 1-axis B4; AXIS_1/2/3 glued as a row centred under OPTION with a 1/2U gap.</desc>
+  <desc id="description">A 72 by 90 millimetre front plate (6U x 7.5U) on a 12 millimetre grid. Same top as 1-axis B4; AXIS_1/2/3 glued as a row centred under OPTION with a 1/2U gap.</desc>
 
   <defs>
     <pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse">
@@ -54,10 +54,10 @@
     </g>
   </defs>
 
-  <!-- 6U x 6.5U front plate (72 x 78 mm) -->
-  <rect x="0" y="0" width="72" height="78" rx="2"
+  <!-- 6U x 7.5U front plate (72 x 90 mm) -->
+  <rect x="0" y="0" width="72" height="90" rx="2"
         fill="#f7f9fb" stroke="#111827" stroke-width="1.1"/>
-  <rect x="0" y="0" width="72" height="78" rx="2" fill="url(#grid)"/>
+  <rect x="0" y="0" width="72" height="90" rx="2" fill="url(#grid)"/>
 
   <!-- Row 1: SPEED, RGB LED, ACCEL (same as 1-axis) -->
   <use href="#pot" x="18" y="18"/>
@@ -75,7 +75,7 @@
   <!-- OPTION -->
   <use href="#optionButton" x="36" y="54"/>
 
-  <!-- AXIS_1 / AXIS_2 / AXIS_3 -- glued row, 1/2U below OPTION, centred on x=36 -->
+  <!-- AXIS_1 / AXIS_2 / AXIS_3: glued row, 1/2U below OPTION, centred on x=36 -->
   <use href="#axisButton" x="24" y="72"/>
   <use href="#axisButton" x="36" y="72"/>
   <use href="#axisButton" x="48" y="72"/>
@@ -102,17 +102,17 @@
 
   <!-- Plate and grid dimensions -->
   <g fill="none" stroke="#344054" stroke-width="0.35">
-    <path d="M 0 82 L 0 88 M 72 82 L 72 88"/>
-    <path d="M 1 86 L 71 86" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
-    <path d="M -4 0 L -10 0 M -4 78 L -10 78"/>
-    <path d="M -8 1 L -8 77" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+    <path d="M 0 94 L 0 100 M 72 94 L 72 100"/>
+    <path d="M 1 98 L 71 98" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
+    <path d="M -4 0 L -10 0 M -4 90 L -10 90"/>
+    <path d="M -8 1 L -8 89" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
     <path d="M 0 -4 L 0 -10 M 12 -4 L 12 -10"/>
     <path d="M 1 -8 L 11 -8" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"/>
   </g>
   <g fill="#344054" font-family="Arial, Helvetica, sans-serif" font-size="3"
      text-anchor="middle">
-    <text x="36" y="91">6U = 72 mm</text>
+    <text x="36" y="103">6U = 72 mm</text>
     <text x="6" y="-11">1U = 12 mm</text>
-    <text x="-13" y="39" transform="rotate(-90 -13 39)">6.5U = 78 mm</text>
+    <text x="-13" y="45" transform="rotate(-90 -13 45)">7.5U = 90 mm</text>
   </g>
 </svg>

@@ -46,7 +46,7 @@ Different **faces** on the same motion stack — pick the UIC that fits your sho
 | Project | What you get | Manual |
 |---------|--------------|--------|
 | **JKSlider** | Full panel — keypad or buttons, SPEED/ACCEL pots, OLED, marks, timelapse, DELAY | [user manual](../uic/projects/jkslider/user-manual.md) |
-| **B4Slider** | AXIS-select remote — MOVE L/R, SET, OPTION, AXIS_1..5, SPEED pot or rotary; no keypad or timelapse | [user manual](../uic/projects/b4slider/user-manual.md) |
+| **B4Slider** | AXIS-select remote — MOVE L/R, SET, OPTION, AXIS_1..6, SPEED pot or rotary; no keypad or timelapse | [user manual](../uic/projects/b4slider/user-manual.md) |
 | *More coming* | Custom rigs on `MC_Client` / UART | [project template](../uic/projects/_template/README.md) |
 
 **JKSlider** when you need the full shoot feature set (marks, timelapse, DELAY). **B4Slider** when you want a small wired remote with packed-axis selection — MOVE L/R **is** the A/B working window on the current AXIS mask. Philosophy: [marks vs working window](marks-vs-working-window.md).

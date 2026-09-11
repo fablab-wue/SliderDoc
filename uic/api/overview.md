@@ -30,7 +30,7 @@ Shipped defaults: [`MC_config.py`](../MC_config.py) (link) and [`UIC_config.py`]
 | `JKSliderConfig.py` | JKSlider panel defaults (`JKS_*`) |
 | `JKSlider.py` | Camera-slider control panel application |
 | `B4SliderConfig.py` | B4Slider panel defaults (`B4S_*`) |
-| `B4Slider.py` | AXIS-select slider app (MOVE L/R, OPTION, SET, AXIS_1..5 + SPEED pot or rotary) |
+| `B4Slider.py` | AXIS-select slider app (MOVE L/R, OPTION, SET, AXIS_1..6 + SPEED pot or rotary) |
 | `SliderPins.example.py` | Template for one full overlay file per slider HW |
 | `QD.py` | `QD` quadrature decoder + `Denoiser` — see [QD.md](../libraries/qd.md) |
 | `SpaceBall.py` | Serial SpaceMouse / Spaceball / SpaceOrb UART reader — see [SpaceBall.md](../libraries/spaceball.md) |
@@ -346,7 +346,7 @@ API RGB channels are **0…255**; docs often describe mixes as **percent**. Apps
 
 ### B4Slider (AXIS-select app)
 
-Minimal panel: MOVE_L / MOVE_R / OPTION / SET / AXIS_1..5 + SPEED pot or rotary (optional ACCEL pot/rotary/`set`). Selection is packed `getAxisCount()` (legal iff `k ≤` that count; no AXIS_6 key). Soft limits are the A/B working window on the **selected** axes ([marks vs working window](../../architecture/marks-vs-working-window.md)). Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`. Shutter is SliderMC `PIN_CAMERA_CTRL` / `CT`, not a UIC GPIO.
+Minimal panel: MOVE_L / MOVE_R / OPTION / SET / AXIS_1..6 + SPEED pot or rotary (optional ACCEL pot/rotary/`set`). Selection is packed `getAxisCount()` (legal iff `k ≤` that count, cap 6). Soft limits are the A/B working window on the **selected** axes ([marks vs working window](../../architecture/marks-vs-working-window.md)). Config: [`B4SliderConfig.py`](https://github.com/fablab-wue/SliderCtrl/blob/main/B4SliderConfig.py) (`B4S_*`); run `B4Slider.run()`. Shutter is SliderMC `PIN_CAMERA_CTRL` / `CT`, not a UIC GPIO.
 
 Homing / `home()` is **aborted** if the `DRV_ERROR` input becomes active (position is not forced to 0).
 
