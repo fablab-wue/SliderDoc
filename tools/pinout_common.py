@@ -14,8 +14,12 @@ OUT_PNG = ROOT / "assets" / "img"
 C_GND = (20, 20, 20)
 C_PWR_5V = (200, 40, 40)
 C_PWR_3V3 = (230, 120, 30)
-C_EXT = (190, 150, 220)  # light purple — EXT_0…EXT_3
-C_DRV = (130, 70, 180)  # purple — all DRV_* pins
+C_EXT = (140, 85, 40)  # brown — EXT_*
+C_DRV = (130, 70, 180)  # purple — DRV_STEP/DIR/ENABLE
+C_DRV_ERR = (190, 150, 220)  # light purple — DRV_ERROR_*
+C_SERVO = (200, 40, 150)  # magenta — SERVO_*
+C_CAMERA = (175, 145, 20)  # dark yellow — CAMERA_CTRL
+C_BUZZER = (20, 110, 50)  # dark green — BUZZER
 C_UART = (60, 130, 220)  # blue — UART to UIC
 C_SW = (120, 210, 205)  # light turquoise — SW_*
 C_DBG = (150, 95, 45)  # brown — DBG_* (DEBUG_HW)
@@ -23,7 +27,7 @@ C_LED = (220, 170, 40)  # amber — status LED
 C_BTN = (40, 180, 175)  # turquoise — UIC BTN_*
 C_DSP = (230, 200, 50)  # yellow — DSP I2C
 C_POT = (140, 200, 110)  # light green — POT_*
-C_CTRL = (190, 150, 220)  # light purple — CTRL_* (same family as EXT)
+C_CTRL = (190, 150, 220)  # light purple — UIC CTRL_*
 C_FREE = (190, 190, 195)
 C_CTRL_PIN = (240, 140, 140)
 C_GP = (90, 170, 100)
@@ -224,9 +228,11 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
     if gpio == "3V3_EN" or lab == "3V3_EN" or gpio == "RUN":
         return C_CTRL_PIN
     if lab.startswith("SERVO_"):
-        return C_CTRL
+        return C_SERVO
     if lab.startswith("EXT_"):
         return C_EXT
+    if lab.startswith("DRV_ERROR"):
+        return C_DRV_ERR
     if lab.startswith("DRV_"):
         return C_DRV
     if lab.startswith("UART_"):
@@ -241,12 +247,14 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_DSP
     if lab.startswith("POT_") or lab.startswith("ENC_"):
         return C_POT
-    if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab or lab == "CAMERA_CTRL":
+    if lab == "CAMERA_CTRL":
+        return C_CAMERA
+    if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab:
         return C_CTRL
     if lab.startswith("LED_") or lab in ("LED", "PIN_LED") or "NEOPIXEL" in lab:
         return C_LED
     if lab in ("BUZZER", "PIN_BUZZER"):
-        return C_EXT
+        return C_BUZZER
     if lab in ("FREE", "(FREE)") or "(FREE)" in lab or lab == "RGB_UNUSED":
         return C_FREE
     return C_FREE

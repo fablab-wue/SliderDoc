@@ -8,10 +8,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from pinout_common import (
-    C_CTRL,
+    C_BUZZER,
+    C_CAMERA,
     C_CTRL_PIN,
-    C_DBG,
     C_DRV,
+    C_DRV_ERR,
     C_EXT,
     C_FREE,
     C_GND,
@@ -19,6 +20,7 @@ from pinout_common import (
     C_PINNUM,
     C_PWR_3V3,
     C_PWR_5V,
+    C_SERVO,
     C_SW,
     C_UART,
     OUT_PNG,
@@ -148,10 +150,12 @@ def render_png(path: Path):
     legend = [
         ("EXT_*", C_EXT),
         ("DRV_*", C_DRV),
-        ("SERVO_*", C_CTRL),
+        ("DRV_ERROR_*", C_DRV_ERR),
+        ("SERVO_*", C_SERVO),
         ("UART_*", C_UART),
         ("SW_*", C_SW),
-        ("CAMERA_CTRL", C_CTRL),
+        ("CAMERA_CTRL", C_CAMERA),
+        ("BUZZER", C_BUZZER),
         ("free", C_FREE),
         ("GND", C_GND),
         ("power 3V3", C_PWR_3V3),
