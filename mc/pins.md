@@ -176,7 +176,7 @@ Some no-name 2N7000 clones swap S/D — if it does not shift, check the marking 
 
 **External key (momentary only):** non-latching switch from this pin to **GND** (never to 3.3 V, never a toggle that stays down). Falling edge: MC listen → one-shot status **`T`**. A UIC can map that to **stop-motion (MSM)** or **start an A/B move**. If the opto is fitted on the same node, the key also fires the shutter (usual remote). `CT` pulls the same pin: a UIC that treats every `T` as “key” will also see command triggers (duration `T` while `CT` is down when verbose is on). Verbose off → no `#T` push; `#` while low still `#T`.
 
-`PIN_EXT_1`…`4` are always outputs (logical `EO1`…`EO4` / protocol `EO0`…`EO3`). Polarity via `EXT_n_active`; boot level is **inactive**. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). **`EO4`… is rejected.**
+`PIN_EXT_1`…`4` default to **input + pull-up** (`ED n I`). `ED n O` is push-pull; `ED n T` is open-collector + pull-up. Logical `EO1`…`EO4` set output level when mode is O or T. `EI0`…`EI3` read the pin in any mode. Polarity via `EXT_n_active`. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). **`EO5`… is rejected.**
 
 STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motor 3 STEP follows motor 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
 

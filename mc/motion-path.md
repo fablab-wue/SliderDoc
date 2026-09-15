@@ -62,10 +62,14 @@ usual `!E:<code> <text>` form:
   `_` becomes `0` µm on that channel.
 - **`0` means stand still** for that slice — no STEP pulses are issued; the
   PIO naturally holds its output level for the slice duration.
-- **Buffer:** a flat array, not a ring buffer. `PD` always appends; `PG`
-  always starts playback at sample 0. The buffer is **retained** after
+- **Buffer:** a flat array, not a ring buffer. `PD` always appends; bare `PG`
+  always starts playback at sample 0. `PG <start> <end>` uses **0-based
+  inclusive** sample indices. If `start > end`, playback runs reverse with
+  **negated deltas**. The slider is already at the start-index pose. Reject
+  either index `< 0` or `>= path_count` (`!E:range`). The buffer is **retained** after
   playback ends (naturally, or via `MS`/`ME`), so `PG` can replay the same
-  data without resending it.
+  data without resending it. `PI` replies `PI:<play_index>` (0-based playhead;
+  0 if idle) and is allowed during playback like `PN`.
 - **Capacity:** `path_buffer_size` (config key, default 32000 samples,
   settable 1..32768 via `CS path_buffer_size <n>` / `CG path_buffer_size`).
   The static pool is 65536 samples split by live packed `n` = `motors+servos`; `path_buffer_size`
@@ -89,7 +93,10 @@ PD 0                   # slice 2: stand still
 PD -250                # slice 3: -0.25 mm
 ...
 PN                     # -> PN:<count>, sanity-check before playing
-PG                     # start playback
+PG                     # start playback (whole buffer)
+# or: PG 0 9            # play samples 0..9 inclusive
+# or: PG 9 0            # reverse, negated deltas
+PI                     # -> PI:<play_index> while running or idle
 ```
 
 While playback is in progress, verbose/`#` status lines report state letter
@@ -180,6 +187,8 @@ STEP FIFO until it ends. Allowed during playback:
 - `PD` / Path Data (live-move streaming — the only way to add more samples
   once `PG` is active; still rejected with `!E:full` at `path_buffer_size`)
 - `PN` / Path Number
+- `PI` / Path Index (0-based playhead)
+- `EI` / Ext In (read extender pin)
 - All status/query commands: `IM`, `IH`, `IL`, `IE`, `IP`, `IT`, `IR`, `IW`,
   `ID`, `IC`, `IG`, `GS`, `GA`, `GE`, `GT`, `GV`, `GD`,
   `VA`/`VF`/`VP`/`VG`
@@ -204,9 +213,9 @@ move/session-set commands (`MT`, `MB`, `MJ`, `MH`, `SS`, `SA`, `SE`,
 - **`IM` / Is Moving** reports `1` while path-mode is active (it is a form
   of motion).
 - **`IP` / Is Position** reports the live position as the path advances.
-- There is currently no query for "samples remaining to play" — use `PN`
-  (total buffered) together with your own bookkeeping of how much you have
-  sent if you need that during live streaming.
+- There is currently no query for "samples remaining to play" — use `PI`
+  (0-based playhead) with `PN` (total buffered), or your own bookkeeping of
+  how much you have sent if you need that during live streaming.
 
 ## Safety and limits
 

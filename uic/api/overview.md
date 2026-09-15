@@ -92,7 +92,7 @@ await mc.wait()
 
 | Method | Notes |
 |--------|-------|
-| `await start(banner_timeout_s=3.0)` | Sends `\n` every 100 ms until welcome `# …` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG. Banner may include a device `name` and/or `- N Axis` when SliderMC `axis` is 2 or 3. |
+| `await start(banner_timeout_s=3.0)` | Sends `VH\\n` every 100 ms until welcome `# MC V1 -` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG. Banner may include a device `name` and `{motors}+{servos} axis`. |
 | `await send(command, arg=None, arg2=None, wait_answer=False, timeout_s=1.0)` | Raw MC line. 2-axis: `arg is None` with `arg2` set sends skip `_` for axis 1. 1-axis ignores `arg2` and never emits `_`. With `wait_answer` returns the raw `TAG:` payload string (spaces kept). Pass `wait_answer` as a **keyword** — a 3rd positional is `arg2`, not `wait_answer`. |
 | `await query(command, arg=None, arg2=None, timeout_s=1.0)` | `send(..., wait_answer=True)`. `IP` may return `"100 20"` — use `_split_nums(answer)` or `getPosition()` / `getPosition2()` (cache). Do not `float(query("IP"))` in 2-axis mode. |
 | `set_axis_status_callback` | 6-arg: `cb(axis, state, pos, speed, accel, dest)` — `axis` is 1 or 2. Dual lines fire **axis 2 then axis 1**. `UIC_Base.on_axis_status` uses axis 1. `None` unregisters. |

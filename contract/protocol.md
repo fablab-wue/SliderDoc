@@ -92,14 +92,14 @@ sequenceDiagram
   participant MC as SliderMC
 
   Note over MC: protocol_init, LED+WDT init, wait LF on UART or USB
-  Host->>MC: LF
-  Note over Host: UIC retries LF every 100ms until banner or 3s
-  MC->>Host: "# Slider Motion Controller V…\\n"
+  Host->>MC: "VH\\n"
+  Note over Host: UIC retries VH every 100ms until banner or 3s
+  MC->>Host: "# MC V1 - …\\n"
   Note over MC: LED switches to McState patterns after banner
   Host->>MC: "SV 1\\n"
 ```
 
-**Host recommendation (UIC `SliderBase`):** send `\n` on UART, wait ≤100 ms for a `# ` line, retry; after **3 s** without a banner, report an error on USB/REPL and soft-continue if the panel should still boot offline. Empty `\n` lines after the session is up remain ignored (see Wire rules).
+**Host recommendation (UIC `MC_Client`):** send `VH\n` on UART, wait ≤100 ms for a `# MC V1 -` line, retry; after **3 s** without a banner, report an error on USB/REPL and soft-continue if the panel should still boot offline. Empty `\n` still reprints the banner (USB monitor). `VH` works after the protocol loop is running so a late MC or UIC reboot can re-sync.
 
 **USB-only bench:** open the MC USB serial monitor and send LF (Enter). The MC LED already blinks the wait pattern (and WDT is armed if `WDT_use=1`) before that LF; Enter unlocks the session, prints the banner, and switches the LED to McState patterns — no UIC or UART wiring required. Then type normal ASCII commands ending in `\n`.
 
@@ -251,13 +251,14 @@ A 2nd, simpler planner for a host-authored motion path: fixed-size time slices, 
 |-------|--------|------|-------------|
 | `PC` | Path Clear | — | Clear the path buffer (path count → 0); rejected with `!E:busy` while `PG` is active. |
 | `PD` | Path Data | axis args | Append signed 16-bit µm sample(s) (-32768..32767); skip `_` or omit named → `0`; increments path count; `!E:parse` / `!E:full`. Allowed while `PG` is active (live-move streaming). |
-| `PG` | Path Go | — | Play the path buffer from sample 0 until path count is reached (then auto soft-stop) or `MS`/`ME` is received; needs enable; `!E:disabled` / `!E:empty` / `!E:busy`. May be sent while `PD` is still being streamed in (live move). |
+| `PG` | Path Go | — or `start end` | Bare: play sample 0 through `path_count-1`, then soft-stop. `PG <start> <end>`: **0-based inclusive** sample indices. If `start > end`, play reverse with negated deltas. Host is already at the start-index pose (before sample `start` going forward, or after sample `start` going reverse). Reject either index `< 0` or `>= path_count` (`!E:range`). Needs enable; `!E:disabled` / `!E:empty` / `!E:busy`. May be sent while `PD` is still being streamed in (live move). |
 | `PN` | Path Number | — | Reply `PN:<count>` — number of samples currently in the buffer; allowed even while path-mode is active. |
+| `PI` | Path Index | — | Reply `PI:<play_index>` — 0-based playhead (0 if idle). Allowed during `PG` like `PN`. Not a GPIO command. |
 | `PS` | Path Slice | `us` or bare | Set the time-slice length in µs (≥1000); bare reloads `init_path_slice_us`; `!E:parse` below minimum, `!E:busy` while active. |
 
 A sample value of `0` means the axis stands still for that slice. Distance→steps and slice-time→PIO-cycles both use an error-diffusion accumulator so rounding never biases total distance or total playback time. `steps_per_unit_N` and PIO limits apply as usual; speed/accel limits are **not** checked — the host is expected to deliver an already speed/accel-limited path.
 
-While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `ME`, `RB`, `PD` (live-move streaming), `PN`, all `I*`/`G*`/`V*` queries, `IG`, `HL`/`?`, `CG`, `BE`, `CT`. The buffer is retained after playback ends (naturally or via `MS`/`ME`), so `PG` can replay the same data.
+While `PG` is active, all other move/session commands are rejected with `!E:busy` — allowed exceptions: `MS`, `ME`, `RB`, `PD` (live-move streaming), `PN`, `PI`, `EI`, all `I*`/`G*`/`V*` queries, `IG`, `HL`/`?`, `CG`, `BE`, `CT`. The buffer is retained after playback ends (naturally or via `MS`/`ME`), so `PG` can replay the same data.
 
 Verbose / `#` while in path-mode (state letter `P`) use the same layouts as other moving states (`#P …` with live pos/speed; accel is typically `0` for constant-rate slices).
 
@@ -265,9 +266,11 @@ Verbose / `#` while in path-mode (state letter `P`) use the same layouts as othe
 
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
-| `EO` | Ext Out | `n [0\|1]` | Channel `0`…`3`; bare `EO0` toggles; `EO0 1` / `EO01` set on; ok during EMO. |
+| `EO` | Ext Out | `n [0\|1]` | Channel `1`…`4` (`EO1`…`EO4`); bare toggles; `EO1 1` set on; ok during EMO. Sets level when mode is `O` or `T`; `EO` on `I` switches to push-pull `O`. |
+| `ED` | Ext Dir | `n I\|O\|T` | Channel `0`…`3` (`ED0`…`ED3`): **I** input+pull-up (boot default), **O** push-pull output, **T** open-collector + pull-up. Do not use `PD`/`PI` for pins (`PD` is Path Data, `PI` is Path Index). |
+| `EI` | Ext In | `n` | Channel `0`…`3` (`EI0`…`EI3`); reply `EI:<n> <0\|1>` (electrical HIGH=1). Works in I, O, and T. Allowed during `PG`. |
 
-`EO4`… is `!E:parse` (`PIN_EXT_COUNT` is 4). Levels use `EXT_n_active`. Reset to inactive on reboot. Beep / camera pulse are Special (`BE`, `CT`).
+`EO5`… is `!E:parse` (`PIN_EXT_COUNT` is 4). Levels use `EXT_n_active`. Reset to inactive on reboot; pin mode defaults to **I**. Beep / camera pulse are Special (`BE`, `CT`).
 
 ### C — Config (persistent)
 
@@ -308,6 +311,7 @@ In-move scripting (live `SS`/`SA` at waypoints, extender cues): [command chains]
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
 | `VA` | Version About | — | Reply `VA:` about string (name, version, author). |
+| `VH` | Version Hello | — | Reprint the welcome banner (`# MC V1 - …`), same bytes as boot / empty LF. Not `VH:…`. Allowed during path and EMO. Hosts should send `VH\\n` to align after either side reboots. |
 | `VF` | Version FW | — | Reply `VF:<version>` — firmware version. |
 | `VP` | Version Protocol | — | Reply `VP:<n>` — protocol version (`1`). Wire may change without bumping `VP`. |
 | `VG` | Version GPIO | — | List `PIN_*=GPIO` lines (machine-readable). Extra-axis pins only when that axis is live; `PIN_CAMERA_CTRL` always listed; `PIN_BUZZER` when `BUZZER_use=1`. |

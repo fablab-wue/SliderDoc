@@ -84,8 +84,9 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 |--------|------|-------|-------------|
 | Path Clear | **`PC`** | `—` | Clear path buffer (count→0); !E:busy while PG active. |
 | Path Data | **`PD`**`<axv_um>` | `—` | Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream). |
-| Path Go | **`PG`** | `—` | Play buffer from sample 0; needs SE; !E:empty\|busy\|disabled. MS/ME ends path. |
+| Path Go | **`PG`**`[<start> <end>]` | `—` | Bare: play from sample 0. `PG start end`: 0-based inclusive indices; start>end plays reverse (−deltas). !E:range if index invalid. Needs SE; !E:empty\|busy\|disabled. MS/ME ends path. |
 | Path Number | **`PN`** | `PN:<count>` | Samples in buffer; allowed during PG. |
+| Path Index | **`PI`** | `PI:<play_index>` | 0-based playhead (0 if idle); allowed during PG. |
 | Path Slice | **`PS`**`[<us>]` | `—` | Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG. |
 
 ## W — Wait
@@ -103,7 +104,9 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
-| Ext Out | **`EO`**`0..3 [0\|1]` | `—` | Ext out n logical 0\|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected. |
+| Ext Out | **`EO`**`1..4 [0\|1]` | `—` | Ext out n logical 0\|1; bare EO1 toggles; OK during EMO. Sets O/T level; EO on I switches to O. |
+| Ext Dir | **`ED`**`0..3 I\|O\|T` | `—` | Pin mode: I input+pull-up (default), O push-pull, T open-collector+pull-up. |
+| Ext In | **`EI`**`0..3` | `EI:<n> <0\|1>` | Read pin (works in I, O, T). Allowed during PG. |
 
 ## Special
 
@@ -127,6 +130,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
 | Version About | **`VA`** | `VA:…` | About string (name, version, author). |
+| Version Hello | **`VH`** | `# MC V1 - …` | Reprint welcome banner (same as boot / empty LF). OK during EMO/path. |
 | Version FW | **`VF`** | `VF:<version>` | Firmware version. |
 | Version Protocol | **`VP`** | `VP:1` | Protocol version (1). Wire may change without bumping VP. |
 | Version GPIO | **`VG`** | `VG:PIN_*=n (multi-line)` | Machine-readable pin map. Extra-axis pins if that axis is live. |

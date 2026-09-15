@@ -229,8 +229,12 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_CTRL_PIN
     if lab.startswith("SERVO_"):
         return C_SERVO
-    if lab.startswith("EXT_"):
+    if lab.startswith("EXT_") or lab.startswith("GIO_OUT"):
         return C_EXT
+    if lab.startswith("GIO_IN"):
+        return C_SW
+    if lab.startswith("DMX"):
+        return C_DRV
     if lab.startswith("DRV_ERROR"):
         return C_DRV_ERR
     if lab.startswith("DRV_"):
@@ -247,7 +251,7 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_DSP
     if lab.startswith("POT_") or lab.startswith("ENC_"):
         return C_POT
-    if lab == "CAMERA_CTRL":
+    if lab == "CAMERA_CTRL" or lab == "CAMERA":
         return C_CAMERA
     if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab:
         return C_CTRL

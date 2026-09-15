@@ -19,11 +19,11 @@ The important distinction is that **A/B in JKSlider** means **marks**, while **A
 
 | Document | Contents |
 |----------|----------|
-| [overview.md](overview.md) | Two-board split, pros/cons, interconnect, failure modes |
+| [overview.md](overview.md) | Two-board split, optional Dragonframe DMC path, interconnect |
 | [command-chains.md](command-chains.md) | `;` chains as in-move scripts (`WP` / `WC` / `WN` / `BE` / `EO`) |
 | [marks-vs-working-window.md](marks-vs-working-window.md) | Canonical explanation: JKSlider A/B/C marks vs B4Slider A/B working window |
 | [marks-vs-soft-limits.md](marks-vs-soft-limits.md) | Legacy alias kept for compatibility; same concept, older wording |
 | [compare.md](compare.md) | Competitive scan vs commercial / DIY sliders |
 | [marketing.md](marketing.md) | Short marketing overview |
 
-**Related:** [contract/protocol.md](../contract/protocol.md) · [UIC API](../uic/api/overview.md) · [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) · [SliderMC](https://github.com/fablab-wue/SliderMC)
+**Related:** [contract/protocol.md](../contract/protocol.md) · [UIC API](../uic/api/overview.md) · [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) · [SliderMC](https://github.com/fablab-wue/SliderMC) · [SliderDMC](https://github.com/fablab-wue/SliderDMC)

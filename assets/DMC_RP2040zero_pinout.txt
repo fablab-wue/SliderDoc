@@ -1,0 +1,40 @@
+Waveshare RP2040-Zero — SliderDMC pinout (USB at top)
+Defaults in src/config.h
+
+    function     pad                  pad    function
+                        +---- USB ----+
+  5V             5V     |o           o| GP0    DMX_TX
+  GND            GND    |o           o| GP1    free
+  3V3            3V3    |o           o| GP2    GIO_OUT0
+  free           GP29   |o           o| GP3    GIO_OUT1
+  free           GP28   |o           o| GP4    GIO_OUT2
+  free           GP27   |o           o| GP5    GIO_OUT3
+  free           GP26   |o           o| GP6    GIO_IN0
+  BUZZER         GP15   |o           o| GP7    GIO_IN1
+  CAMERA         GP14   |o           o| GP8    GIO_IN2
+                        +-------------+
+                         13 12 11 10 9
+
+Bottom edge (left→right):
+  GP13   UART_RX
+  GP12   UART_TX
+  GP11   free
+  GP10   free
+  GP9    GIO_IN3
+
+Bottom-side SMD pads (top→bottom):
+  GND    GND
+  GP25   free
+  GP24   free
+  GP23   free
+  GP22   free
+  GP21   free
+  GP20   free
+  GP19   free
+  GP18   free
+  GP17   free
+
+Legend: DMX_TX GP0 (PIO UART 250k 8N2); GIO OUT GP2–5; GIO IN GP6–9.
+UART to SliderMC 115200 baud GP12 (TX) / GP13 (RX). CAMERA GP14 (OC). BUZZER GP15.
+GP16 = onboard WS2812 status LED. GP17–20 are not DMC GIO (those are MC extender pins).
+Cross UART to SliderMC: DMC TX GP12 → MC RX; DMC RX GP13 ← MC TX. See dmc/pins.md.

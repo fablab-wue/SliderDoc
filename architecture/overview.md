@@ -10,6 +10,8 @@
 
 JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated motion controller (SliderMC).
 
+An optional third firmware, **[SliderDMC](https://github.com/fablab-wue/SliderDMC)**, is a **Dragonframe** USB DMC v2 client on a **Waveshare RP2040-Zero**. It talks SliderMC ASCII on UART (same `VH` / `CG` / `MT` contract as the UIC). Use it **instead of** a panel on that UART — not in parallel. Docs: [dmc/README.md](../dmc/README.md).
+
 ![Architecture overview](../assets/img/architecture_overview.svg)
 
 **Preferred UIC stack (this project):** Raspberry Pi Pico (or compact **RP2040-Zero** for smaller designs) + **MicroPython** + `uasyncio`. Makers may **fork or expand** with another controller, language, or framework as a UART client to SliderMC — welcome DIY, not a shipping port of this repo.
@@ -144,7 +146,7 @@ Default baud: **115 200**. Changeable in SliderMC source (`UART_BAUD` in `incl
 
 UART is **3.3 V** logic. Do **not** connect it directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
 
-**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# …` banner (bytes before that LF are discarded on both). The UIC retries `\n` on UART every 100 ms for up to 3 s; on timeout it prints an error and soft-continues. For USB-only bench, press Enter in the MC serial monitor. Details: [Technical Manual — Link](../contract/link-and-handshake.md#communication-mc--uic) and [PROTOCOL.md](../contract/protocol.md#startup-banner).
+**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# …` banner (bytes before that LF are discarded on both). The UIC retries **`VH\n`** on UART every 100 ms for up to 3 s; on timeout it prints an error and soft-continues. For USB-only bench, press Enter in the MC serial monitor. Details: [Technical Manual — Link](../contract/link-and-handshake.md#communication-mc--uic) and [PROTOCOL.md](../contract/protocol.md#startup-banner).
 
 ### Power / VSYS
 
@@ -168,7 +170,7 @@ Hardware `DRV_ERROR` and hard limits are handled on the **MC**. The UIC is infor
 
 ## Failure modes
 
-- **UIC reboot or hang:** the MC keeps running its own firmware. In-flight motion continues until the MC finishes the move, hits a limit / `DRV_ERROR`, or receives a new command after the UIC recovers. The UIC must re-establish the UART session via `start()` (sends unlock `\n`, waits for the welcome banner). The MC sends the banner **only once per MC boot** — a UIC-only reboot does not get a new banner unless the MC is also reset / power-cycled. If no banner arrives within 3 s, `start()` prints an error and soft-continues without motion.
+- **UIC reboot or hang:** the MC keeps running its own firmware. In-flight motion continues until the MC finishes the move, hits a limit / `DRV_ERROR`, or receives a new command after the UIC recovers. The UIC must re-establish the UART session via `start()` (sends `VH\n`, waits for the welcome banner). After the MC protocol loop is running, `VH` reprints the banner so a UIC-only reboot can re-sync. If no banner arrives within 3 s, `start()` prints an error and soft-continues without motion.
 - **UART disconnect:** the UIC can no longer send commands or reliably read status; `DRV_ERROR` and hard limits still act **locally on the MC**.
 - **`DRV_ERROR` / hard limits:** handled on the MC regardless of UIC health. While the link is up and verbose status is enabled (`SV 1`), the UIC learns EMO / hard-limit state from `#…` status lines (not a local EMO pin).
 - **No MC / banner timeout:** panel firmware can still start (OLED/LED); motion commands will not work until the link and handshake succeed.
@@ -179,6 +181,7 @@ Hardware `DRV_ERROR` and hard limits are handled on the **MC**. The UIC is infor
 |-------|----------|------|
 | **UIC** | MicroPython: `JKSlider` + `MC_Client` / `UIC_Base` | Pots, buttons/keypad, OLED, RGB/NeoPixel, UART host, optional WLAN |
 | **MC** | C++/PlatformIO: SliderMC | STEP/DIR/EN, servos, home/limits, camera `CT`, DRV_ERROR, EXT outputs, planner, UART device |
+| **DMC** (optional) | C++/PlatformIO: SliderDMC on RP2040-Zero | USB DMC v2 to Dragonframe; UART host to MC; local GIO/DMX/shutter/buzzer |
 
 ```mermaid
 flowchart LR
@@ -211,13 +214,14 @@ flowchart LR
 | **UIC** (button) | [img/JKS_Pico_pinout_button.png](../assets/img/JKS_Pico_pinout_button.png) |
 | **UIC** (keypad) | [img/JKS_Pico_pinout_keypad.png](../assets/img/JKS_Pico_pinout_keypad.png) |
 | **MC** | [SliderMC `../assets/img/MC_Pico_pinout.png`](../assets/img/MC_Pico_pinout.png) (see [PINS.md](../mc/pins.md)) |
+| **DMC** (RP2040-Zero) | [SliderDMC pinout](../assets/img/DMC_RP2040zero_pinout.png) (see [dmc/pins.md](../dmc/pins.md)) |
 
 Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../mc/pins.md`.
 
 ## Wire protocol (summary)
 
 - ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
-- **Startup:** a `\n` on UIC UART or USB unlocks the MC; MC replies with welcome `# …` banner; UIC then sends `SV 1`.
+- **Startup:** `VH\n` on UIC UART (or Enter/LF on USB) unlocks the MC; MC replies with welcome `# MC V1 - …` banner; UIC then sends `SV 1`. `VH` reprints the banner after either side reboots.
 - Commands: `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
 - Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]` — extra packed channels append ` | ` groups (`#I p1 | p2`; empty `||` = idle 0)
 - Errors: `!E:<code> <text>`
@@ -229,3 +233,5 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 ## Camera pin
 
 Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.
+
+With **SliderDMC**, Dragonframe camera shutter can also pulse **DMC GP14** (OC + optional 2N7000 to 5 V) and still send MC `CT`. Wiring: [dmc/pins.md](../dmc/pins.md#camera-gp14--2n7000-level-shifter-5-v-and-gpio-protection).

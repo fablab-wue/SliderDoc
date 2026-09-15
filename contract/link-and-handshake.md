@@ -62,7 +62,7 @@ Architecture overview: [../architecture/overview.md](../architecture/overview.md
 
 ### Session start (handshake)
 
-The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **UIC UART or USB CDC** (whichever arrives first). Bytes before that LF are discarded on both ports. Production panels unlock over UART: the UIC (`MC_Client.start()`) sends `\n` and waits for a line starting with `# ` (hash + space), for example:
+The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **UIC UART or USB CDC** (whichever arrives first). Bytes before that LF are discarded on both ports. Production panels unlock over UART: the UIC (`MC_Client.start()`) sends **`VH\n`** (the LF also unlocks a waiting MC) and waits for a line starting with `# MC V1 -`, for example:
 
 ```text
 # Slider Motion Controller V1.0 ['$' for help]
@@ -70,7 +70,7 @@ The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **U
 
 When config `axis` is 2 or 3, the banner includes the literal suffix `- N Axis`. When config `name` is set, the device name is prefixed (`# <name> - Slider Motion Controller V…`). Hosts should accept any `# ` ready line; see [protocol.md — Startup banner](protocol.md#startup-banner).
 
-If no banner arrives within **100 ms**, the UIC sends another `\n`. After **3 s** without a banner it prints an error to the USB/REPL shell and **continues** (panel UI can start without motion). On success (or soft-continue) it sends `SV 1` for verbose status.
+If no banner arrives within **100 ms**, the UIC sends another `VH\n`. After **3 s** without a banner it prints an error to the USB/REPL shell and **continues** (panel UI can start without motion). On success (or soft-continue) it sends `SV 1` for verbose status. After the protocol loop is running, `VH` reprints the same banner so a UIC-only reboot can re-sync without another MC power cycle.
 
 **USB-only bench (no UIC):** open the MC USB serial monitor and press Enter (LF). That unlocks the session and prints the banner so you can type ASCII commands without UART wiring. See [protocol.md — Startup banner](protocol.md#startup-banner).
 
@@ -80,14 +80,14 @@ sequenceDiagram
   participant MC as SliderMC
 
   Note over MC: Boot, wait LF on UART or USB
-  UIC->>MC: LF
+  UIC->>MC: VH_LF
   Note over UIC: wait max 100ms for banner
   alt no banner yet
-    UIC->>MC: LF
+    UIC->>MC: VH_LF
     Note over UIC: retry until 3s total
   end
   alt banner received
-    MC->>UIC: "# Slider Motion Controller V…\\n"
+    MC->>UIC: "# MC V1 - …\\n"
   else timeout 3s
     Note over UIC: print error on USB/REPL
     Note over UIC: soft-continue without MC
@@ -96,4 +96,18 @@ sequenceDiagram
 ```
 
 After a UIC-only reboot, the MC does **not** re-send the banner unless the MC also resets — power-cycle both boards or reset the MC when re-establishing the link.
+
+## SliderDMC (Dragonframe) as a UART client
+
+[SliderDMC](https://github.com/fablab-wue/SliderDMC) is another host of the same MC UART: it sends **`VH`** then **`CG`** (same as `MC_Client`). USB toward Dragonframe is binary DMC, not this ASCII.
+
+DMC board is always **GP12 TX / GP13 RX**. Cross to the MC:
+
+| DMC | SliderMC Zero | SliderMC Pico |
+|-----|---------------|---------------|
+| GP12 TX | GP13 RX | GP17 RX |
+| GP13 RX | GP12 TX | GP16 TX |
+| GND | GND | GND |
+
+Do not connect UIC and DMC to one MC UART at the same time. Pins and MAX485 / camera / buzzer ASCII: [dmc/pins.md](../dmc/pins.md). Handshake overview: [dmc/overview.md](../dmc/overview.md).
 
