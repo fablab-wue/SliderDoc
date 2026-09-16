@@ -119,9 +119,27 @@ On a stable assert: **immediate** stop (PIO FIFO cleared, no decelerate), driver
 
 `board_heartbeat_init()` runs **before** the unlock `\n` wait: it sets up `PIN_LED` and, if `WDT_use=1` (default), arms the RP2040 watchdog (**2 s** timeout). Every protocol/`unlock` poll (~5 ms) calls `board_heartbeat_tick()`, which always feeds the WDT and advances the LED state machine every **3rd** poll (~**67 Hz**, close to 64). A freeze of that path longer than 2 s (including a hung wait-for-`\n`) triggers a reboot.
 
-`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W / Pico 2 W external GP28 (`picow` / `pico2w` — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero / RP2350 Mini external GP29.
+`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W / Pico 2 W external GP28 (`picow` / `pico2w` — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero / RP2350 Mini external GP29 plus onboard WS2812 on `PIN_NEOPIXEL` GP16.
 
-Until the first `\n` (UIC UART or USB CDC) and banner, the LED uses the **WAIT** pattern. After `board_heartbeat_ready()`, patterns follow `McState` (same source as verbose/`?`), priority: ERROR → HARD_LIMIT → HOMING → MOVING → DISABLED → IDLE → HOLD/other.
+Until the first `\n` (UIC UART or USB CDC) and banner, the GPIO LED uses the **WAIT** pattern. After `board_heartbeat_ready()`, GPIO patterns follow `McState` (same source as verbose/`?`), priority: ERROR → HARD_LIMIT → HOMING → MOVING → DISABLED → IDLE → HOLD/other.
+
+When `PIN_NEOPIXEL` ≠ `PIN_LED`, the WS2812 shows JKSlider-style colours (brightness 32, protocol task only; STEP PIO stays on pio0). Priority (top wins):
+
+| Priority | Status | Colour |
+|----------|--------|--------|
+| 1 | `ERROR` / `DRV_ERROR` | Solid red `255,0,0` |
+| 2 | FIFO underrun (latched ~1.5 s) | Fast red blink `255,0,0` / off, 80 ms |
+| 3 | `HARD_LIMIT` | Fast red blink `255,0,0` / off, 80 ms |
+| 4 | `HOMING` | Red blink `255,0,0` / off, 250 ms |
+| 5 | Path play (`PATH`) | Cyan `0,200,200` |
+| 6 | Accel / decel | Yellow `255,255,0` |
+| 7 | Moving cruise | Green `0,255,0` |
+| 8 | Disabled | Dim orange `31,11,0` |
+| 9 | Idle, UIC UART linked | Dim white `31,31,31` |
+| 10 | Idle, USB-only / no UIC | Dim purple `31,0,31` |
+| 11 | Startup (before unlock `\n` on UIC UART or USB) | Rainbow until unlock |
+
+UIC-linked means the unlock `\n` arrived on UART, or any UART RX since then (no idle timeout). USB-only bench stays dim purple at idle.
 
 `CS WDT_use=0` updates RAM/`mc.ini`, but **disabling takes effect only after reboot** (the hardware WDT cannot be cleanly turned off once armed; while armed, the heartbeat keeps feeding it). Enabling via `CS` also applies after the next boot (`RB` / power-cycle).
 

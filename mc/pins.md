@@ -52,6 +52,7 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`MC_Pico_pinout.t
 | `PIN_EXT_1` | 21 | Extender `EO1` |
 | `PIN_CAMERA_CTRL` | 22 | Camera OC sink (`CT`) / listen, low-active |
 | `PIN_LED` | `LED_BUILTIN` (GP25) | Status / heartbeat LED (onboard) |
+| `PIN_NEOPIXEL` | same as `PIN_LED` (25) | WS2812 skipped (GPIO LED only). Override in `pins.h` to a free GPIO to drive a pixel in parallel. |
 | `PIN_SERVO_1` | 26 | RC servo 1 PWM (100 Hz, wrap 65535; ~1.25′ / 0.021° per count over ±135° at 500–2500 µs) |
 | `PIN_SERVO_2` | 27 | RC servo 2 PWM |
 | `PIN_BUZZER` | 28 | Optional piezo (`BE` / Beep); gated by `BUZZER_use` (default off) |
@@ -68,6 +69,8 @@ Same header pin map as classic Pico, except the status LED:
 |--------|------|------|
 | *(all other pins)* | *(same as Pico)* | Same as table above |
 | `PIN_LED` | **28** | External status / heartbeat LED |
+
+`PIN_NEOPIXEL` defaults to the same GPIO, so only the GPIO LED is driven. Point `PIN_NEOPIXEL` at a free pin in `pins.h` to add a WS2812.
 
 The Pico W / Pico 2 W onboard LED is on the CYW43 WiFi chip — do not drive `LED_BUILTIN` under FreeRTOS. Use env `picow` or `pico2w` and wire an external LED to **GP28**. That aliases `PIN_BUZZER`; firmware will **not** pulse the buzzer (heartbeat LED wins). Use a different compile-time GPIO if a piezo is needed.
 
@@ -97,7 +100,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`MC_RP2040z
 | `PIN_UART_RX` | 13 | UART RX from UIC |
 | `PIN_SW_LIMIT_R_3` | 14 | Motor 3 hard limit right |
 | `PIN_SW_LIMIT_L_3` | 15 | Motor 3 hard limit left |
-| *(unused)* | 16 | Onboard WS2812 data — unused by firmware |
+| `PIN_NEOPIXEL` | 16 | Onboard WS2812 status (JKSlider-style colours; pio1) |
 | `PIN_EXT_1` | 17 | Extender `EO1` |
 | `PIN_EXT_2` | 18 | Extender `EO2` |
 | `PIN_EXT_3` | 19 | Extender `EO3` |
@@ -119,6 +122,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`MC_RP2040z
 
 GPIO numbers are fixed in `pins.h` (not changeable via protocol).  
 Pad drive: STEP / DIR / EXT / SERVO **8 mA**; `PIN_DRV_ENABLE` and `PIN_CAMERA_CTRL` **12 mA**.  
+Status LED: GPIO blink on `PIN_LED` always. If `PIN_NEOPIXEL` is a **different** GPIO, a single WS2812 is driven from the protocol task (pio1, brightness 32). Pico defaults `PIN_NEOPIXEL` to `PIN_LED` (classic LED only). See [CONFIG.md](CONFIG.md#watchdog-wdt_use-and-status-led).  
 Active levels for all pins except UART are config keys (`DRV_STEP_1_active`, `SW_LIMIT_L_1_active`, …): `0` = low-active, `1` = high-active. Digit is **before** the suffix (`SW_LIMIT_R_3_use`).  
 Hard-limit **usage** is gated by `SW_LIMIT_L_N_use` / `SW_LIMIT_R_N_use` (default off). Homing modes 1/2 use those same limit pins.  
 Optional **buzzer** is gated by `BUZZER_use` (default off); `BE [<ms>]` pulses `PIN_BUZZER` (GP28); bare 100 ms, clamp 1..1000. On Pico W / Pico 2 W GP28 is `PIN_LED`, so the buzzer is not claimed.  

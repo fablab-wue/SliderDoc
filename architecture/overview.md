@@ -65,13 +65,14 @@ What may attach to each board (same ownership as the overview diagram):
 - `DRV_ERROR` / E-stop interlock
 - USB debug (host PC)
 - UART to UIC
+- Status GPIO LED; onboard WS2812 on Zero (`PIN_NEOPIXEL` GP16)
 
 ## Isolation model
 
 | Side | Responsibility |
 |------|----------------|
-| **Must not run on MC** | Display I2C, button/keypad scan, ADC pots, NeoPixel / UI LED effects, WLAN |
-| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, servos, camera `CT`, `DRV_ERROR`, EXT, optional buzzer |
+| **Must not run on MC** | Display I2C, button/keypad scan, ADC pots, UIC NeoPixel / UI LED effects, WLAN |
+| **MC owns exclusively** | STEP/DIR/EN, planner / FIFO, home / limits, servos, camera `CT`, `DRV_ERROR`, EXT, optional buzzer, status GPIO LED + single status WS2812 on the proto task (pio1) |
 | **Contract** | UIC talks **millimetres** over UART; MC owns steps and ramps |
 
 ## Software stacks

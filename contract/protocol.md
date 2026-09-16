@@ -91,17 +91,17 @@ sequenceDiagram
   participant Host as Host_UIC_or_USB
   participant MC as SliderMC
 
-  Note over MC: protocol_init, LED+WDT init, wait LF on UART or USB
+  Note over MC: LED+WDT init, wait LF on UART or USB
   Host->>MC: "VH\\n"
   Note over Host: UIC retries VH every 100ms until banner or 3s
   MC->>Host: "# MC V1 - …\\n"
-  Note over MC: LED switches to McState patterns after banner
+  Note over MC: GPIO LED / WS2812 switch to McState after banner
   Host->>MC: "SV 1\\n"
 ```
 
 **Host recommendation (UIC `MC_Client`):** send `VH\n` on UART, wait ≤100 ms for a `# MC V1 -` line, retry; after **3 s** without a banner, report an error on USB/REPL and soft-continue if the panel should still boot offline. Empty `\n` still reprints the banner (USB monitor). `VH` works after the protocol loop is running so a late MC or UIC reboot can re-sync.
 
-**USB-only bench:** open the MC USB serial monitor and send LF (Enter). The MC LED already blinks the wait pattern (and WDT is armed if `WDT_use=1`) before that LF; Enter unlocks the session, prints the banner, and switches the LED to McState patterns — no UIC or UART wiring required. Then type normal ASCII commands ending in `\n`.
+**USB-only bench:** open the MC USB serial monitor and send LF (Enter). The MC LED already blinks the wait pattern (Zero WS2812 rainbows until that LF) and WDT is armed if `WDT_use=1`; Enter unlocks the session, prints the banner, and switches the LED to McState patterns — no UIC or UART wiring required. USB-only idle is dim purple on the WS2812. Then type normal ASCII commands ending in `\n`.
 
 Hosts can treat the banner like GRBL’s welcome string: init finished, ready for commands.
 

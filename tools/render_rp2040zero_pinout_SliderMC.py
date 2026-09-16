@@ -299,7 +299,7 @@ def _layout(mode: str):
             "Legend: DRV_ENABLE GP0; motor1 STEP/DIR/LIMIT GP1–4; motor2 GP5–8.",
             "ERROR 1–3 GP9–11; motor3 STEP/DIR GP27/26, LIMIT3 GP15/14. CAMERA_CTRL GP25 (OC / T).",
             "EXT_1…4 on GP17–20 (EO1…EO4); UART 115200 baud GP12/13. SERVO_1..3 GP21–23 (underside).",
-            "RP2350 Mini reuses this map. CS motors 2|3 / CS servos (no RB). GP29 status LED; GP16 onboard RGB unused.",
+            "RP2350 Mini reuses this map. CS motors 2|3 / CS servos (no RB). GP29 GPIO LED; GP16 onboard WS2812 status.",
             "SW_LIMIT_*_N off until CS …_use=1. Pin names match IG / VG.",
         ],
         "png_title": "RP2040-Zero SliderMC pinout",
@@ -475,7 +475,7 @@ def render_png(path: Path, mode: str = "mc"):
     gp16_note = (
         "GP16 = onboard WS2812 (optional PIN_NEOPIXEL)"
         if mode in ("button", "b4")
-        else "GP16 = onboard RGB LED (unused by firmware)"
+        else "GP16 = onboard WS2812 status (PIN_NEOPIXEL)"
     )
     c.text(gp16_note, board_left, bot_sec_y + bot_sec_h + 6, sub_c, 1)
 
