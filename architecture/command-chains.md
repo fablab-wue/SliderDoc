@@ -33,10 +33,12 @@ Start a 300 mm seek at 20. At 100 (~1/3) bump cruise to 50 (live retarget). At 2
 ## Hard accel, soft stop
 
 ```text
-SA100;MT300;WC;SA5;WM
+SA 100 5; MT 300; WM
 ```
 
-Hard acceleration until cruise (`WC` / status letter `M`), then `SA 5` so braking is very soft. Same seek, two accel personalities, no pause in the middle.
+Hard start ramp, soft stop ramp, one seek — no `WC` needed. `SA 100 5` sets accel 100 and decel 5.
+
+The older live-retarget form still works: `SA100; MT300; WC; SA5; WM` (after cruise, `SA 5` sets **both** ramps to 5).
 
 ## Extender cue (lights / Start)
 
@@ -66,12 +68,13 @@ Bare `CT` is 100 ms. A UIC that maps status letter `T` to a key event will also 
 
 | Chain | Intent |
 |-------|--------|
-| `SA200; MT 600; WP 400; SA 15; WM` | Fast most of the way; only the last third brakes softly |
+| `SA 100 5; MT 300; WM` | Hard start, soft stop (split ramps) |
+| `SA200; MT 600; WP 400; SA 15; WM` | Fast most of the way; `SA 15` after the mark sets **both** ramps to 15 |
 | `MT 300; WC; BE; WN; EO2 1; WM; EO2 0` | Beep at cruise; fire EXT_2 when braking starts |
 | `MT 500; CT; WP 250; CT` | Trigger at start of seek and again at midpoint |
 | `BE; WT 2; MT 300; WM` | Audible pre-roll, then go |
 | `EO1 1; MT 500; WM; EO1 0` | Hold record/start for the whole move |
-| `MH; WH; SA100; MT 300; WC; SA5; WM` | Home, then the soft-stop seek |
+| `MH; WH; SA100 5; MT 300; WM` | Home, then hard-start / soft-stop seek |
 | `SS20; MT 300; WP 100; SS50; BE; WP 200; SS20; WM` | 1/3–2/3 speed profile with a beep at the speed-up mark |
 | `MT 400 90; WP 200; SS 15; WM` | Dual-axis: after master halfway, slow both (`WP` is the time-sync master) |
 

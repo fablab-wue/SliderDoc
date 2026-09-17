@@ -151,10 +151,10 @@ API values use **mm**, **mm/s**, and **mm/s²** unless a config key says otherwi
 ## Session vs config
 
 - **S-commands** change **session** RAM only (not written to `mc.ini`), except `SD` which sets live `init_debug_level` (USB debug; not a session field).
-- Power-up (and FS load) copies config init (`init_speed`, `init_accel`, `init_terminal`, `init_verbose`) into the session.
+- Power-up (and FS load) copies config init (`init_speed`, `init_accel`, `init_terminal`, `init_verbose`) into the session. `init_accel` seeds **both** live accel and decel.
 - **Bare bool setters** (`SE`, `ST`, `SV`, `EO0`…`EO3`): **toggle** the current logical state.
-- **Bare non-bool S-commands** (e.g. `SS`, `SA`, `SD`) reload that parameter from config init (`SD` → default debug level).
-- **`SS` / `SA`** reject values above `max_speed_1` / `max_accel_1` with `!E:limit …` (session unchanged).
+- **Bare non-bool S-commands** (e.g. `SS`, `SA`, `SD`) reload that parameter from config init (`SD` → default debug level; bare `SA` reloads `init_accel` into both ramps).
+- **`SS` / `SA`** reject values above `max_speed_1` / `max_accel_1` with `!E:limit …` (session unchanged). Both `SA` args are checked.
 - **`CS` / `CG`** read/write persistent config keys; `CS` also updates the live session for keys that have a session counterpart (`init_speed`, `init_accel`, `init_terminal`, `init_verbose`).
 
 ---
@@ -181,7 +181,7 @@ Axis values for the packed live channels (STEP/DIR motors first, then RC servos;
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
 | `SS` | Set Speed | `v` or bare | Cruise speed mm/s (≤ `max_speed_1`); bare reloads `init_speed`; applies live to the next fill (including joy-mode `MJ`). |
-| `SA` | Set Accel | `a` or bare | Accel mm/s² (≤ `max_accel_1`); bare reloads `init_accel`; applies live to the next fill (including joy-mode `MJ`). |
+| `SA` | Set Accel | `a [d]` or bare | Accel mm/s², optional decel mm/s² (both ≤ `max_accel_1`). One value sets **both** ramps; two values split start vs stop. No skip `_`. Bare reloads `init_accel` into both. Applies live to the next fill (including joy-mode `MJ`). |
 | `SE` | Set Enable | `0\|1` or bare | Driver enable 0\|1; bare toggles; required before motion; off stops hard. **`SE 0` also stops servo PWM** (limp); `SE 1` restores the last pulse. |
 | `ST` | Set Terminal | `0\|1` or bare | Terminal Mode 0\|1; bare toggles; local echo + UART command sniff to USB. |
 | `SV` | Set Verbose | `0\|1` or bare | Verbose status push 0\|1; bare toggles; ~3 Hz `#…` status lines when on. |
@@ -197,7 +197,7 @@ Axis values for the packed live channels (STEP/DIR motors first, then RC servos;
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
 | `GS` | Get Speed | — | Reply `GS:<mm/s>` — current session cruise speed. |
-| `GA` | Get Accel | — | Reply `GA:<mm/s2>` — current session acceleration. |
+| `GA` | Get Accel | — | Reply `GA:<accel> <decel>` — current session accel and decel (mm/s²). After `SA 200`, `GA:200.00 200.00`. |
 | `GE` | Get Enable | — | Reply `GE:0\|1` — driver enable state. |
 | `GT` | Get Terminal | — | Reply `GT:0\|1` — Terminal Mode state. |
 | `GV` | Get Verbose | — | Reply `GV:0\|1` — verbose push state. |
@@ -449,6 +449,7 @@ Format: `!E:<code> <short text>`
 SE 1
 SS 50
 SA 200
+SA 200 50
 MT 100;WM
 IM
 VA

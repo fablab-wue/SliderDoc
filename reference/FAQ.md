@@ -37,6 +37,8 @@ There is no constant-speed cruise segment.
 
 This is common for shorter moves where the slider never reaches a steady speed before stopping.
 
+`SA` can set a different stop ramp (`SA a d`). The peak is then not at half distance; remaining distance is compared to the **decel** stop-distance.
+
 ---
 
 ## What is a trapezoid move?
@@ -73,17 +75,14 @@ Because the acceleration and deceleration are spread over a curved half-sine sha
 
 The result is smoother motion, but the total move consumes more time for the same speed and distance.
 
-For a sine-ramp profile, the accel/decel time is:
+For a sine-ramp profile, the accel/decel times are:
 
 $$
-T_{accel} = T_{decel} = \frac{\pi V_{max}}{2a}
+T_{accel} = \frac{\pi V_{max}}{2a},\quad T_{decel} = \frac{\pi V_{max}}{2d}
 $$
 
-So the full accel+decel time is:
-
-$$
-T_{ad} = \frac{\pi V_{max}}{a}
-$$
+When $d = a$ (one `SA` value), $T_{accel} = T_{decel} = \pi V_{max}/(2a)$ and
+the full accel+decel time is $\pi V_{max}/a$.
 
 ---
 

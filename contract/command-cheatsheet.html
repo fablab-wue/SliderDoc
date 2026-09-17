@@ -135,7 +135,7 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <tbody>
 <tr><td class="sh">SS</td><td class="ln">Set Speed</td><td class="ds">Cruise speed mm/s (≤ max_speed_1); bare reloads init_speed; live on next fill (incl. MJ). Dual MT: axis1=session, axis2×ratio.</td></tr>
-<tr><td class="sh">SA</td><td class="ln">Set Accel</td><td class="ds">Peak accel mm/s² (≤ max_accel_1); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
+<tr><td class="sh">SA</td><td class="ln">Set Accel</td><td class="ds">Peak accel [, decel] mm/s² (≤ max_accel_1). One value sets both ramps; two split start/stop. No skip _. Bare reloads init_accel into both; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
 <tr><td class="sh">SE</td><td class="ln">Set Enable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop. SE 0 also stops servo PWM (limp).</td></tr>
 <tr><td class="sh">ST</td><td class="ln">Set Terminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).</td></tr>
 <tr><td class="sh">SV</td><td class="ln">Set Verbose</td><td class="ds">Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).</td></tr>
@@ -150,7 +150,7 @@ code {
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <tbody>
 <tr><td class="sh">GS</td><td class="ln">Get Speed</td><td class="ds">Current session cruise speed.</td></tr>
-<tr><td class="sh">GA</td><td class="ln">Get Accel</td><td class="ds">Current session acceleration.</td></tr>
+<tr><td class="sh">GA</td><td class="ln">Get Accel</td><td class="ds">Current session accel and decel (mm/s²).</td></tr>
 <tr><td class="sh">GE</td><td class="ln">Get Enable</td><td class="ds">Driver enable state.</td></tr>
 <tr><td class="sh">GT</td><td class="ln">Get Terminal</td><td class="ds">Terminal Mode state.</td></tr>
 <tr><td class="sh">GV</td><td class="ln">Get Verbose</td><td class="ds">Verbose push state.</td></tr>

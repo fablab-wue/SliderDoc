@@ -32,19 +32,22 @@ Files: `src/motion/pio_step.cpp`, `include/pio_step.h`.
 
 ## Planner (sine seek)
 
-Raised-cosine velocity blend. The ramp **target** is the cruise speed, or 0 when
-stopping / reversing / braking. Two rules keep the profile symmetric:
+Raised-cosine velocity blend. Ramp-up uses session **accel**; stop-distance / brake
+commit uses session **decel** (`SA a [d]`). The ramp **target** is the cruise
+speed, or 0 when stopping / reversing / braking. Two rules keep the profile from
+skewing:
 
 - The target is **not** `min(cruise, vmax(rem))`. Such a target moves with every
   FIFO word as `rem` shrinks, restarts the sine phase each time, and leaves the
   axis crawling at `ramp_start_hz` — the higher the cruise, the worse.
-- Once `|v| > vmax(rem)` the planner **commits** to a single brake ramp down to
-  0 (`g_braking`). Re-deriving the brake per word collapses the S-curve into
-  constant deceleration of `2a/π` (≈64 % of `SA`), which is why braking used to
-  report one fixed acceleration value. While braking, the distance clamp acts
+- Once remaining distance cannot support the current speed (`vmax` from **decel**),
+  the planner **commits** to a single brake ramp down to 0 (`g_braking`).
+  Re-deriving the brake per word collapses the S-curve into constant deceleration
+  of `2a/π` (≈64 % of the stop ramp). While braking, the distance clamp acts
   only as an outer cap (`1.25 × vmax`) and no longer tears down the ramp.
 
-Distance limiting otherwise applies as a clamp on the issued velocity:
+Distance limiting otherwise applies as a clamp on the issued velocity (stop
+geometry uses **decel** \(a\)):
 
 \[
 d = \pi v^2 / (4 a)
@@ -57,7 +60,7 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 1. **One source of truth for STEP rate** — `planner_fill_fifo()` computes Hz from remaining distance + cruise/accel at issue time.
 2. **`pack_n`:** if `remaining_steps <= 0` return **0 before** any min-Hz shortcut (prevents Zielpunkt-Pendeln).
 3. **Position** advances when pulses are **committed to TX**; soft-stop waits for empty FIFO.
-4. **Live retarget** — `MT` / `MJ` / `SS` / `SA` update target/cruise/accel; next fill uses new remaining distance.
+4. **Live retarget** — `MT` / `MJ` / `SS` / `SA` update target/cruise/accel/decel; next fill uses new remaining distance.
 5. **Reverse** — decelerate to 0 → `dir_change_pause_s` → accelerate the other way.
 6. **Soft limits** clamp remaining steps to the **session working window** (`SL`/`SR`); illegal `MT` outside the window is rejected.
 7. **Homing** — FSM via `MH` (`home_mode_N`, `home_speed_N`, `home_accel_N`, `home_move_out_N`); mode `0` = silent no-op (`SP` declares origin). `MH 1|2|3` selects the axis.

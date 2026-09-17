@@ -180,8 +180,8 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `setOledUnit("mm"\|"inch")` | OLED Pos/Spd/Acc display unit only (API remains mm). |
 | `getOledUnit()` | `"mm"` or `"inch"`. |
 | `setOledBadges(tl, delay, mark=None)` | Yellow upper-right badges concatenated: `D`, `TL`, mark (`A` / `->A`). |
-| `estimateMoveTime(distance_mm, speed, accel)` | Stop-to-stop travel time (s) for a sine-ramp move. On `MC_Client`. |
-| `estimateMoveTimeTo(position_mm, speed=None, accel=None)` | Same sine-ramp estimate from current position to `position_mm`. Speed/accel default to session `SS`/`SA` when omitted. On `MC_Client`. |
+| `estimateMoveTime(distance_mm, speed, accel, decel=None)` | Stop-to-stop travel time (s) for a sine-ramp move. `decel=None` uses accel. On `MC_Client`. |
+| `estimateMoveTimeTo(position_mm, speed=None, accel=None, decel=None)` | Same sine-ramp estimate from current position to `position_mm`. Speed/accel default to session `SS`/`SA` when omitted; omitted decel uses accel. On `MC_Client`. |
 | `setCameraMode(tl_div, fps)` | CTRL_CAMERA: hold-high while moving if `tl_div==1`; else pulse every `tl_div/fps` s while moving. JKSlider Cont mode calls this with `tl_div=1` so Cont is hold-high; MSM uses `pulseCamera()` while stopped. |
 | `setCameraMotionActive(active)` | Keep CTRL_CAMERA in-motion (hold-high / pulses) while the axis is soft-paused (video / Cont / legacy continuous TL). |
 | `setCameraManual(manual)` | When True, disable auto intervalometer / hold-high (MSM owns shutter). |

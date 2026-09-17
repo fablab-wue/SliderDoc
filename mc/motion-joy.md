@@ -40,9 +40,9 @@ value has not changed, to reduce the payload on the serial link.
 
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
-| `MJ` | Move Joy | `pct [pct2 [pct3]]` | Signed joy speed as **percent of session `SS`**. Negative = left, positive = right, `0` = soft-stop (normal `SA` deceleration). Extra args for extra live axes (omit → `0`). Named `X`/`Y`/`Z` also legal. |
+| `MJ` | Move Joy | `pct [pct2 [pct3]]` | Signed joy speed as **percent of session `SS`**. Negative = left, positive = right, `0` = soft-stop (session **decel**). Extra args for extra live axes (omit → `0`). Named `X`/`Y`/`Z` also legal. |
 | `SS` | Set Speed | `v` or bare | 100 % reference (mm/s). Legal **during** joy-mode; rescales live cruise. |
-| `SA` | Set Accel | `a` or bare | Ramp used for accel/decel (including stick changes and `MJ 0`). Legal during joy-mode. |
+| `SA` | Set Accel | `a [d]` or bare | Start ramp and optional stop ramp (including stick changes and `MJ 0`). One value sets both. Legal during joy-mode. |
 | `MS` | Move Stop | — | Ends joy-mode and soft-stops (same as other moves). |
 
 Success is silent. Needs `SE 1`. Rejected while path-mode
@@ -85,7 +85,7 @@ These **exit** joy-mode and take over motion: `MT`, `MB`, `MH`,
 `SS` / `SA` (including bare reset to `init_*`) do **not** exit joy-mode.
 `SS` updates the 100 % reference; live cruise becomes
 `(stored_pct / 100) * new_SS`, then clamped per axis, then ramps with
-current `SA`.
+current session accel (stick-up) / decel (`MJ 0`).
 
 No comms-loss timeout — last `MJ` holds (needed for acyclic sends). Send
 `MJ 0` to stop from the stick; `MS` is an explicit stop that also leaves

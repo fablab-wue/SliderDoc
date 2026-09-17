@@ -29,12 +29,12 @@ Supported boards: Pico / Pico W / RP2040-Zero. Pin map: [pins.md](pins.md).
 
 ## Dual `MT` / `MB` timing (not CNC)
 
-Session **`SS` / `SA`** (and `init_speed` / `init_accel`) set **axis-1** cruise and peak accel.
+Session **`SS` / `SA`** (and `init_speed` / `init_accel`) set **axis-1** cruise and peak accel/decel. `SA a` sets both ramps; `SA a d` splits them. Dual scaling applies to **both**.
 
 When **both** axes move (`MT a b` with both deltas ≠ 0), firmware scales axis-2 so both finish together:
 
 \[
-v_2 = v_1 \cdot \frac{|d_2|}{|d_1|},\quad a_2 = a_1 \cdot \frac{|d_2|}{|d_1|}
+v_2 = v_1 \cdot \frac{|d_2|}{|d_1|},\quad a_2 = a_1 \cdot \frac{|d_2|}{|d_1|},\quad d_{\mathrm{dec},2} = d_{\mathrm{dec},1} \cdot \frac{|d_2|}{|d_1|}
 \]
 
 (clamped to `max_speed_1` / `max_accel_1` on axis 1 and `max_speed_2` / `max_accel_2` on axis 2; see `motion_move_to2` in SliderMC `planner.cpp`).
@@ -50,8 +50,8 @@ Example: `SS 50`, `MT 100 20` → axis1 ≈ 50 u/s, axis2 ≈ 10 u/s (ratio 20/1
 
 On a coordinated dual seek, firmware keeps the start ratio \(r = |d_2|/|d_1|\).
 
-- `SS` / `SA` set **axis-1** cruise / accel (session values).
-- Axis-2 is updated as \(v_2 = v_1 \cdot r\), \(a_2 = a_1 \cdot r\) (same clamps as at `MT` start).
+- `SS` / `SA` set **axis-1** cruise / accel / decel (session values).
+- Axis-2 is updated as \(v_2 = v_1 \cdot r\), \(a_2 = a_1 \cdot r\), \(d_{\mathrm{dec},2} = d_{\mathrm{dec},1} \cdot r\) (same clamps as at `MT` start).
 
 So a speed or accel change mid-move keeps both axes finishing **at about the same time**. A new dual `MT a b` replaces \(r\) from the new deltas. Coordination ends on single-axis `MT`/`MB`, joy, halt, soft reset, or when both axes go idle. Soft stop (`MS`) does not clear \(r\) immediately — scaled accel stays on axis-2 for a matched decelerate; mid-stop `SA` still rescales until both idle.
 
@@ -59,9 +59,9 @@ So a speed or accel change mid-move keeps both axes finishing **at about the sam
 
 ## Soft stop (`MS`) on both axes
 
-`MS` / soft stop applies to **every active axis** independently: each decelerates to 0 with its own `accel_mm_s2`.
+`MS` / soft stop applies to **every active axis** independently: each decelerates to 0 with its own `decel_mm_s2`.
 
-On a coordinated dual `MT` (both deltas ≠ 0), axis 2 still carries the scaled cruise/accel (\(v_2/a_2 \approx v_1/a_1\)), including after mid-move `SS`/`SA`. Soft-stop duration scales like \(v/a\), so both axes usually finish decelerating **at about the same time**.
+On a coordinated dual `MT` (both deltas ≠ 0), axis 2 still carries the scaled cruise/accel/decel (\(v_2/a_2 \approx v_1/a_1\)), including after mid-move `SS`/`SA`. Soft-stop duration scales like \(v/d_{\mathrm{dec}}\), so both axes usually finish decelerating **at about the same time**.
 
 This is **not** a dedicated sync-stop controller — only matching per-axis physics. Sync can break if `max_speed_1` / `max_speed_2` / `max_accel_1` / `max_accel_2` clamped an axis, one axis was already braking for its target, or the move was jog / joy / single-axis (no dual scaling).
 

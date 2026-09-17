@@ -193,11 +193,15 @@ $$
 $$
 
 For a symmetric move that accelerates from rest to $v_{peak}$ and then decelerates
-back to rest, the total time is:
+back to rest **with the same** $a_{eff}$, the total time is:
 
 $$
  T_{total} = 2T = \frac{\pi v_{peak}}{a_{eff}}
 $$
+
+If accel $a$ and decel $d$ differ (`SA a d`), the halves are independent:
+$T_a = \pi v_{peak}/(2a)$, $T_d = \pi v_{peak}/(2d)$, and
+$T_{total} = T_a + T_d$.
 
 This is the correct sine-ramp timing for one accel+decel cycle.
 
@@ -270,7 +274,8 @@ $$
 
 where $v_{cmd}$ is the commanded peak speed and $a$ is the acceleration magnitude.
 
-This is for a pure triangle / half-sine move with equal accel and decel.
+This is for a pure triangle / half-sine move with **equal** accel and decel.
+With independent ramps $a$ and $d$: $t_{total} = \pi v_{cmd}(a+d)/(2 a d)$.
 
 ### 4.3 Constant-speed segment time
 
@@ -299,10 +304,12 @@ Let:
 
 - $\Delta x$ = total move distance in mm
 - $v_{cmd}$ = commanded speed in mm/s = command `SS`
-- $a$ = acceleration magnitude in mm/s² = command `SA`
+- $a$ = acceleration magnitude in mm/s² = first `SA` arg (start ramp)
+- $d$ = deceleration magnitude in mm/s² = second `SA` arg (stop ramp; omit → $d = a$)
 - $\Delta x > 0$
 
-The move is a standard acceleration/deceleration problem.
+The move is a standard acceleration/deceleration problem. Equal ramps ($d = a$)
+are the special case used below unless noted.
 
 ### 5.1 Minimum distance needed to reach a speed
 
@@ -312,7 +319,14 @@ $$
  d_{accel} = \frac{\pi v_{cmd}^2}{4 a}
 $$
 
-for the same sine/half-sine shaped profile.
+and to stop from $v_{cmd}$ under deceleration $d$:
+
+$$
+ d_{decel} = \frac{\pi v_{cmd}^2}{4 d}
+$$
+
+for the same sine/half-sine shaped profile. `vmax(rem)` in the planner uses
+**decel** (stop geometry).
 
 ### 5.2 If the distance is long enough for cruise
 
@@ -320,56 +334,49 @@ A move that is long enough to reach the command speed and then hold it has a cru
 segment only when:
 
 $$
- \Delta x > 2 d_{accel}
+ \Delta x > d_{accel} + d_{decel}
 $$
 
-Then the distance available for constant speed is:
+($2 d_{accel}$ when $d = a$.) Then the distance available for constant speed is:
 
 $$
- \Delta x_{cruise} = \Delta x - 2 d_{accel}
+ \Delta x_{cruise} = \Delta x - d_{accel} - d_{decel}
 $$
 
 and the total move time is:
 
 $$
- t_{total} = \frac{\pi v_{cmd}}{a} + \frac{\Delta x_{cruise}}{v_{cmd}}
+ t_{total} = t_{accel} + t_{decel} + \frac{\Delta x_{cruise}}{v_{cmd}}
 $$
 
-because each half of the move takes one half-sine duration:
-
-$$
- t_{accel} = t_{decel} = \frac{\pi v_{cmd}}{2 a}
-$$
-
-and therefore
-
-$$
- t_{accel} + t_{decel} = \frac{\pi v_{cmd}}{a}
-$$
+with $t_{accel} = \pi v_{cmd}/(2 a)$ and $t_{decel} = \pi v_{cmd}/(2 d)$.
+When $d = a$ this is $\pi v_{cmd}/a + \Delta x_{cruise}/v_{cmd}$.
 
 ### 5.3 If the move is shorter than the accel/decel distance
 
 If
 
 $$
- \Delta x \le 2 d_{accel}
+ \Delta x \le d_{accel} + d_{decel}
 $$
 
 then the profile is a pure accel/decel triangle / no cruise. The peak speed is
 limited by the distance:
 
 $$
- v_{peak} = \sqrt{\frac{4 a \Delta x}{2\pi}} = \sqrt{\frac{2 a \Delta x}{\pi}}
+ v_{peak} = \sqrt{\frac{4 \Delta x}{\pi (1/a + 1/d)}}
 $$
 
-and the total time is:
+When $d = a$ this is $\sqrt{2 a \Delta x / \pi}$. Peak occurs at
+$\Delta x \cdot d / (a + d)$, not necessarily at half distance.
+
+The total time is:
 
 $$
- t_{total} = \frac{\pi v_{peak}}{a}
+ t_{total} = \frac{\pi v_{peak} (a + d)}{2 a d}
 $$
 
-which is also the same as the half-sine accel/decel time expression evaluated at the
-reduced peak.
+($t_{total} = \pi v_{peak}/a$ when $d = a$.)
 
 ---
 

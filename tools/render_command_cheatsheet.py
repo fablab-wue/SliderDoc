@@ -50,9 +50,9 @@ GROUPS = [
             (
                 "SA",
                 "Set Accel",
-                "SA [<a>]",
+                "SA [<a> [d]]",
                 SILENT,
-                "Peak accel mm/s² (≤ max_accel_1); bare reloads init_accel; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.",
+                "Peak accel [, decel] mm/s² (≤ max_accel_1). One value sets both ramps; two split start/stop. No skip _. Bare reloads init_accel into both; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.",
             ),
             (
                 "SE",
@@ -109,7 +109,7 @@ GROUPS = [
         "G — Get (session)",
         [
             ("GS", "Get Speed", "GS", "GS:<mm/s>", "Current session cruise speed."),
-            ("GA", "Get Accel", "GA", "GA:<mm/s2>", "Current session acceleration."),
+            ("GA", "Get Accel", "GA", "GA:<a> <d>", "Current session accel and decel (mm/s²)."),
             ("GE", "Get Enable", "GE", "GE:0|1", "Driver enable state."),
             ("GT", "Get Terminal", "GT", "GT:0|1", "Terminal Mode state."),
             ("GV", "Get Verbose", "GV", "GV:0|1", "Verbose push state."),

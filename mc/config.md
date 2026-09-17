@@ -13,7 +13,7 @@ Factory defaults are compiled in `include/config_defaults.h` and mirrored in `da
 
 **Session** values (cruise speed, accel, terminal, verbose) are used by S/G commands and motion.  
 They are loaded from `init_*` config keys at boot. `SS`/`SA`/`ST`/`SV` change session only (not the file).  
-Bare `SS`/`SA` reload that field from config init. `CS` updates config and the matching session field.
+Bare `SS`/`SA` reload that field from config init (`SA` loads `init_accel` into **both** live accel and decel). `CS` updates config and the matching session field (`CS init_accel` also writes both session ramps).
 
 **No firmware aliases** for old unnumbered axis-1 keys (`max_speed`, `slider_min`, `home_mode`, `DRV_STEP_active`, …) or `axis2_use`. Those names return `!E:cfg`. **`CS axis` and `CS slider_*` are rejected.** Same-release synonyms only: `steps_per_mm_N`→`steps_per_unit_N`, `soft_min_N`/`soft_max_N`→packed `axis_min_N`/`axis_max_N`, plus session-init aliases `speed`→`init_speed`, `accel`→`init_accel`, `verbose`→`init_verbose`, `terminal`→`init_terminal`, `debug_level`→`init_debug_level`. Saves write only the canonical names (`MOTOR_*` / `SERVO_*`, not `slider_*`).
 
@@ -47,9 +47,9 @@ Default is **3**.
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `init_speed` | float mm/s | 50 | Cruise speed init (session via `SS`/`GS`); must be ≤ `max_speed_1` |
-| `init_accel` | float mm/s² | 200 | Peak sine-ramp acceleration init; must be ≤ `max_accel_1` |
+| `init_accel` | float mm/s² | 200 | Peak sine-ramp init for **both** session accel and decel (`SA` / `GA`); must be ≤ `max_accel_1` |
 | `max_speed_1` | float mm/s | 100 | Axis-1 speed ceiling (`SS` rejects above; planner also caps axis-1 cruise, including `MJ`) |
-| `max_accel_1` | float mm/s² | 300 | Axis-1 accel ceiling (`SA` rejects above; planner caps axis-1 accel) |
+| `max_accel_1` | float mm/s² | 300 | Axis-1 accel/decel ceiling (`SA` rejects either arg above; planner caps axis-1 ramps) |
 | `max_speed_2` / `max_speed_3` | float mm/s | 100 | Axis-2 / axis-3 speed ceiling (planner / `MJ`; session `SS` still vs `max_speed_1`) |
 | `max_accel_2` / `max_accel_3` | float mm/s² | 300 | Axis-2 / axis-3 accel ceiling |
 | `steps_per_unit_1` | float | 320 | Axis-1 steps per user unit (mm, deg, …); synonym `steps_per_mm_1` |
