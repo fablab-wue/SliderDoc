@@ -17,10 +17,10 @@ Motor payloads are **1-based**. Unknown types return ACK `0x0013` (unsupported).
 | DMC | Meaning | MC / local |
 |-----|---------|------------|
 | `0x0001` | hello / identify | hello reply, no ACK |
-| `0x0020` | live DMX | 512-ch buffer on GP0; RAMP=0 snap, RAMP=1 linear ramp. Per-frame `0x0102` → `ERR_UNSUPPORTED` |
-| `0x0021` | GIO out | GP2–5 |
-| `0x0022` | GIO in | GP6–9 (data reply) |
-| `0x0023` | camera | shutter: GP14 + `CT`; meter: ACK only |
+| `0x0020` | live DMX | 512-ch buffer on GP0; channels 1–6 also PWM (DMX1–DMX6). RAMP=0 snap, RAMP=1 linear ramp. Per-frame `0x0102` → `ERR_UNSUPPORTED` |
+| `0x0021` | GIO out | GP1–4 |
+| `0x0022` | GIO in | GP5–8 (data reply) |
+| `0x0023` | camera | shutter: GP9 + `CT`; meter: ACK only |
 | `0x0030` | motor status | moving bitmask + DMX-ramp byte |
 | `0x0031` | absolute move | `MT` (÷1000) |
 | `0x0032` / `0x0033` | stop | `MS` |
@@ -34,7 +34,7 @@ Motor payloads are **1-based**. Unknown types return ACK `0x0013` (unsupported).
 | `0x0100` / `0x0101` / `0x0103` | upload begin/axis/end | RAM table + `PC`/`PD` (µm = DMC step delta; split if \|delta\| > 32767) |
 | `0x0104` | RT triggers | apply GIO OUT bits at those frames |
 | `0x0110` | position frame | `MT` to that pose |
-| `0x0111` | run move | FPS×1000 → `PS`; `MT` start; bloop GP15+`BE`; then `PG start end` |
+| `0x0111` | run move | FPS×1000 → `PS`; `MT` start; bloop GP10+`BE`; then `PG start end` |
 | `0x0113` | go | `PG` range |
 | `0x0114` | end | sent when path finishes |
 | `0x0120` | jog all | FPS×1000 → `PS`; `PG` current→dest |

@@ -53,34 +53,34 @@ LEFT = [
     ("5V", "5V"),
     ("GND", "GND"),
     ("3V3", "3V3"),
-    ("GP29", "free"),
-    ("GP28", "free"),
-    ("GP27", "free"),
-    ("GP26", "free"),
-    ("GP15", "BUZZER"),
-    ("GP14", "CAMERA"),
+    ("GP29", "DMX1"),
+    ("GP28", "DMX2"),
+    ("GP27", "DMX3"),
+    ("GP26", "DMX4"),
+    ("GP15", "DMX5"),
+    ("GP14", "DMX6"),
 ]
 
 # Right edge, top→bottom.
 RIGHT = [
     ("GP0", "DMX_TX"),
-    ("GP1", "free"),
-    ("GP2", "GIO_OUT0"),
-    ("GP3", "GIO_OUT1"),
-    ("GP4", "GIO_OUT2"),
-    ("GP5", "GIO_OUT3"),
-    ("GP6", "GIO_IN0"),
-    ("GP7", "GIO_IN1"),
-    ("GP8", "GIO_IN2"),
+    ("GP1", "GIO_OUT0"),
+    ("GP2", "GIO_OUT1"),
+    ("GP3", "GIO_OUT2"),
+    ("GP4", "GIO_OUT3"),
+    ("GP5", "GIO_IN0"),
+    ("GP6", "GIO_IN1"),
+    ("GP7", "GIO_IN2"),
+    ("GP8", "GIO_IN3"),
 ]
 
 # Bottom edge, left→right.
 BOTTOM = [
     ("GP13", "UART_RX"),
     ("GP12", "UART_TX"),
-    ("GP11", "free"),
-    ("GP10", "free"),
-    ("GP9", "GIO_IN3"),
+    ("GP11", "MOVE"),
+    ("GP10", "BUZZER"),
+    ("GP9", "CAMERA"),
 ]
 
 # Bottom view SMD pads, top→bottom.
@@ -98,12 +98,13 @@ BOT_PADS = [
 ]
 
 LEGEND = [
-    ("DMX_TX", C_DRV),
+    ("DMX*", C_DRV),
     ("GIO_OUT*", C_EXT),
     ("GIO_IN*", C_SW),
     ("UART_*", C_UART),
     ("CAMERA", C_CAMERA),
     ("BUZZER", C_BUZZER),
+    ("MOVE", C_GP),
     ("NEOPIXEL", C_LED),
     ("free", C_FREE),
     ("GND", C_GND),
@@ -117,8 +118,9 @@ ASCII_HEAD = (
 )
 
 ASCII_NOTES = [
-    "Legend: DMX_TX GP0 (PIO UART 250k 8N2); GIO OUT GP2–5; GIO IN GP6–9.",
-    "UART to SliderMC 115200 baud GP12 (TX) / GP13 (RX). CAMERA GP14 (OC). BUZZER GP15.",
+    "Legend: DMX_TX GP0 (PIO UART 250k 8N2); DMX1–6 PWM 18 kHz on GP29/28/27/26/15/14 (ch 1–6).",
+    "GIO OUT GP1–4; GIO IN GP5–8. UART to SliderMC 115200 baud GP12 (TX) / GP13 (RX).",
+    "CAMERA GP9 (OC). BUZZER GP10. MOVE GP11 high while verbose status is M/A/B/H/P.",
     "GP16 = onboard WS2812 status LED. GP17–20 are not DMC GIO (those are MC extender pins).",
     "Cross UART to SliderMC: DMC TX GP12 → MC RX; DMC RX GP13 ← MC TX. See dmc/pins.md.",
 ]

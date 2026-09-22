@@ -19,13 +19,20 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderDMC.py` → [`DMC_RP204
 | Pad | Function |
 |-----|----------|
 | GP0 | DMX512 TX (PIO UART 250000 8N2 + BREAK/MAB). MAX485 for a real universe; TTL is enough on the bench |
-| GP2–GP5 | DMC GIO **OUT** bits 0–3 (open-collector + pull-up) |
-| GP6–GP9 | DMC GIO **IN** bits 0–3 (pull-up; unsolicited `MSG_GIO_IN` after Connect) |
+| GP1–GP4 | DMC GIO **OUT** bits 0–3 (open-collector + pull-up) |
+| GP5–GP8 | DMC GIO **IN** bits 0–3 (pull-up; unsolicited `MSG_GIO_IN` after Connect) |
+| GP9 | Camera shutter (open-collector + pull-up); also MC `CT` on `MSG_GIO_CAM` shutter |
+| GP10 | Preroll/bloop buzzer; also MC `BE` from `RUN_MOVE` |
+| GP11 | **MOVE** — push-pull, high while the verbose status letter is `M`, `A`, `B`, `H`, or `P`; low on `I`, `E`, `D`, `L`. `T` (camera overlay) leaves the pin as it is |
 | GP12 | UART TX to SliderMC (115200) |
 | GP13 | UART RX from SliderMC |
-| GP14 | Camera shutter (open-collector + pull-up); also MC `CT` on `MSG_GIO_CAM` shutter |
-| GP15 | Preroll/bloop buzzer; also MC `BE` from `RUN_MOVE` |
+| GP14 | DMX6 PWM (channel 6) |
+| GP15 | DMX5 PWM (channel 5) |
 | GP16 | Onboard WS2812 status LED |
+| GP26 | DMX4 PWM (channel 4) |
+| GP27 | DMX3 PWM (channel 3) |
+| GP28 | DMX2 PWM (channel 2) |
+| GP29 | DMX1 PWM (channel 1) |
 | USB CDC | Dragonframe DMC |
 
 GP17–20 are **not** DMC GIO. SliderMC extender pins (`ED`/`EI`/`EO`) stay on the **motion** Zero. Do not share those pads with this board’s GIO.
@@ -89,11 +96,28 @@ A/B polarity: if dimmers ignore the universe, swap A/B. Bench without a transcei
 
 ---
 
-## Camera GP14 — 2N7000 level-shifter (5 V) and GPIO protection
+## DMX1–DMX6 PWM
 
-Firmware drives GP14 as **open-collector + pull-up** (same idea as SliderMC `PIN_CAMERA_CTRL`). The pad is **3.3 V only**. Use this FET path when the camera or box wants **5 V TTL/CMOS** and shared GND is OK.
+Channels **1–6** of the same 512-byte buffer also drive PWM, so a dimmer can sit on the Zero without a DMX receiver. Channels 7–512 stay on the GP0 UART only.
 
-**GPIO protection:** series 220–470 Ω from GP14 to the gate; optional BAT54 (or Schottky) clamp from the pad to 3.3 V and GND. Never put 5 V on GP14.
+| Name | Pad | Channel |
+|------|-----|---------|
+| DMX1 | GP29 | 1 |
+| DMX2 | GP28 | 2 |
+| DMX3 | GP27 | 3 |
+| DMX4 | GP26 | 4 |
+| DMX5 | GP15 | 5 |
+| DMX6 | GP14 | 6 |
+
+18 kHz, high-active, 255 counts per period. Level 0 is steady low, level 255 is steady high, and a level *n* is high for *n*/255 of the period (1 → 1/255, 10 → 10/255, 254 → 254/255).
+
+---
+
+## Camera GP9 — 2N7000 level-shifter (5 V) and GPIO protection
+
+Firmware drives GP9 as **open-collector + pull-up** (same idea as SliderMC `PIN_CAMERA_CTRL`). The pad is **3.3 V only**. Use this FET path when the camera or box wants **5 V TTL/CMOS** and shared GND is OK.
+
+**GPIO protection:** series 220–470 Ω from GP9 to the gate; optional BAT54 (or Schottky) clamp from the pad to 3.3 V and GND. Never put 5 V on GP9.
 
 Isolated dry-contact shutter cables: use a **PC817** instead — [components/camera.md](../components/camera.md) and [mc/pins.md](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
 
@@ -102,7 +126,7 @@ Isolated dry-contact shutter cables: use a **PC817** instead — [components/cam
           |                            |
          BAT54*                       10k
           |                            |
-  GP14 -- 330 Ω -- G (2N7000)          |
+  GP9 -- 330 Ω -- G (2N7000)          |
                     S -------- D ------+---- camera TTL in
                     |
                    GND
@@ -117,7 +141,7 @@ Idle (pad released ~3.3 V): FET off → output **5 V**. Shutter (pad LOW): FET o
 
 ---
 
-## Buzzer GP15 — BC3xx NPN driver
+## Buzzer GP10 — BC3xx NPN driver
 
 Do not hang a 5 V buzzer on the GPIO. Use an NPN low-side switch (`BC337` / `BC547`; not PNP `BC327`). Firmware also pulses MC `BE` — **one physical buzzer** is enough (this board **or** the MC).
 
@@ -132,7 +156,7 @@ Do not hang a 5 V buzzer on the GPIO. Use an NPN low-side switch (`BC337` / `BC5
                        |
                       1 kΩ
                        |
-                      GP15
+                      GP10
 ```
 
 Active (self-drive) buzzers: omit the flyback diode. Passive piezo: this is an on/off driver, not a tone generator.

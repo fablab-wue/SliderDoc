@@ -53,7 +53,8 @@ Default is **3**.
 | `max_speed_2` / `max_speed_3` | float mm/s | 100 | Axis-2 / axis-3 speed ceiling (planner / `MJ`; session `SS` still vs `max_speed_1`) |
 | `max_accel_2` / `max_accel_3` | float mm/s² | 300 | Axis-2 / axis-3 accel ceiling |
 | `steps_per_unit_1` | float | 320 | Axis-1 steps per user unit (mm, deg, …); synonym `steps_per_mm_1` |
-| `unit_name` | string | `mm` | UIC unit label (max 7 printable ASCII chars; no `#`) |
+| `motor_1_unit` … `motor_3_unit` | string | `mm` | Stored UIC label for that motor (max 7 printable ASCII chars; no `#`) |
+| `servo_1_unit` … `servo_3_unit` | string | `deg` | Stored UIC label for that servo (same character rules) |
 | `MOTOR_1_min` | float units or `none` | 0 | Motor-1 envelope min (`none` / `-` disables); boot → session `SL`; homing; packed `axis_min_1` / `soft_min_1` |
 | `MOTOR_1_max` | float units or `none` | 600 | Motor-1 envelope max; boot → session `SR`; packed `axis_max_1` / `soft_max_1` |
 | `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
@@ -64,6 +65,7 @@ Default is **3**.
 | `motors` | 1\|2\|3 | 1 | Live STEP/DIR count. `IA` / `CG axis` / banner use `motors+servos`. **Re-inits GPIO/PIO without `RB`.** |
 | `servos` | 0..3 | 0 | RC servo PWM channels. Pico GP26/27/18 (18 steals EXT_4 when `servos>=3`); Zero GP21–23. PWM 100 Hz, wrap 65535; default 500–2500 µs → ~**1.25′** / 0.021° per count over ±135°. |
 | `axis` | int (read) | 1 | Synthesized packed sum (`motors+servos`). `CG axis` and bare `CG` dump emit it. **`CS axis` is rejected.** |
+| `axis_N_unit` | string (read) | *(from source)* | Packed label copied from `motor_N_unit` or the matching `servo_*_unit` (motors, then servos). Bare `CG` emits it for live channels only. **`CS axis_N_unit` is rejected.** |
 | `name` | string | *(empty)* | Optional device name in welcome banner (max 31 printable ASCII chars; no `#`) |
 | `DRV_STEP_1_active` | 0/1 | 1 | Axis-1 STEP active level (PIO program) |
 | `DRV_STEP_2_active` | 0/1 | 1 | Axis-2 STEP polarity. **No `DRV_STEP_3_active`** — axis 3 STEP follows axis 2 (PIO has two polarity programs). |

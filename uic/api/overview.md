@@ -612,7 +612,7 @@ Shipped defaults live in `MC_config.py` / `UIC_config.py` / `JKSliderConfig.py`.
 | `PIN_LED_ONBOARD` | `"LED"` | Pico onboard LED (heartbeat) |
 | `DEBUG_LEVEL` | 3 | USB debug verbosity |
 
-Mechanics (`steps_per_unit_1`), `max_speed_1` / `max_accel_1`, `unit_name`, `MOTOR_1_min` / `MOTOR_1_max`, and `MOTOR_2_min` / `MOTOR_2_max` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, packed `axis_count` from CG `axis`, `motors`/`servos` from those keys). Python object fields `mc.max_speed` / `mc.slider_min` stay filled from motor 1 / packed channel 1. `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
+Mechanics (`steps_per_unit_1`), `max_speed_1` / `max_accel_1`, `motor_N_unit` / `servo_N_unit`, `MOTOR_1_min` / `MOTOR_1_max`, and `MOTOR_2_min` / `MOTOR_2_max` live on **SliderMC** and are loaded into `MC_Client` via `CG` after the welcome banner (`mc_config`, packed `axis_count` from CG `axis`, `motors`/`servos` from those keys). Packed `axis_N_unit` is generated and read-only; `mc.axis_unit` is the six labels from that dump. Python object fields `mc.max_speed` / `mc.slider_min` stay filled from motor 1 / packed channel 1. `status` tracks McState (`MC_STATE_*` / `MC_STATE_CHARS`).
 
 ### JKSlider panel (`JKSliderConfig.py`)
 

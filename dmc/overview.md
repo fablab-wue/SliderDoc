@@ -96,8 +96,8 @@ Classic onboard LED: `SLIDERDMC_STATUS_LED_MODE=0`.
 |------|------|
 | `config.h` | Limits, pin map, 1000 steps = 1 mm/deg, hello name |
 | `dmc_protocol` | Framing, opcodes, Fletcher checksum |
-| `gio` | Local DMC GIO GP2–9, shutter GP14, buzzer GP15 |
-| `dmx` | 512-ch live DMX on GP0 (PIO UART) |
+| `gio` | Local DMC GIO GP1–8, shutter GP9, buzzer GP10, MOVE GP11 |
+| `dmx` | 512-ch live DMX on GP0 (PIO UART); channels 1–6 also PWM on GP29/28/27/26/15/14 |
 | `path_store` | DF upload table → MC `PD` samples |
 | `mc_client` | SliderMC UART + simulator |
 | `status_led` | WS2812 / classic LED |

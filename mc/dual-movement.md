@@ -73,10 +73,10 @@ Protocol text often says mm / mm/s / mm/s², but values are **user units** conve
 
 | Setup | Treat args as | Set |
 |-------|---------------|-----|
-| Linear slider | mm, mm/s, mm/s² | `steps_per_unit_1` = steps per mm; `unit_name=mm` |
-| Rotary / pan | °, °/s, °/s² | `steps_per_unit_1` (or `_2`) = steps per degree; `unit_name=deg` |
+| Linear slider | mm, mm/s, mm/s² | `steps_per_unit_1` = steps per mm; `motor_1_unit=mm` |
+| Rotary / pan | °, °/s, °/s² | `steps_per_unit_1` (or `_2`) = steps per degree; `motor_N_unit=deg` |
 
-`CG unit_name` lets a UIC show the unit label (default `mm`). Soft limits, `IP`, and verbose positions use the same user unit.
+`CG axis_N_unit` is the packed label a UIC shows. It is generated from `motor_N_unit` (default `mm`) or `servo_N_unit` (default `deg`). **`CS axis_N_unit` is rejected.** Soft limits, `IP`, and verbose positions use the same user unit.
 
 Same-release synonyms: `steps_per_mm_1` / `steps_per_mm_2` still set the same fields; `CG`/`foreach` emit the canonical names. There are **no aliases** for unnumbered `steps_per_unit` / `steps_per_mm`.
 
@@ -106,7 +106,7 @@ CS MOTOR_2_max none
 | `DRV_*_1_active`, `SW_*_1_*`, `home_*_1` | same keys with `_2` (digit before `_active` / `_use`) |
 | `max_speed_1` / `max_accel_1` | `max_speed_2` / `max_accel_2` |
 
-**Shared** (not per-motor): session `SS`/`SA` (master units), `unit_name`, `motors`/`servos`, `name`, ramp/path globals, debug/verbose init. `MJ` uses session `SS` as 100 % and clamps each motor to its own `max_speed_N`. Packed servos use `SERVO_N_*`. Motor 3 uses the matching `_3` keys when `motors=3`.
+**Shared** (not per-motor): session `SS`/`SA` (master units), `motors`/`servos`, `name`, ramp/path globals, debug/verbose init. Each motor has `motor_N_unit`; each servo has `servo_N_unit`. Packed `axis_N_unit` is generated from those and is read-only. `MJ` uses session `SS` as 100 % and clamps each motor to its own `max_speed_N`. Packed servos use `SERVO_N_*`. Motor 3 uses the matching `_3` keys when `motors=3`.
 
 Full tables: [config.md](config.md).
 
@@ -120,7 +120,7 @@ Full tables: [config.md](config.md).
 4. **Prefer pan on motor 2** — keeps linear “mm” on motor 1 (`IP` first field / UIC habit). `WP` / Wait Pos is the **time-sync master** (optional 2nd arg is timeout). In-move `;` chains: [command-chains.md](../architecture/command-chains.md). Homing: `MH 1|2|3` (motors only).
 5. **`max_speed_1` / `max_speed_2` clamp:** if `|d2| ≫ |d1|`, scaled `v2` may hit `max_speed_2` and **lose** perfect time sync — shorten the axis2 move, raise the cap, or move axes sequentially. Mid-move `SS`/`SA` stay time-synced while coordination is active (same clamp still applies).
 6. **Path mode (`PG`):** extra `PD` args are **slice-timed**, not the same as dual-`MT` distance scaling. See [motion-path.md](motion-path.md).
-7. **UIC:** both JKSlider and B4Slider select packed axes 1–6 (`getAxisCount()`). JKSlider MOVE/FAST send packed `MJ` with **0** on unselected live channels; B4Slider MOVE uses skipped `MT`. JKSlider A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Hosts/scripts can still send dual `MT` directly. Use `CG unit_name` for the display unit.
+7. **UIC:** both JKSlider and B4Slider select packed axes 1–6 (`getAxisCount()`). JKSlider MOVE/FAST send packed `MJ` with **0** on unselected live channels; B4Slider MOVE uses skipped `MT`. JKSlider A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Hosts/scripts can still send dual `MT` directly. Use `CG axis_N_unit` for the display unit (`CS` rejects it; set `motor_N_unit` or `servo_N_unit`).
 
 ---
 
@@ -128,6 +128,6 @@ Full tables: [config.md](config.md).
 
 - [ ] `CS motors 2` (no `RB`)
 - [ ] `steps_per_unit_1` / `_2` match mechanics (mm or °)
-- [ ] `unit_name` set for UIC (`mm` or `deg`)
+- [ ] `motor_N_unit` / `servo_N_unit` set for UIC (`mm` or `deg`; read back as `axis_N_unit`)
 - [ ] Soft limits `none` on any endless rotate motor
 - [ ] Watch `|d2|/|d1|` vs `max_speed_1` / `max_speed_2` on dual seeks

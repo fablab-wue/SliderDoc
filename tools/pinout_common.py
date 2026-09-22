@@ -253,6 +253,8 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_POT
     if lab == "CAMERA_CTRL" or lab == "CAMERA":
         return C_CAMERA
+    if lab == "MOVE":
+        return C_GP
     if lab.startswith("CTRL_") or "CTRL_CAMERA" in lab:
         return C_CTRL
     if lab.startswith("LED_") or lab in ("LED", "PIN_LED") or "NEOPIXEL" in lab:
