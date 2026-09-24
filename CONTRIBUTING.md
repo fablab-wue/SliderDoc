@@ -17,7 +17,7 @@
 | JKSlider operator text | [uic/projects/jkslider/user-manual.md](uic/projects/jkslider/user-manual.md) | |
 | JKSlider installer text | [uic/projects/jkslider/technical/](uic/projects/jkslider/technical/README.md) | Link [checklists](build/checklists/README.md) for scannable steps |
 | MC firmware behaviour | [mc/*.md](mc/README.md) | Align with SliderMC source |
-| DMC / Dragonframe bridge | [dmc/*.md](dmc/README.md) | Align with SliderDMC source; do not vendor Dragonframe PDFs or dmc-lite |
+| DMC / Dragonframe bridge | [dmc/*.md](dmc/README.md) | Align with DF_DMC_2_MC source; do not vendor Dragonframe PDFs or dmc-lite |
 | Component catalog | [components/](components/README.md) | One file per module type |
 | Generated assets | [assets/](assets/README.md), cheat-sheet folders | Run [tools/](tools/README.md) scripts; commit outputs |
 

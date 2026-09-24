@@ -1,5 +1,5 @@
-# Generate RP2040-Zero pinout ASCII + PNG for SliderDMC (stdlib only).
-#   python tools/render_rp2040zero_pinout_SliderDMC.py
+# Generate RP2040-Zero pinout ASCII + PNG for DF_DMC_2_MC (stdlib only).
+#   python tools/render_rp2040zero_pinout_DF_DMC_2_MC.py
 #
 # Top view + bottom view (USB at top). Same geometry as SliderMC Zero renderer.
 
@@ -113,7 +113,7 @@ LEGEND = [
 ]
 
 ASCII_HEAD = (
-    "Waveshare RP2040-Zero — SliderDMC pinout (USB at top)",
+    "Waveshare RP2040-Zero — DF_DMC_2_MC pinout (USB at top)",
     "Defaults in src/config.h",
 )
 
@@ -242,7 +242,7 @@ def render_png(path: Path):
     sub_c = (90, 90, 100)
     c = Canvas(width, height)
 
-    c.text("RP2040-Zero SliderDMC pinout", margin, margin, text_c, 3)
+    c.text("RP2040-Zero DF_DMC_2_MC pinout", margin, margin, text_c, 3)
     c.text("Top + bottom view  USB at top  src/config.h  DragonFrame DMC bridge", margin, margin + 34, sub_c, 1)
 
     sec_y = margin + title_h

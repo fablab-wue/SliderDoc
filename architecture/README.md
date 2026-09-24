@@ -26,4 +26,4 @@ The important distinction is that **A/B in JKSlider** means **marks**, while **A
 | [compare.md](compare.md) | Competitive scan vs commercial / DIY sliders |
 | [marketing.md](marketing.md) | Short marketing overview |
 
-**Related:** [contract/protocol.md](../contract/protocol.md) · [UIC API](../uic/api/overview.md) · [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) · [SliderMC](https://github.com/fablab-wue/SliderMC) · [SliderDMC](https://github.com/fablab-wue/SliderDMC)
+**Related:** [contract/protocol.md](../contract/protocol.md) · [UIC API](../uic/api/overview.md) · [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) · [SliderMC](https://github.com/fablab-wue/SliderMC) · [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)

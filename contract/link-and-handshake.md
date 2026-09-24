@@ -97,9 +97,9 @@ sequenceDiagram
 
 After a UIC-only reboot, the MC does **not** re-send the banner unless the MC also resets — power-cycle both boards or reset the MC when re-establishing the link.
 
-## SliderDMC (Dragonframe) as a UART client
+## DF_DMC_2_MC (Dragonframe) as a UART client
 
-[SliderDMC](https://github.com/fablab-wue/SliderDMC) is another host of the same MC UART: it sends **`VH`** then **`CG`** (same as `MC_Client`). USB toward Dragonframe is binary DMC, not this ASCII.
+[DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) is another host of the same MC UART: it sends **`VH`** then **`CG`** (same as `MC_Client`). USB toward Dragonframe is binary DMC, not this ASCII.
 
 DMC board is always **GP12 TX / GP13 RX**. Cross to the MC:
 

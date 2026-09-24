@@ -1,16 +1,16 @@
 <link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
-  --doc-title: "SliderDMC command mapping";
+  --doc-title: "DF_DMC_2_MC command mapping";
   --doc-path: ".\\SliderDoc\\dmc\\mapping.md";
 }
 </style>
 
-# SliderDMC command mapping
+# DF_DMC_2_MC command mapping
 
 [← Index](README.md)
 
-Dragonframe **DMC v2** opcodes SliderDMC honours, and where they go. Canonical wire format: [DMC-Protocol-2024-08-13.pdf](https://www.dragonframe.com/download/dmcproto/DMC-Protocol-2024-08-13.pdf). This page is **our** subset and the SliderMC / GPIO path only.
+Dragonframe **DMC v2** opcodes DF_DMC_2_MC honours, and where they go. Canonical wire format: [DMC-Protocol-2024-08-13.pdf](https://www.dragonframe.com/download/dmcproto/DMC-Protocol-2024-08-13.pdf). This page is **our** subset and the SliderMC / GPIO path only.
 
 Motor payloads are **1-based**. Unknown types return ACK `0x0013` (unsupported).
 

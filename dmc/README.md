@@ -1,12 +1,12 @@
 <link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
-  --doc-title: "SliderDMC";
+  --doc-title: "DF_DMC_2_MC";
   --doc-path: ".\\SliderDoc\\dmc\\README.md";
 }
 </style>
 
-# SliderDMC firmware docs
+# DF_DMC_2_MC firmware docs
 
 DragonFrame **DMC v2** USB bridge to **SliderMC** ASCII UART. Shipping board: **Waveshare RP2040-Zero**.
 
@@ -19,7 +19,7 @@ DragonFrame **DMC v2** USB bridge to **SliderMC** ASCII UART. Shipping board: **
 | [pins.md](pins.md) | GPIO map, UART to MC, wiring ASCII |
 | [mapping.md](mapping.md) | DMC opcodes → MC / local GPIO |
 
-**Code repo:** [SliderDMC](https://github.com/fablab-wue/SliderDMC)
+**Code repo:** [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)
 
 **Official DMC protocol (Dragonframe, not this project):** [DMC-Protocol-2024-08-13.pdf](https://www.dragonframe.com/download/dmcproto/DMC-Protocol-2024-08-13.pdf)
 

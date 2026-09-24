@@ -1,22 +1,22 @@
 <link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
-  --doc-title: "SliderDMC build";
+  --doc-title: "DF_DMC_2_MC build";
   --doc-path: ".\\SliderDoc\\dmc\\build.md";
 }
 </style>
 
-# SliderDMC build
+# DF_DMC_2_MC build
 
 [← Index](README.md)
 
-Firmware: [SliderDMC](https://github.com/fablab-wue/SliderDMC). Board: **Waveshare RP2040-Zero**. Core: earlephilhower Arduino Pico via PlatformIO (`env:rpipico`, `board = pico` — GPIO numbers match the Zero map in [pins.md](pins.md)).
+Firmware: [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC). Board: **Waveshare RP2040-Zero**. Core: earlephilhower Arduino Pico via PlatformIO (`env:rpipico`, `board = pico` — GPIO numbers match the Zero map in [pins.md](pins.md)).
 
 ## Prerequisites (Windows)
 
 1. Install [VS Code](https://code.visualstudio.com/).
 2. Install the **PlatformIO IDE** extension.
-3. **File → Open Folder** → the `SliderDMC` repository root (not SliderMC / SliderCtrl).
+3. **File → Open Folder** → the `DF_DMC_2_MC` repository root (not SliderMC / SliderCtrl).
 4. Connect the Zero over USB.
 
 SliderMC build notes (WinUSB / picotool) also apply: [mc/build.md](../mc/build.md#windows-upload-picotool--upload_port-error).
@@ -43,7 +43,7 @@ Keep Dragonframe disconnected, one COM session:
 python pc_dmc_test.py COM21 --sequence hi
 ```
 
-Expect `type=0x0001`, `name="SliderCtrl MC V1 (dmc-lite)"`, `motors=1` (or live `axis`). Further sequences: `hi,status,position,config` and `hi,gio,dmx`. Script lives in the SliderDMC repo.
+Expect `type=0x0001`, `name="SliderCtrl MC V1 (dmc-lite)"`, `motors=1` (or live `axis`). Further sequences: `hi,status,position,config` and `hi,gio,dmx`. Script lives in the DF_DMC_2_MC repo.
 
 ## Dragonframe Connect
 

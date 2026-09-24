@@ -1,4 +1,4 @@
-Waveshare RP2040-Zero — SliderDMC pinout (USB at top)
+Waveshare RP2040-Zero — DF_DMC_2_MC pinout (USB at top)
 Defaults in src/config.h
 
     function     pad                  pad    function

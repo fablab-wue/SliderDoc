@@ -1,32 +1,32 @@
 <link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
-  --doc-title: "SliderDMC overview";
+  --doc-title: "DF_DMC_2_MC overview";
   --doc-path: ".\\SliderDoc\\dmc\\overview.md";
 }
 </style>
 
-# SliderDMC overview
+# DF_DMC_2_MC overview
 
 [← Index](README.md)
 
-**SliderDMC** is a USB **DMC v2** client for [Dragonframe](https://www.dragonframe.com/) Arc. It sits on a **Waveshare RP2040-Zero** between the PC and [SliderMC](https://github.com/fablab-wue/SliderMC):
+**DF_DMC_2_MC** is a USB **DMC v2** client for [Dragonframe](https://www.dragonframe.com/) Arc. It sits on a **Waveshare RP2040-Zero** between the PC and [SliderMC](https://github.com/fablab-wue/SliderMC):
 
 ```text
 Dragonframe (PC)
         USB CDC  — binary DMC v2
-SliderDMC  (RP2040-Zero)
+DF_DMC_2_MC  (RP2040-Zero)
         UART 115200  GP12 TX / GP13 RX  — SliderMC ASCII (VH, CG, MT, PG, …)
 SliderMC
 ```
 
 It is **not** a UIC panel. The panel ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) and Dragonframe are alternate hosts of the same motion board. Do not put both on the MC UART at once.
 
-Code: [SliderDMC](https://github.com/fablab-wue/SliderDMC). Pins: [pins.md](pins.md). Opcode map: [mapping.md](mapping.md). Build: [build.md](build.md).
+Code: [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC). Pins: [pins.md](pins.md). Opcode map: [mapping.md](mapping.md). Build: [build.md](build.md).
 
 ## Official protocol (Dragonframe)
 
-SliderDMC implements a **dmc-lite** subset. Wire format and message IDs are defined by Dragonframe — we do **not** redistribute their sketches or PDFs.
+DF_DMC_2_MC implements a **dmc-lite** subset. Wire format and message IDs are defined by Dragonframe — we do **not** redistribute their sketches or PDFs.
 
 - [DMC v2 COMM Protocol (2024-08-13 PDF)](https://www.dragonframe.com/download/dmcproto/DMC-Protocol-2024-08-13.pdf)
 - [How do I integrate a motion control system?](https://www.dragonframe.com/ufaqs/how-do-i-integrate-a-motion-control-system-with-dragonframe/) (same PDF; `dmc_msg.h` / `dmc_msg.c`)
@@ -36,7 +36,7 @@ Our behaviour (hello name, units, which opcodes we honour) is in this folder and
 
 ## Dragonframe Connect
 
-Dragonframe always starts with binary `MSG_HI` (`0x0001`). SliderDMC replies with identity named **`SliderCtrl MC V1 (dmc-lite)`**. Device type in Scene → Connections stays **dmc-lite**. An unsolicited hello is also sent when the USB serial port opens.
+Dragonframe always starts with binary `MSG_HI` (`0x0001`). DF_DMC_2_MC replies with identity named **`SliderCtrl MC V1 (dmc-lite)`**. Device type in Scene → Connections stays **dmc-lite**. An unsolicited hello is also sent when the USB serial port opens.
 
 Hello fields:
 
@@ -59,7 +59,7 @@ USB is **CDC only** (no mass-storage log drive). CDC is binary DMC — the Platf
 
 ## Units (DMC wire)
 
-DMC positions, speeds, and limits are signed integers with no unit field. SliderDMC uses a **fixed scale**:
+DMC positions, speeds, and limits are signed integers with no unit field. DF_DMC_2_MC uses a **fixed scale**:
 
 | DMC value | SliderMC |
 |-----------|----------|

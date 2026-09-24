@@ -1,20 +1,20 @@
 <link rel="stylesheet" type="text/css" href="../tools/SliderCtrl.css">
 <style>
 :root {
-  --doc-title: "SliderDMC pin map";
+  --doc-title: "DF_DMC_2_MC pin map";
   --doc-path: ".\\SliderDoc\\dmc\\pins.md";
 }
 </style>
 
-# SliderDMC pin map
+# DF_DMC_2_MC pin map
 
 [← Index](README.md)
 
-Pins are fixed in SliderDMC `src/config.h`. Shipping board: **Waveshare RP2040-Zero**.
+Pins are fixed in DF_DMC_2_MC `src/config.h`. Shipping board: **Waveshare RP2040-Zero**.
 
-![SliderDMC RP2040-Zero pinout](../assets/img/DMC_RP2040zero_pinout.png)
+![DF_DMC_2_MC RP2040-Zero pinout](../assets/img/DMC_RP2040zero_pinout.png)
 
-Regenerate: `python tools/render_rp2040zero_pinout_SliderDMC.py` → [`DMC_RP2040zero_pinout.txt`](../assets/DMC_RP2040zero_pinout.txt) + PNG.
+Regenerate: `python tools/render_rp2040zero_pinout_DF_DMC_2_MC.py` → [`DMC_RP2040zero_pinout.txt`](../assets/DMC_RP2040zero_pinout.txt) + PNG.
 
 | Pad | Function |
 |-----|----------|
@@ -67,7 +67,7 @@ MC UART is GP16/17:
 
 Handshake: DMC sends `VH` then `CG` (same as UIC `MC_Client`). Details: [link-and-handshake.md](../contract/link-and-handshake.md). MC pin maps: [mc/pins.md](../mc/pins.md).
 
-Do not attach SliderCtrl and SliderDMC to the same MC UART at the same time.
+Do not attach SliderCtrl and DF_DMC_2_MC to the same MC UART at the same time.
 
 ---
 

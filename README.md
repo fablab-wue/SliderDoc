@@ -2,7 +2,7 @@
 
 ![JKSlider](assets/img/jkslider-hero.png)
 
-Documentation and manuals for an **open DIY motorized camera slider** ecosystem: **UIC** ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) + **MC** ([SliderMC](https://github.com/fablab-wue/SliderMC)) + optional **DMC** ([SliderDMC](https://github.com/fablab-wue/SliderDMC)) + shared UART contract.
+Documentation and manuals for an **open DIY motorized camera slider** ecosystem: **UIC** ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) + **MC** ([SliderMC](https://github.com/fablab-wue/SliderMC)) + optional **DMC** ([DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)) + shared UART contract.
 
 Whether you operate on set, install a panel, build the rail, or extend the firmware — this repo is the single source for architecture, protocol, user manuals, and build guides. **Mechanics and enclosure are yours**; the docs cover control feel, motion firmware, and wiring so your build can behave like a commercial motorized slider on the things that matter for shooting — or as a **construction kit** for custom motorized rigs.
 
@@ -12,7 +12,7 @@ Whether you operate on set, install a panel, build the rail, or extend the firmw
 |------|------|
 | [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) | UI controller — MicroPython panel firmware (JKSlider, B4Slider, libraries) |
 | [SliderMC](https://github.com/fablab-wue/SliderMC) | Motion controller — C++ / FreeRTOS STEP/DIR (optional 2nd axis: typical **linear + pan**, time-synced) |
-| [SliderDMC](https://github.com/fablab-wue/SliderDMC) | Dragonframe DMC v2 USB bridge (RP2040-Zero) to SliderMC UART |
+| [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) | Dragonframe DMC v2 USB bridge (RP2040-Zero) to SliderMC UART |
 
 ---
 
@@ -53,7 +53,7 @@ How this compares to commercial motorized sliders: [architecture/compare.md](arc
 | [contract/](contract/README.md) | UART protocol, link/handshake, MC command cheat sheet |
 | [uic/](uic/README.md) | API, libraries, JKSlider / B4Slider / template projects |
 | [mc/](mc/README.md) | Build, config, pins, motion firmware |
-| [dmc/](dmc/README.md) | Dragonframe DMC bridge (SliderDMC) |
+| [dmc/](dmc/README.md) | Dragonframe DMC bridge (DF_DMC_2_MC) |
 | [components/](components/README.md) | Tested hardware module catalog |
 | [build/](build/README.md) | Hardware manual + installer checklists |
 | [reference/](reference/README.md) | Glossary |

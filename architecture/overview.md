@@ -10,7 +10,7 @@
 
 JKSlider runs as a **split** system: a UI controller (UIC) plus a dedicated motion controller (SliderMC).
 
-An optional third firmware, **[SliderDMC](https://github.com/fablab-wue/SliderDMC)**, is a **Dragonframe** USB DMC v2 client on a **Waveshare RP2040-Zero**. It talks SliderMC ASCII on UART (same `VH` / `CG` / `MT` contract as the UIC). Use it **instead of** a panel on that UART — not in parallel. Docs: [dmc/README.md](../dmc/README.md).
+An optional third firmware, **[DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)**, is a **Dragonframe** USB DMC v2 client on a **Waveshare RP2040-Zero**. It talks SliderMC ASCII on UART (same `VH` / `CG` / `MT` contract as the UIC). Use it **instead of** a panel on that UART — not in parallel. Docs: [dmc/README.md](../dmc/README.md).
 
 ![Architecture overview](../assets/img/architecture_overview.svg)
 
@@ -182,7 +182,7 @@ Hardware `DRV_ERROR` and hard limits are handled on the **MC**. The UIC is infor
 |-------|----------|------|
 | **UIC** | MicroPython: `JKSlider` + `MC_Client` / `UIC_Base` | Pots, buttons/keypad, OLED, RGB/NeoPixel, UART host, optional WLAN |
 | **MC** | C++/PlatformIO: SliderMC | STEP/DIR/EN, servos, home/limits, camera `CT`, DRV_ERROR, EXT outputs, planner, UART device |
-| **DMC** (optional) | C++/PlatformIO: SliderDMC on RP2040-Zero | USB DMC v2 to Dragonframe; UART host to MC; local GIO/DMX/shutter/buzzer |
+| **DMC** (optional) | C++/PlatformIO: DF_DMC_2_MC on RP2040-Zero | USB DMC v2 to Dragonframe; UART host to MC; local GIO/DMX/shutter/buzzer |
 
 ```mermaid
 flowchart LR
@@ -215,7 +215,7 @@ flowchart LR
 | **UIC** (button) | [img/JKS_Pico_pinout_button.png](../assets/img/JKS_Pico_pinout_button.png) |
 | **UIC** (keypad) | [img/JKS_Pico_pinout_keypad.png](../assets/img/JKS_Pico_pinout_keypad.png) |
 | **MC** | [SliderMC `../assets/img/MC_Pico_pinout.png`](../assets/img/MC_Pico_pinout.png) (see [PINS.md](../mc/pins.md)) |
-| **DMC** (RP2040-Zero) | [SliderDMC pinout](../assets/img/DMC_RP2040zero_pinout.png) (see [dmc/pins.md](../dmc/pins.md)) |
+| **DMC** (RP2040-Zero) | [DF_DMC_2_MC pinout](../assets/img/DMC_RP2040zero_pinout.png) (see [dmc/pins.md](../dmc/pins.md)) |
 
 Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../mc/pins.md`.
 
@@ -235,4 +235,4 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 
 Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.
 
-With **SliderDMC**, Dragonframe camera shutter can also pulse **DMC GP9** (OC + optional 2N7000 to 5 V) and still send MC `CT`. Wiring: [dmc/pins.md](../dmc/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).
+With **DF_DMC_2_MC**, Dragonframe camera shutter can also pulse **DMC GP9** (OC + optional 2N7000 to 5 V) and still send MC `CT`. Wiring: [dmc/pins.md](../dmc/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).
