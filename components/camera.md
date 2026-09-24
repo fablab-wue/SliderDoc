@@ -27,7 +27,7 @@ Low-active open-collector sink. Two ways to reach the camera:
 
 Intended out-side pull-up is **5 V**. FET `V_DS`: BSS138 **50 V**, 2N7000 **60 V**. Pico pad is **3.3 V only** — never put 5 V on `PIN_CAMERA_CTRL`. Full ASCII, pinouts, and voltage notes: [mc/pins.md](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
 
-**DF_DMC_2_MC:** Dragonframe shutter may also sit on the DMC Zero **GP9** (same OC idea, 2N7000 + GPIO protection ASCII). Firmware still sends MC `CT`. See [dmc/pins.md](../dmc/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).
+**DF_DMC_2_MC:** Dragonframe shutter may also sit on the DMC Zero **GP9** (same OC idea, 2N7000 + GPIO protection ASCII). Firmware still sends MC `CT`. See [DF_DMC_2_MC pins](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).
 
 ## JKSlider MSM (`mc.cameraTrigger` / MC `CT`)
 

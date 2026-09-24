@@ -109,5 +109,5 @@ DMC board is always **GP12 TX / GP13 RX**. Cross to the MC:
 | GP13 RX | GP12 TX | GP16 TX |
 | GND | GND | GND |
 
-Do not connect UIC and DMC to one MC UART at the same time. Pins and MAX485 / camera / buzzer ASCII: [dmc/pins.md](../dmc/pins.md). Handshake overview: [dmc/overview.md](../dmc/overview.md).
+Do not connect UIC and DMC to one MC UART at the same time. Slider-side notes: [dmc/README.md](../dmc/README.md). Pinout and wiring: [DF_DMC_2_MC pins](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/pins.md).
 
