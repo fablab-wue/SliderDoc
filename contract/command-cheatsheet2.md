@@ -80,6 +80,8 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
 | Move To | **`MT`**`<axv> (absolute)` | `—` | Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip). |
+| Move Duration | **`MD`**`<ms> <axv>` | `—` | Same targets as MT. Arrive in ms (1..60000). Cruise is distance/time. Does not change SS. Too fast = !E:speed. |
+| Move For | **`MF`**`<ms> <ramp_ms> <axv>` | `—` | Same targets as MD. Each ramp lasts ramp_ms. 2*ramp_ms is less than ms. Too fast = !E:speed. |
 | Move By | **`MB`**`<axv> (delta) …` | `—` | Relative move; same skip/named XYZABC rules as MT. |
 | Move Joy | **`MJ`**`<pct> …` | `—` | Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release. |
 | Move Home | **`MH`**`[1\|2\|3]` | `—` | Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/ME. |

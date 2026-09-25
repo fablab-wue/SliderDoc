@@ -229,6 +229,8 @@ Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
 | `MT` | Move To | axis args | Absolute units; skip `_` or omit named axis idles that axis; needs enable; live-retargets. |
+| `MD` | Move Duration | `ms` then axis args | Same targets as `MT`. Arrive in `ms` (1..60000). Cruise is distance/time. Does not change session `SS`. Faster than `max_speed` is `!E:speed`. |
+| `MF` | Move For | `ms` `ramp_ms` then axis args | Same targets as `MD`. Each ramp lasts `ramp_ms`, and `2 * ramp_ms` is less than `ms`. Cruise is distance over the remaining time. Does not change session `SS`. Too fast is `!E:speed`. |
 | `MB` | Move By | axis args | Relative units; same skip / named rules as `MT`. |
 | `MJ` | Move Joy | axis args | Joystick velocity hold: signed % of session `SS`; omit named extra → `0`; `0` = soft-stop; `SS`/`SA` stay live; clamp to `max_speed_N`. |
 | `MH` | Move Home | `[1\|2\|3]` | Homing cycle for a **motor** only; optional axis `1` (default), `2`, or `3`; no-op if that motor `home_mode_N` is `0` (use `SP` for origin); needs `SE 1`; cancel with `MS`/`ME`. Servo letters (`A`/`B`/`C`) → `!E:parse`. There is **no servo homing**. |
