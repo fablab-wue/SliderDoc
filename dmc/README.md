@@ -20,6 +20,18 @@ SliderMC
 
 Do **not** put the panel and DF_DMC_2_MC on the same MC UART at the same time.
 
+## Flash a release
+
+No compiler and no PlatformIO. The bridge is a Waveshare RP2040-Zero.
+
+1. Download `DF_DMC_2_MC-<tag>-rp2040zero.uf2` from the [DF_DMC_2_MC Releases](https://github.com/fablab-wue/DF_DMC_2_MC/releases) page.
+2. Hold **BOOTSEL**, plug in USB, then release BOOTSEL.
+3. Copy the UF2 onto the `RPI-RP2` drive. The board reboots into the new firmware.
+
+The other Dragonframe bridges are separate downloads: [DF_DMC_2_PWM](https://github.com/fablab-wue/DF_DMC_2_PWM/releases) (`DF_DMC_2_PWM-<tag>-pico.uf2`, Raspberry Pi Pico) and [DF_DMC_2_MKS](https://github.com/fablab-wue/DF_DMC_2_MKS/releases) (`DF_DMC_2_MKS-<tag>-rp2040zero.uf2`, Waveshare RP2040-Zero). Both use the same BOOTSEL copy onto `RPI-RP2`.
+
+A new file is built when a `v*` tag is pushed on that firmware repo. Rebuild an existing tag from that repo's Actions page with **Run workflow**.
+
 ## In Dragonframe
 
 1. Scene → Connections → Add connection

@@ -8,6 +8,29 @@
 
 # Build and VS Code setup
 
+## Flash a release
+
+No compiler and no PlatformIO. Download the UF2 for your board from the [SliderMC Releases](https://github.com/fablab-wue/SliderMC/releases) page.
+
+| File | Board |
+|------|--------|
+| `SliderMC-<tag>-pico.uf2` | Raspberry Pi Pico (RP2040) |
+| `SliderMC-<tag>-picow.uf2` | Raspberry Pi Pico W |
+| `SliderMC-<tag>-rp2040zero.uf2` | Waveshare RP2040-Zero |
+| `SliderMC-<tag>-pico2.uf2` | Raspberry Pi Pico 2 (RP2350) |
+| `SliderMC-<tag>-pico2w.uf2` | Raspberry Pi Pico 2 W |
+| `SliderMC-<tag>-rp2350zero.uf2` | Waveshare RP2350-Zero |
+
+1. Hold **BOOTSEL**, plug in USB, then release BOOTSEL.
+2. Copy the UF2 onto the drive that appears. RP2040 boards show up as `RPI-RP2`. RP2350 boards (Pico 2, Pico 2 W, RP2350 Zero) show up as `RP2350`.
+3. The board reboots into the new firmware.
+
+Pico and Zero share a chip family. The bootloader accepts either file on that chip, and the wrong one uses the wrong pins. Match the file to the board.
+
+A release UF2 is the application only. It does not contain `data/mc.ini`. A board with no `/mc.ini` yet boots with the compiled defaults in `include/config_defaults.h`. An existing `/mc.ini` on LittleFS survives a later UF2 update. Factory `data/mc.ini` still needs `pio run -t uploadfs` from a source build (see [Config file / filesystem](#config-file-filesystem)).
+
+A new set of files is built when a `v*` tag is pushed on SliderMC. Rebuild an existing tag from that repo's Actions page with **Run workflow**.
+
 ## Prerequisites (Windows)
 
 1. Install [VS Code](https://code.visualstudio.com/).
@@ -27,6 +50,9 @@
   - `pico` — Raspberry Pi Pico (`board = rpipico`); `BOARD_PICO` default in `pins.h`
   - `picow` — Raspberry Pi Pico W (`board = rpipicow`); `-DBOARD_PICO_W`, external `PIN_LED` on **GP28** (CYW43 onboard LED is not used under FreeRTOS)
   - `rp2040zero` — Waveshare RP2040-Zero (`board = waveshare_rp2040_zero`); `-DBOARD_RP2040_ZERO`
+  - `pico2` — Raspberry Pi Pico 2 (`board = rpipico2`); `-DBOARD_PICO2`, 150 MHz, Pico pin map
+  - `pico2w` — Raspberry Pi Pico 2 W (`board = rpipico2w`); `-DBOARD_PICO2_W`, Pico W pin map
+  - `rp2350zero` — Waveshare RP2350-Zero (`board = waveshare_rp2350_zero`); `-DBOARD_RP2350_ZERO`, RP2040-Zero pin map
 - earlephilhower core, FreeRTOS enabled via `PIO_FRAMEWORK_ARDUINO_ENABLE_FREERTOS`.
 - PlatformIO toolbar: **Build** / **Upload** / **Monitor** (select the env matching your hardware).
 - USB CDC carries the ASCII CLI (same protocol as UART).
@@ -69,7 +95,7 @@ If MI_01 has no WinUSB driver (Device Manager shows Error / no driver), picotool
 5. Do **not** replace the driver on the composite parent or on Interface 0 — that breaks the `RPI-RP2` drag-and-drop path.
 6. Verify: `picotool info -d` should print RP2040 device info and exit 0. In Device Manager, `RP2 Boot` should be OK under USB devices.
 
-After that, **Upload** from a running MC firmware (CDC COM present) resets via 1200 baud, flashes with picotool, and reboots. Manual `.uf2` copy remains available as a fallback.
+After that, **Upload** from a running MC firmware (CDC COM present) resets via 1200 baud, flashes with picotool, and reboots. A hand-copied UF2 uses the same `RPI-RP2` / `RP2350` drive; release files and the BOOTSEL steps are in [Flash a release](#flash-a-release).
 
 **Alternative:** set `upload_protocol = mbed` in `platformio.ini` so PlatformIO copies `firmware.uf2` to the `RPI-RP2` drive (no WinUSB). Less reliable timing after reset, and **Upload Filesystem** (`uploadfs`) still needs picotool.
 
@@ -98,14 +124,15 @@ Uses `src/motion/motion_stub.cpp` instead of the on-device planner/PIO path.
 - Defaults: `data/mc.ini` and `include/config_defaults.h`
 - On-device FS: **LittleFS**, 64 KiB (`board_build.filesystem_size = 0x10000` in `platformio.ini`)
 - Load/save: `src/board/littlefs_port.cpp` — boot loads `/mc.ini`; each successful `CS` rewrites it
-- Flash the factory FS image (includes `data/mc.ini`) after changing defaults or on a fresh Pico:
+- A [release UF2](#flash-a-release) does not contain `data/mc.ini`. First boot with an empty LittleFS keeps the compiled defaults. Config written later with `CS` is stored on LittleFS and survives the next UF2 update, because the filesystem sits in a separate flash region.
+- Flash the factory FS image (includes `data/mc.ini`) after changing defaults or on a fresh Pico. That step still needs a source build:
 
 ```powershell
 pio run -t uploadfs -e pico
 ```
 
 Typical first-time sequence: **Build** → **Upload** (firmware) → **Upload Filesystem** (`uploadfs`) → **Monitor**.  
-Flash the factory FS image for the matching env, e.g. `pio run -t uploadfs -e pico` (or `-e picow` / `-e rp2040zero`).  
+Flash the factory FS image for the matching env, e.g. `pio run -t uploadfs -e pico` (or `-e picow` / `-e rp2040zero` / `-e pico2` / `-e pico2w` / `-e rp2350zero`).  
 Manual check: `CS init_speed 25`, reset, `CG init_speed` → `CG:init_speed=25`.
 
 ## Publish to GitHub

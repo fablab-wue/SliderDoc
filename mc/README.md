@@ -6,7 +6,7 @@ C++ / FreeRTOS motor controller for RP2040 (STEP/DIR motors plus optional RC ser
 
 | Document | Topic |
 |----------|-------|
-| [build.md](build.md) | VS Code, PlatformIO, flash, host tests |
+| [build.md](build.md) | Release UF2 flash (no IDE), VS Code, PlatformIO, host tests |
 | [config.md](config.md) | Config keys, `CS`/`CG`, persistence |
 | [dual-movement.md](dual-movement.md) | Optional 2nd axis: timing, units, soft limits |
 | [pins.md](pins.md) | Fixed GPIO map |
