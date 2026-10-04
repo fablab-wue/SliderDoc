@@ -30,8 +30,8 @@ role of the floor parameters, and the equations used to size a move.
 | $t_{accel}$ | time spent accelerating | s |
 | $t_{decel}$ | time spent decelerating | s |
 | $t_{cruise}$ | time spent at constant speed | s |
-| `ramp_start_hz` | minimum starting velocity floor when leaving rest | Hz / step rate equivalent |
-| `stop_approach_hz` | low-speed end-of-move floor while braking | Hz / step rate equivalent |
+| `ramp_start_speed` | launch speed when leaving rest | axis unit/s (mm/s, deg/s, …) |
+| `stop_approach_speed` | approach speed while braking in | axis unit/s (mm/s, deg/s, …) |
 
 ## 1. Ramp form
 
@@ -103,11 +103,19 @@ decel halves.
 
 ---
 
-## 2. Role of ramp_start_hz and stop_approach_hz
+## 2. Role of ramp_start_speed and stop_approach_speed
 
-These are not both “same kind of floor.” They serve different roles.
+These are not both “same kind of floor.” They serve different roles. Both are speeds in the axis’s own unit per second (mm/s, deg/s, …), not step rates. The planner turns a floor into a pulse frequency per axis:
 
-### ramp_start_hz
+$$
+f_{\mathrm{step}} = v_{\mathrm{floor}} \times \texttt{steps\_per\_unit}
+$$
+
+A coordinated move multiplies \(v_{\mathrm{floor}}\) by that axis’s distance ratio first, so a 320-step axis and a 40-step axis share the same profile in time. `0` disables the floor. A floor faster than the commanded cruise is not applied as a step-rate clamp — that used to hold a slow axis at the floor for the whole move.
+
+Defaults are `ramp_start_speed = 1.5` and `stop_approach_speed = 0.75` (480 Hz and 240 Hz at 320 steps/unit, 60 Hz and 30 Hz at 40).
+
+### ramp_start_speed
 
 This is a launch floor.
 
@@ -125,7 +133,7 @@ Practical role:
 The planner uses a launch floor as a minimum velocity while accelerating away from
 rest.
 
-### stop_approach_hz
+### stop_approach_speed
 
 This is an approach / tail floor used near the end of a move.
 
@@ -141,25 +149,25 @@ Practical role:
 
 The tradeoff is simple:
 
-- larger `stop_approach_hz` = shorter low-speed tail, more abrupt final approach
-- smaller `stop_approach_hz` = longer low-speed tail, smoother final approach
+- larger `stop_approach_speed` = shorter low-speed tail, more abrupt final approach
+- smaller `stop_approach_speed` = longer low-speed tail, smoother final approach
 - value `0` = no approach floor; the profile is allowed to decay directly toward zero
   without a dedicated low-speed tail
 
-![Large stop_approach_hz](../assets/img/stop_approach_hz_large.svg)
+![Large stop approach speed](../assets/img/stop_approach_hz_large.svg)
 
-![Small stop_approach_hz](../assets/img/stop_approach_hz_small.svg)
+![Small stop approach speed](../assets/img/stop_approach_hz_small.svg)
 
-![Zero stop_approach_hz](../assets/img/stop_approach_hz_zero.svg)
+![Zero stop approach speed](../assets/img/stop_approach_hz_zero.svg)
 
-With `stop_approach_hz = 0`, the planner effectively removes the end-floor clamp:
+With `stop_approach_speed = 0`, the planner effectively removes the end-floor clamp:
 there is no intentional plateau or taper at a nonzero floor before the final stop.
 The final braking still remains smooth because the sine ramp itself reduces velocity
 continuously, but the low-speed tail is absent and the motion reaches zero more
 directly.
 
-In other words, `ramp_start_hz` is for leaving the zero-speed region, while
-`stop_approach_hz` is for entering the zero-speed region.
+In other words, `ramp_start_speed` is for leaving the zero-speed region, while
+`stop_approach_speed` is for entering the zero-speed region.
 
 ---
 
@@ -492,8 +500,8 @@ The planner uses a couple of core ideas:
 - acceleration and deceleration are both sine-shaped
 - the peak is not a hard corner, but a rounded maximum
 - the midpoint is not forced to a fixed distance; it is geometry-driven
-- `ramp_start_hz` is a launch floor
-- `stop_approach_hz` is an end-of-move floor
+- `ramp_start_speed` is a launch floor
+- `stop_approach_speed` is an end-of-move floor
 - stop distance and remaining distance determine when the brake begins
 
 The most important identities are:
@@ -614,10 +622,10 @@ ramp.
 
 ### 12.3 Why the low-speed tail exists
 
-The end-of-move floor, `stop_approach_hz`, does not define the brake trigger itself.
+The end-of-move floor, `stop_approach_speed`, does not define the brake trigger itself.
 It defines the low-speed tail near zero.
 
-When `stop_approach_hz` is larger than zero, the planner keeps the final phase from
+When `stop_approach_speed` is larger than zero, the planner keeps the final phase from
 falling too abruptly into zero speed. This creates a short taper or tail near the end.
 When it is zero, the planner is allowed to decay directly toward zero without an
 explicit low-speed floor.
@@ -627,7 +635,7 @@ explicit low-speed floor.
 The real practical rule is:
 
 - use the remaining-distance calculation to decide when decel begins
-- use `stop_approach_hz` to shape the final low-speed approach
+- use `stop_approach_speed` to shape the final low-speed approach
 - use the sine profile itself to keep the transition smooth
 
 This is why a good stop is both distance-aware and velocity-aware at the same time.
@@ -660,7 +668,7 @@ cleanly” story.
 
 ### D. Minimum speed / end-of-move floor tuning
 
-Explain how `ramp_start_hz` and `stop_approach_hz` interact with micro-stepping,
+Explain how `ramp_start_speed` and `stop_approach_speed` interact with micro-stepping,
 mechanical backlash, and final positioning quality. This is the best chapter for
 practical tuning advice.
 
@@ -684,7 +692,7 @@ Add a few concrete examples, such as:
 - short move with no cruise
 - medium move with a cruise plateau
 - long move with strong braking close to the end
-- tuning `stop_approach_hz` to reduce a low-speed tail
+- tuning `stop_approach_speed` to reduce a low-speed tail
 
 These examples turn the equations into something immediately useful when setting up a
 new axis or tuning a profile.

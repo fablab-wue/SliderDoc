@@ -63,7 +63,7 @@ So a speed or accel change mid-move keeps both axes finishing **at about the sam
 
 On a coordinated dual `MT` (both deltas ≠ 0), axis 2 still carries the scaled cruise/accel/decel (\(v_2/a_2 \approx v_1/a_1\)), including after mid-move `SS`/`SA`. Soft-stop duration scales like \(v/d_{\mathrm{dec}}\), so both axes usually finish decelerating **at about the same time**.
 
-This is **not** a dedicated sync-stop controller — only matching per-axis physics. Sync can break if `max_speed_1` / `max_speed_2` / `max_accel_1` / `max_accel_2` clamped an axis, one axis was already braking for its target, or the move was jog / joy / single-axis (no dual scaling).
+This is **not** a dedicated sync-stop controller — only matching per-axis physics. The launch and approach floors (`ramp_start_speed`, `stop_approach_speed`) are speeds in the axis unit, scaled by the same distance ratio as cruise and accel, then turned into a step rate with `speed × steps_per_unit`. Different `steps_per_unit` values therefore stay time-aligned. Sync can still break if `max_speed_1` / `max_speed_2` / `max_accel_1` / `max_accel_2` clamped an axis, one axis was already braking for its target, or the move was jog / joy / single-axis (no dual scaling).
 
 ---
 
@@ -106,7 +106,7 @@ CS MOTOR_2_max none
 | `DRV_*_1_active`, `SW_*_1_*`, `home_*_1` | same keys with `_2` (digit before `_active` / `_use`) |
 | `max_speed_1` / `max_accel_1` | `max_speed_2` / `max_accel_2` |
 
-**Shared** (not per-motor): session `SS`/`SA` (master units), `motors`/`servos`, `name`, ramp/path globals, debug/verbose init. Each motor has `motor_N_unit`; each servo has `servo_N_unit`. Packed `axis_N_unit` is generated from those and is read-only. `MJ` uses session `SS` as 100 % and clamps each motor to its own `max_speed_N`. Packed servos use `SERVO_N_*`. Motor 3 uses the matching `_3` keys when `motors=3`.
+**Shared** (not per-motor): session `SS`/`SA` (master units), `motors`/`servos`, `name`, `ramp_start_speed` / `stop_approach_speed`, path globals, debug/verbose init. Each motor has `motor_N_unit`; each servo has `servo_N_unit`. Packed `axis_N_unit` is generated from those and is read-only. `MJ` uses session `SS` as 100 % and clamps each motor to its own `max_speed_N`. Packed servos use `SERVO_N_*`. Motor 3 uses the matching `_3` keys when `motors=3`.
 
 Full tables: [config.md](config.md).
 

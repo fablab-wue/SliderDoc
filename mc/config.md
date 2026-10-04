@@ -93,8 +93,8 @@ Default is **3**.
 | `SERVO_N_swap` | 0/1 | 0 | `1` = reverse mechanical sense (min angle ↔ long pulse). Not the same as `active`. |
 | `home_mode_2` / `home_mode_3` | 0..4 | 0 | Motor-2 / 3 homing mode (servos are not homed) |
 | `home_move_out_N` / `home_speed_N` / `home_accel_N` | float | *(same as axis 1)* | Homing parameters for axes 2 and 3 |
-| `ramp_start_hz` | int | 1000 | First step rate leaving standstill |
-| `stop_approach_hz` | int | 400 | Minimum step rate on the last few steps near target (floor; 0 disables) |
+| `ramp_start_speed` | float | 1.5 | Launch speed leaving standstill, in the axis unit per second (mm/s, deg/s, …). `0` disables. Step rate is `speed × steps_per_unit`; a coordinated move scales the speed by that axis’s distance ratio. |
+| `stop_approach_speed` | float | 0.75 | Approach speed while braking in (same units). `0` disables. Larger = shorter low-speed tail. |
 | `dir_change_pause_s` | float | 0.1 | Pause at 0 on reverse |
 | `path_buffer_size` | int | 32000 | Logical `PD` sample cap **per axis** (≤ pool/`n`); pool is 65536 samples split by live `axis`. See [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path) |
 | `init_path_slice_us` | int µs | 10000 | Default `PS` slice length (≥1000); session field set via `PS`; bare `PS` reloads this |
@@ -107,6 +107,8 @@ For every motor/switch/extender pin except UART: `0` = low-active (asserted when
 Helper: `config_pin_asserted(gpio_level, active)`. Extender outputs boot **inactive** (opposite of `EXT_n_active`); logical level is not persisted — only polarity is in `mc.ini`.
 
 Removed legacy keys: `step_active_high`, `dir_invert`, `en_active_low`.
+
+`ramp_start_hz` and `stop_approach_hz` still load, as `speed = hz / 320` (the tune those step rates were written against). `CG` and a saved `mc.ini` emit only `ramp_start_speed` and `stop_approach_speed`. If a file sets both, the later line wins.
 
 ### Hard limits (`SW_LIMIT_*_N_use`)
 

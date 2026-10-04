@@ -39,7 +39,7 @@ skewing:
 
 - The target is **not** `min(cruise, vmax(rem))`. Such a target moves with every
   FIFO word as `rem` shrinks, restarts the sine phase each time, and leaves the
-  axis crawling at `ramp_start_hz` — the higher the cruise, the worse.
+  axis crawling at `ramp_start_speed` — the higher the cruise, the worse.
 - Once remaining distance cannot support the current speed (`vmax` from **decel**),
   the planner **commits** to a single brake ramp down to 0 (`g_braking`).
   Re-deriving the brake per word collapses the S-curve into constant deceleration
