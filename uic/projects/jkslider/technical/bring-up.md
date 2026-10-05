@@ -142,8 +142,8 @@ JKSlider.run()
    Or press the Pico reset / power-cycle if `main.py` is installed.
 3. Release any stuck buttons if OLED says **Release …**.
 4. Wait for homing; try SPEED + MOVE, then **STOP**.
-5. If direction is wrong, see checklist item **DIR** below — flip `DIR_POSITIVE_HIGH` or swap motor wires (one change at a time).
-6. If Thonny shows **`SliderMC banner timeout … continuing without MC`**, the panel UI started but the motion board did not answer — check the [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic) wiring checklist in the pitfalls table.
+5. If direction is wrong, see checklist item **DIR** below — flip `DRV_DIR_1_active` or swap motor wires (one change at a time).
+6. If Thonny shows **`SliderMC banner timeout … UNLINKED`**, the panel UI started but the motion board did not answer — check the [Communication MC ↔ UIC](../../../../contract/link-and-handshake.md#communication-mc--uic) wiring checklist in the pitfalls table.
 
 ### Common Thonny pitfalls
 
@@ -154,7 +154,7 @@ JKSlider.run()
 | Shell shows errors about missing module | That `.py` file is not on the Pico — upload it |
 | Want to stop a running slider from PC | Click Thonny’s red stop button, or unplug USB briefly |
 | Files on Pico vs PC mixed up | Always check **which side** you saved to (Pico vs computer) |
-| `SliderMC banner timeout … continuing without MC` | UART **crossed** (UIC TX→MC RX, UIC RX→MC TX)? Shared **GND**? Both at **115 200** baud? SliderMC firmware flashed and powered? Panel continues without motion until the link works |
+| `SliderMC banner timeout … UNLINKED` | UART **crossed** (UIC TX→MC RX, UIC RX→MC TX)? Shared **GND**? Both at **115 200** baud? Pico TX/RX are GP16/17; Zero TX/RX are GP12/13. SliderMC firmware flashed and powered? Panel UI still starts; motion waits until the link works |
 
 ---
 
@@ -185,17 +185,17 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 - [ ] MC `max_speed_1` — fastest SPEED pot / FAST may request (start **conservative**, e.g. 50–100). UIC uses this as pot full scale.
 - [ ] MC `max_accel_1` / `init_accel` — planner ceiling and session default; panel ACCEL pot uses `JKS_ACCEL_MIN_MM_S2`…`min(JKS_ACCEL_MAX_MM_S2, max_accel_1)`.
 - [ ] Optional UIC clamps: `JKS_SPEED_MAX_MM_S`, `JKS_ACCEL_MAX_MM_S2`, `JKS_SPEED_MIN_MM_S`.
-- [ ] Homing / DRV_ERROR / home direction — **SliderMC** config (`HOME_*`, halt decel, etc.).
+- [ ] Homing / DRV_ERROR / home direction — **SliderMC** config (`home_mode_1`, `home_speed_1`, `DRV_ERROR_1_active`). `DRV_ERROR` stops immediately (no decel ramp).
 - [ ] If motion feels rough at high speed: lower MC `max_speed_1`, or check microstepping / power / mechanical binding.  
   See SliderMC motion docs and [Technical Manual — Motion](motion-installer.md).
 
 ### D. Driver and switch logic (must match your electronics)
 
-- [ ] `PIN_DRV_STEP` / `PIN_DRV_DIR` / `PIN_DRV_EN` / `PIN_SW_LIMIT_*` / `PIN_DRV_ERROR` — on the **SliderMC** Pico (see [PINS.md](../../../../mc/pins.md)); not on the UIC.
-- [ ] `EN_ACTIVE_LOW` — `True` for most A4988 / DRV8825 / TMC boards (enable when pin is low).
-- [ ] `DIR_POSITIVE_HIGH` — if “right” on the panel moves the wrong way, flip this to `True`/`False` (or swap A/B motor wires once mechanics are fixed).
+- [ ] `PIN_DRV_STEP_1` / `PIN_DRV_DIR_1` / `PIN_DRV_ENABLE` / `PIN_SW_LIMIT_*_1` / `PIN_DRV_ERROR_1` — on the **SliderMC** board (Pico STEP/DIR/EN/ERROR = GP0/GP1/GP15/GP12; see [pins.md](../../../../mc/pins.md)); not on the UIC.
+- [ ] `DRV_EN_1_active=0` for most A4988 / DRV8825 / TMC boards (enable when the pin is low).
+- [ ] `DRV_DIR_1_active` — if “right” on the panel moves the wrong way, flip `0`/`1` (or swap A/B motor wires once mechanics are fixed).
 - [ ] `SW_LIMIT_L_1_use` / `SW_LIMIT_R_1_use` / `*_active` — match your limit switches (many are to GND with pull-up → active low). Set `home_mode_1` 1 or 2 to home on that limit.
-- [ ] `DRV_ERROR_ACTIVE_HIGH` / `DRV_ERROR_PULL` — match your E-stop wiring (or leave unused pin safe).
+- [ ] `DRV_ERROR_1_active` — `0` for an active-low open-collector alarm (the default). The pin is always polled.
 - [ ] LED pins / `LED_ACTIVE_HIGH` if you fit an RGB LED (UIC `UIC_config.py`).
 - [ ] OLED: `DSP_ENABLED = True` only if wired; set `DSP_DRIVER` / `DSP_ROTATE_180` and SDA/SCL if not using the defaults.
 
@@ -203,7 +203,7 @@ These live on **SliderMC** (not UIC `UIC_config.py`). See [CONFIG.md](../../../.
 
 - [ ] Power motor supply + Pico; homing finds the switch and stops cleanly.
 - [ ] From soft min, a known move (e.g. 100 mm) matches a ruler within a millimetre or two.  
-  If distance is wrong by a **factor** (e.g. half/double): recheck `MICROSTEPS` and `MM_PER_REV`.
+  If distance is wrong by a **factor** (e.g. half/double): recheck driver microsteps and `steps_per_unit_1`.
 - [ ] Soft max stops gently; STOP tap and STOP hold behave as in the User Manual.
 - [ ] DRV_ERROR / E-stop (if fitted) kills motion and leaves the driver safe.
 

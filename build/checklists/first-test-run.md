@@ -16,5 +16,5 @@ After firmware flash and wiring. See [bring-up.md § First test](../../uic/proje
 - [ ] Release stuck keys if OLED prompts
 - [ ] Homing completes cleanly
 - [ ] MOVE L/R and STOP behave correctly
-- [ ] Wrong direction? Flip `DIR_POSITIVE_HIGH` or swap motor wires (one change at a time)
+- [ ] Wrong direction? Flip `DRV_DIR_1_active` or swap motor wires (one change at a time)
 - [ ] Banner timeout? Check [link checklist](../../contract/link-and-handshake.md#communication-mc--uic)

@@ -26,7 +26,7 @@ Use when changing mechanics, driver, or travel. Full detail: [bring-up.md](../..
 ## C. Driver pins (SliderMC)
 
 - [ ] STEP/DIR/EN, home, DRV_ERROR on MC Pico — [mc/pins.md](../../mc/pins.md)
-- [ ] `EN_ACTIVE_LOW`, `DIR_POSITIVE_HIGH`, switch polarity correct
+- [ ] `DRV_EN_1_active`, `DRV_DIR_1_active`, `DRV_ERROR_1_active`, and limit `*_active` match the driver and switches
 
 ## D. UIC panel (after axis works)
 

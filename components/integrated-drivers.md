@@ -16,14 +16,16 @@ Wire the axis to the **SliderMC** Pico. Pinout: [PINS.md](../mc/pins.md) · [MC_
 
 ### Shared SliderMC nets (axis)
 
-| Net | Default GP | Config |
-|-----|------------|--------|
-| `DRV_STEP` | 18 | `DRV_STEP_1_active` |
-| `DRV_DIR` | 19 | `DRV_DIR_1_active` |
-| `DRV_EN` | 20 | `DRV_EN_1_active` (typical `0` = active-low) |
-| `DRV_ERROR` | **21** | `DRV_ERROR_1_active` (always polled) |
+Pico defaults below. Zero motor 1 is STEP GP1, DIR GP2, EN GP0, ERROR GP9. Full map: [pins.md](../mc/pins.md).
 
-Mechanics (must match the integrated drive’s microstep/setting) — set on SliderMC as `steps_per_unit_1` (and related home keys). UIC `UIC_config.py` may keep matching `MICROSTEPS` / `MM_PER_REV` for display helpers only.
+| Net | Pico GP | Config |
+|-----|---------|--------|
+| `DRV_STEP_1` | 0 | `DRV_STEP_1_active` |
+| `DRV_DIR_1` | 1 | `DRV_DIR_1_active` |
+| `DRV_ENABLE` | 15 | `DRV_EN_1_active` (typical `0` = active-low) |
+| `DRV_ERROR_1` | **12** | `DRV_ERROR_1_active` (always polled) |
+
+Mechanics (must match the integrated drive’s microstep setting) — set on SliderMC as `steps_per_unit_1` (and related home keys).
 
 | Symbol | Default | Role |
 |--------|---------|------|
@@ -36,15 +38,15 @@ Mechanics (must match the integrated drive’s microstep/setting) — set on Sli
 
 **Status:** Working (interface pattern documented in Technical Manual). Concrete SKU: [MKS SERVO42C](#mks-servo42c-nema17-closed-loop) below.
 
-Alarm / stall / OC from the integrated driver → SliderMC `PIN_DRV_ERROR` (**GP21**). Asserting it halts and disables the driver.
+Alarm / stall / OC from the integrated driver → SliderMC `PIN_DRV_ERROR_1` (Pico **GP12**). Asserting it halts immediately and disables the driver.
 
 ```
-  Closed-loop driver          SliderMC
-  STEP  <-------------------  GP18
-  DIR   <-------------------  GP19
-  EN    <-------------------  GP20
+  Closed-loop driver          SliderMC Pico
+  STEP  <-------------------  GP0
+  DIR   <-------------------  GP1
+  EN    <-------------------  GP15
   GND   --------------------  GND
-  ALARM / ERR ---------------> GP21  DRV_ERROR
+  ALARM / ERR ---------------> GP12  DRV_ERROR_1
 ```
 
 Full notes: [Technical Manual — Closed-loop drivers](../uic/projects/jkslider/technical/motion-installer.md#closed-loop-drivers-and-stall--alarm--drv_error).
@@ -88,22 +90,22 @@ Control connector (typical silkscreen order on the board): **V+**, **Gnd**, **Co
 
 Connect SliderMC **GND** ↔ SERVO42C **Gnd**, leave **Com** open unless an MKS adapter diagram for your board says otherwise. Connecting only `Com` to GND is wrong for this setup.
 
-| SliderMC net | GP | SERVO42C |
-|--------------|-----|----------|
-| `DRV_STEP` | 18 | **Stp** |
-| `DRV_DIR` | 19 | **Dir** |
-| `DRV_EN` | 20 | **En** |
+| SliderMC net | Pico GP | SERVO42C |
+|--------------|---------|----------|
+| `DRV_STEP_1` | 0 | **Stp** |
+| `DRV_DIR_1` | 1 | **Dir** |
+| `DRV_ENABLE` | 15 | **En** |
 | GND | — | **Gnd** (required); **Com** usually open |
-| `DRV_ERROR` (optional) | **21** | Alarm / ERR if your board exposes one |
+| `DRV_ERROR_1` (optional) | **12** | Alarm / ERR if your board exposes one |
 
 ```
-  MKS SERVO42C                SliderMC
-  Stp  <--------------------  GP18  DRV_STEP
-  Dir  <--------------------  GP19  DRV_DIR
-  En   <--------------------  GP20  DRV_EN
+  MKS SERVO42C                SliderMC Pico
+  Stp  <--------------------  GP0   DRV_STEP_1
+  Dir  <--------------------  GP1   DRV_DIR_1
+  En   <--------------------  GP15  DRV_ENABLE
   Gnd  ---------------------  GND          (required)
   Com  (usually leave open)
-  ALM  ---------------------> GP21  DRV_ERROR   (optional)
+  ALM  ---------------------> GP12  DRV_ERROR_1   (optional)
   V+ / Gnd  <-- motor supply 12–24 V (separate)
 ```
 

@@ -25,9 +25,9 @@ SliderMC is a **named ASCII CLI** (expert-friendly, UIC-friendly), not a G-code 
 | GRBL 1.1 | SliderMC |
 |----------|----------|
 | G-code lines + `$` settings | Two-letter commands (`MT`, `SS`, `CS`); `HL` / `?` = Help |
-| Welcome `Grbl X.Xx ['?' for help]` | Startup `# Slider Motion Controller V… ['?' for help]` |
+| Welcome `Grbl X.Xx ['?' for help]` | Startup `# MC V1 - Slider Motion Controller - N+M axis ['?' for help]` |
 | Realtime single characters outside the line buffer | Same: `#` status, `!` soft stop, ESC halt, `0x18` intercepted before line assembly |
-| Status `<Idle\|MPos:…>` on `?` | `#` and verbose push share compact `#…` lines (~3 Hz). `?` is help (needs newline). |
+| Status `<Idle\|MPos:…>` on `?` | `#` and verbose push share compact `#…` lines (default 10 Hz while moving). `?` is help (needs newline). |
 | `ok` / `error:N` per line | Motion/settings **silent** on success; errors `!E:code message`; queries `XX:value` |
 | `$N=` EEPROM settings | `CS` / `CG` + `mc.ini` on LittleFS |
 
@@ -69,22 +69,21 @@ After power-up the protocol task initializes, then **waits for a single `\n` (LF
 
 Only after that LF does the MC send one ready line beginning with `# ` (hash + **space**), distinct from status lines (`#I …`, `#M …`). The banner is mirrored to **USB + UART**.
 
-Base form (1-axis, no device name):
+The banner always starts with `# MC V1 -` and always ends with `{motors}+{servos} axis ['?' for help]`.
+
+No device name:
 
 ```text
-# Slider Motion Controller V1.0 ['?' for help]
+# MC V1 - Slider Motion Controller - 1+0 axis ['?' for help]
 ```
 
-Optional pieces from config:
+With config `name` set, that name **replaces** the words `Slider Motion Controller` (it is not added in front of them):
 
-| `name` | `motors`+`servos` | Banner |
-|--------|-------------------|--------|
-| empty | `1+0` | `# Slider Motion Controller V… ['?' for help]` |
-| empty | other | `# Slider Motion Controller V… - {motors}+{servos} axis ['?' for help]` |
-| set | `1+0` | `# <name> - Slider Motion Controller V… ['?' for help]` |
-| set | other | `# <name> - Slider Motion Controller V… - {motors}+{servos} axis ['?' for help]` |
+```text
+# MC V1 - <name> - 1+0 axis ['?' for help]
+```
 
-Literal suffix is **`- N+M axis`** (e.g. `1+0 axis`, `1+2 axis`). Config key `name` is printable ASCII (max 31 chars), no `#` or control characters.
+`name` is printable ASCII (max 31 chars), no `#` or control characters. Axis text is always present, including `1+0`.
 
 ```mermaid
 sequenceDiagram
@@ -93,13 +92,15 @@ sequenceDiagram
 
   Note over MC: LED+WDT init, wait LF on UART or USB
   Host->>MC: "VH\\n"
-  Note over Host: UIC retries VH every 100ms until banner or 3s
+  Note over Host: UIC retries VH every 100ms until banner or 5s
   MC->>Host: "# MC V1 - …\\n"
   Note over MC: GPIO LED / WS2812 switch to McState after banner
+  Host->>MC: "VP\\n"
+  MC->>Host: "VP:1\\n"
   Host->>MC: "SV 1\\n"
 ```
 
-**Host recommendation (UIC `MC_Client`):** send `VH\n` on UART, wait ≤100 ms for a `# MC V1 -` line, retry; after **3 s** without a banner, report an error on USB/REPL and soft-continue if the panel should still boot offline. Empty `\n` still reprints the banner (USB monitor). `VH` works after the protocol loop is running so a late MC or UIC reboot can re-sync.
+**Host recommendation (UIC `MC_Client`):** `start()` sends `VH\n` every 100 ms until a `# MC V1 -` line arrives. The default wait is **5 s** (`banner_timeout_s=5.0`). On timeout it prints `UNLINKED` and returns `False`. It does **not** send `SV` or `CG`. JKSlider and B4Slider still start the panel UI after that. On success it requires `VP:1`, then sends `SV 1` and reads `CG`. A later empty line does **not** reprint the banner. `VH` does, after the protocol loop is running, so a UIC-only reboot can re-sync.
 
 **USB-only bench:** open the MC USB serial monitor and send LF (Enter). The MC LED already blinks the wait pattern (Zero WS2812 rainbows until that LF) and WDT is armed if `WDT_use=1`; Enter unlocks the session, prints the banner, and switches the LED to McState patterns — no UIC or UART wiring required. USB-only idle is dim purple on the WS2812. Then type normal ASCII commands ending in `\n`.
 
@@ -152,7 +153,7 @@ API values use **mm**, **mm/s**, and **mm/s²** unless a config key says otherwi
 
 - **S-commands** change **session** RAM only (not written to `mc.ini`), except `SD` which sets live `init_debug_level` (USB debug; not a session field).
 - Power-up (and FS load) copies config init (`init_speed`, `init_accel`, `init_terminal`, `init_verbose`) into the session. `init_accel` seeds **both** live accel and decel.
-- **Bare bool setters** (`SE`, `ST`, `SV`, `EO0`…`EO3`): **toggle** the current logical state.
+- **Bare bool setters** (`SE`, `ST`, `SV`, `EO1`…`EO4`): **toggle** the current logical state.
 - **Bare non-bool S-commands** (e.g. `SS`, `SA`, `SD`) reload that parameter from config init (`SD` → default debug level; bare `SA` reloads `init_accel` into both ramps).
 - **`SS` / `SA`** reject values above `max_speed_1` / `max_accel_1` with `!E:limit …` (session unchanged). Both `SA` args are checked.
 - **`CS` / `CG`** read/write persistent config keys; `CS` also updates the live session for keys that have a session counterpart (`init_speed`, `init_accel`, `init_terminal`, `init_verbose`).
@@ -184,7 +185,7 @@ Axis values for the packed live channels (STEP/DIR motors first, then RC servos;
 | `SA` | Set Accel | `a [d]` or bare | Accel mm/s², optional decel mm/s² (both ≤ `max_accel_1`). One value sets **both** ramps; two values split start vs stop. No skip `_`. Bare reloads `init_accel` into both. Applies live to the next fill (including joy-mode `MJ`). |
 | `SE` | Set Enable | `0\|1` or bare | Driver enable 0\|1; bare toggles; required before motion; off stops hard. **`SE 0` also stops servo PWM** (limp); `SE 1` restores the last pulse. |
 | `ST` | Set Terminal | `0\|1` or bare | Terminal Mode 0\|1; bare toggles; local echo + UART command sniff to USB. |
-| `SV` | Set Verbose | `0\|1` or bare | Verbose status push 0\|1; bare toggles; ~3 Hz `#…` status lines when on. |
+| `SV` | Set Verbose | `0\|1` or bare | Verbose status push 0\|1; bare toggles. While moving, default **10 Hz** (`verbose_rate_hz`). Idle/disabled with terminal off is change-triggered plus a 1 s heartbeat. |
 | `SD` | Set Debug | `0..5` or bare | USB-only debug level 0..5; bare restores default; never sent on UIC UART. |
 | `SL` | Set Left | axis args or bare | Session working-window **min**; bare → envelope (`MOTOR_`/`SERVO_` / packed `axis_min_N`); `none` clears that side (effective → envelope if set). |
 | `SR` | Set Right | axis args or bare | Session working-window **max**; bare → envelope; `none` clears that side. |
@@ -272,7 +273,7 @@ Verbose / `#` while in path-mode (state letter `P`) use the same layouts as othe
 | `ED` | Ext Dir | `n I\|O\|T` | Channel `0`…`3` (`ED0`…`ED3`): **I** input+pull-up (boot default), **O** push-pull output, **T** open-collector + pull-up. Do not use `PD`/`PI` for pins (`PD` is Path Data, `PI` is Path Index). |
 | `EI` | Ext In | `n` | Channel `0`…`3` (`EI0`…`EI3`); reply `EI:<n> <0\|1>` (electrical HIGH=1). Works in I, O, and T. Allowed during `PG`. |
 
-`EO5`… is `!E:parse` (`PIN_EXT_COUNT` is 4). Levels use `EXT_n_active`. Reset to inactive on reboot; pin mode defaults to **I**. Beep / camera pulse are Special (`BE`, `CT`).
+`EO5`… is `!E:parse` (`PIN_EXT_COUNT` is 4). Levels use `EXT_1_active`…`EXT_4_active` (`EO1` is extender 1, `ED0`/`EI0` are the same pin). Reset to inactive on reboot; pin mode defaults to **I**. Beep / camera pulse are Special (`BE`, `CT`).
 
 ### C — Config (persistent)
 
@@ -313,7 +314,7 @@ In-move scripting (live `SS`/`SA` at waypoints, extender cues): [command chains]
 | Short | Phrase | Args | Description |
 |-------|--------|------|-------------|
 | `VA` | Version About | — | Reply `VA:` about string (name, version, author). |
-| `VH` | Version Hello | — | Reprint the welcome banner (`# MC V1 - …`), same bytes as boot / empty LF. Not `VH:…`. Allowed during path and EMO. Hosts should send `VH\\n` to align after either side reboots. |
+| `VH` | Version Hello | — | Reprint the welcome banner (`# MC V1 - …`), the same bytes as the one-shot boot banner. An empty line does not reprint it. Not `VH:…`. Allowed during path and EMO. Hosts should send `VH\\n` to align after either side reboots. |
 | `VF` | Version FW | — | Reply `VF:<version>` — firmware version. |
 | `VP` | Version Protocol | — | Reply `VP:<n>` — protocol version (`1`). Wire may change without bumping `VP`. |
 | `VG` | Version GPIO | — | List `PIN_*=GPIO` lines (machine-readable). Extra-axis pins only when that axis is live; `PIN_CAMERA_CTRL` always listed; `PIN_BUZZER` when `BUZZER_use=1`. |
@@ -342,7 +343,7 @@ Hard-limit trips and `PIN_DRV_ERROR` use the same internal halt path as `ME`.
 
 Polled with ~20 ms debounce (including **already asserted at power-up**). While asserted: `IE:1`, state letter `E`, halt applied, most commands rejected with `!E:emo active`.
 
-Allowed while error active: `IE`, `IA`, `ID`, `IC`, `IG`, `VA`/`VF`/`VP`, `VG`, `HL`/`?`, `CS`/`CR`/`CG`, `ME`, `RB`, `EO0`…`EO3`, `BE`, `CT`, realtime `#` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
+Allowed while error active: `IE`, `IA`, `ID`, `IC`, `IG`, `VA`/`VF`/`VP`/`VG`/`VH`, `HL`/`?`, `CS`/`CR`/`CG`, `ME`, `RB`, `EO1`…`EO4`, `EI0`…`EI3`, `BE`, `CT`, realtime `#` / `!` / `ESC` / `0x18`. When the pin releases, `drv_error` clears (`enable` stays 0 until `SE 1`).
 
 ---
 
@@ -353,7 +354,7 @@ Allowed while error active: `IE`, `IA`, `ID`, `IC`, `IG`, `VA`/`VF`/`VP`, `VG`, 
 | Board | Support |
 |-------|---------|
 | Pico / Pico W / Pico 2 / Pico 2 W | `CS motors 1..3`, `CS servos 0..3`. Servo PWM on GP26/27/18 (GP18 steals EXT_4 when `servos>=3`). |
-| RP2040-Zero / RP2350 Mini | Same counts. Servo PWM on GP21–23. |
+| RP2040-Zero / RP2350-Zero | Same counts. Servo PWM on GP21–23. UART is GP12/13, not the Pico GP16/17 pair. |
 
 Packed live channels = `motors + servos` (1..6). `IA` replies that sum; bare `CG` dump includes synthesized `axis=<sum>`. Extra-arg `MT`/`MB`/`PD`/`MJ`/`SL`/`SR`/`SP` apply (motors then servos). `WP` uses the **time-sync master**. `IG` / `VG` list extra motor / servo pins only while fitted; `PIN_CAMERA_CTRL` is always listed (`CT` / listen). See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives packed channels independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
 
@@ -361,7 +362,7 @@ Packed live channels = `motors + servos` (1..6). `IA` replies that sum; bare `CG
 
 ---
 
-## Verbose push (~3 Hz when session verbose=1)
+## Verbose push (default 10 Hz while moving)
 
 Verbose mode pushes compact `#…` status so the UIC can refresh a display (e.g. OLED). It also acts as a **heartbeat** that the MC is alive.
 
@@ -393,8 +394,9 @@ Homing (`#H`) includes speed and accel but **omits target**. Servos are never ho
 - When moving/homing, **speed** / **accel** magnitudes use absolute values (`fabs`).
 - **accel** is measured `dv/dt` magnitude (lightly smoothed), not the `SA` setpoint; **0** in cruise.
 - 1-axis **target** is present only for position seeks (not continuous jog / soft-stop bleed). Multi-axis moving lines emit a target per group.
-- With **Terminal Mode + verbose** together, a status line is printed only when it **differs** from the previous one.
-- With verbose alone (terminal off), lines are still pushed every ~3 Hz even if unchanged.
+- Default rate is `verbose_rate_hz` **10** (1..200). While moving, homing, or otherwise not idle/disabled, lines are pushed at that rate even if unchanged.
+- Idle or disabled, with terminal off: a line is sent when it changes, and again as a **1 s heartbeat** if it has not.
+- Terminal Mode dedupes at `verbose_rate_hz`: a line is sent only when it differs from the previous one.
 
 Examples (1 packed channel):
 

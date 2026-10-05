@@ -21,7 +21,7 @@ SliderMC planner & PIO: [MOTION.md](../../../../mc/motion.md) · command list: [
 
 How fast (and how slowly) the carriage can move is set by **three ceilings**. The slowest one wins.
 
-Numbers below assume the default mechanics **320 steps/mm** (`200` full steps × `8` microsteps / `5` mm per rev). If you change `MICROSTEPS` or `MM_PER_REV`, mm/s scales with `steps_per_unit_1`.
+Numbers below assume the default mechanics **320 steps/mm** (`200` full steps × `8` microsteps / `5` mm per rev). If you change `steps_per_unit_1`, mm/s at a given step rate scales with it.
 
 ### 1. Three ceilings
 
@@ -174,16 +174,18 @@ Programmer detail and direction-change plot: [../../../api/overview.md](../../..
 On the **SliderMC** board, the axis is driven as **STEP + DIR + EN** only (no UART/SPI in firmware for microstepping).  
 Default MC pins and software defaults (see [PINS.md](../../../../mc/pins.md)):
 
-| MC GPIO | Driver | Config |
-|---------|--------|--------|
-| GP18 | STEP | `PIN_DRV_STEP` ([PINS.md](../../../../mc/pins.md)) |
-| GP19 | DIR | `PIN_DRV_DIR` |
-| GP20 | EN → **ENN** (active-low enable) | `PIN_DRV_EN`, `EN_ACTIVE_LOW = True` |
+Pico motor 1. Zero is STEP GP1, DIR GP2, EN GP0 — [pins.md](../../../../mc/pins.md).
+
+| MC Pico GPIO | Driver | Config |
+|--------------|--------|--------|
+| GP0 | STEP | `PIN_DRV_STEP_1` |
+| GP1 | DIR | `PIN_DRV_DIR_1` |
+| GP15 | EN → **ENN** (active-low enable) | `PIN_DRV_ENABLE`, `DRV_EN_1_active=0` |
 | GND | GND (logic + power return) | — |
 | 3V3 | **VIO** / VCC_IO (logic supply) | — |
 
-Set **`MICROSTEPS = 8`** (UIC `UIC_config.py` / MC steps-per-mm) and configure the driver for **8 microsteps** the same way (pins or SPI).  
-Motor supply **VM** is never taken from the Pico — only share **GND**.
+Set SliderMC **`steps_per_unit_1`** (for example 320 = 200 full steps × 8 microsteps / 5 mm per rev) and strap or program the driver for the same microstep count.  
+Motor supply **VM** is never taken from the controller — only share **GND**.
 
 Common rules for all modules below:
 
@@ -211,9 +213,9 @@ UART is **not** required. Strap **MS1 / MS2** for 8 microsteps (both to GND):
    motor B− -------------| 2B / B2          |
                          |                  |
    MC 3V3 -------------| VIO / VDD        |
-   MC GP20 ------------| ENN / EN         |   EN_ACTIVE_LOW = True
-   MC GP18 ------------| STEP             |
-   MC GP19 ------------| DIR              |
+   MC GP15 ------------| ENN / EN         |   DRV_EN_1_active = 0
+   MC GP0  ------------| STEP             |
+   MC GP1  ------------| DIR              |
                          |                  |
    GND ------------------| MS1              |   8 microsteps
    GND ------------------| MS2              |
@@ -226,7 +228,7 @@ UART is **not** required. Strap **MS1 / MS2** for 8 microsteps (both to GND):
 ```
 
 Current: set the module trim pot / heatsink per the board manual (do not exceed motor rating).  
-`MICROSTEPS = 8` in `UIC_config.py` must match MS1/MS2 = GND/GND.
+`steps_per_unit_1` on SliderMC must match MS1/MS2 = GND/GND (8 microsteps).
 
 #### TMC5160T / TMC5160T Pro (BTT SPI module)
 
@@ -242,9 +244,9 @@ Pin names follow common BTT dual-row silkscreen (J1 control / J2 power):
                          | A1 / A2 / B1 / B2         |---- stepper coils
    MC 3V3 -------------| VIO / VCC_IO              |
                          +---------------------------+
-                         | EN                    J1  |---- MC GP20
-                         | STEP                      |---- MC GP18
-                         | DIR                       |---- MC GP19
+                         | EN                    J1  |---- MC GP15
+                         | STEP                      |---- MC GP0
+                         | DIR                       |---- MC GP1
                          | SDI  SCK  CSN  SDO  CLK   |---- SPI host**
                          +---------------------------+
 
@@ -259,9 +261,9 @@ Minimal STEP/DIR-only sketch (SPI programmed separately for **8 µsteps**):
 ```
   MC 3V3 ---- VIO
   MC GND ---- GND (also to motor PSU −)
-  MC GP18 --- STEP
-  MC GP19 --- DIR
-  MC GP20 --- EN   (active-low ENN behaviour; EN_ACTIVE_LOW = True)
+  MC GP0  --- STEP
+  MC GP1  --- DIR
+  MC GP15 --- EN   (active-low ENN behaviour; DRV_EN_1_active = 0)
 
   SPI host ---- SDI / SCK / CSN / SDO   (set microsteps = 8, then optional)
   CLK --------- leave open unless your module requires an external clock
@@ -269,43 +271,43 @@ Minimal STEP/DIR-only sketch (SPI programmed separately for **8 µsteps**):
 
 Firmware checklist for any of these drivers:
 
-- [ ] `MICROSTEPS = 8` matches driver (MS straps or SPI `MRES`)
-- [ ] `EN_ACTIVE_LOW = True`
-- [ ] `DIR_POSITIVE_HIGH` flipped if travel direction is wrong
+- [ ] Driver microsteps match `steps_per_unit_1` (MS straps or SPI `MRES`)
+- [ ] `DRV_EN_1_active=0` when EN is active-low
+- [ ] `DRV_DIR_1_active` flipped if travel direction is wrong
 - [ ] Shared GND; VM from motor PSU only
-- [ ] `steps_per_unit = (MOTOR_STEPS_PER_REV × MICROSTEPS) ÷ MM_PER_REV` on **SliderMC**
+- [ ] `steps_per_unit_1 = (full steps per rev × microsteps) ÷ mm per rev` on **SliderMC**
 
 ### Closed-loop drivers and stall / alarm → DRV_ERROR
 
 JKSlider firmware stays **open-loop STEP/DIR** (no encoder input on the Pico). That is enough when you use a **closed-loop stepper driver** that takes STEP/DIR and keeps its own encoder loop on the motor.
 
-**`PIN_DRV_ERROR`** is the hardware interlock input. With **SliderMC**, the EMO / driver alarm lives on **MC GP21**; the UIC uses GP22 for `PIN_CTRL_CAMERA`. The UIC sees EMO / hard-limit via the MC **verbose `#…` status line** (not a local EMO pin). Use the MC input for:
+**`PIN_DRV_ERROR_1`** is the hardware interlock input. On SliderMC Pico that pin is **GP12** (Zero **GP9**). The shutter is MC `PIN_CAMERA_CTRL` (`CT`), not a UIC GPIO. The UIC sees EMO / hard-limit via the MC **verbose `#…` status line** (not a local EMO pin). Use the MC input for:
 
 - **Motor driver error detection** (stall / alarm / OC / fault from a closed-loop or smart driver)
 - **Emergency stop** button (or both, diode-OR’d onto the same pin)
 
-When the input asserts, Slider runs the interlock path: **halt** with `DRV_ERROR_DECEL_MM_S2`, then **disable** the driver and block further moves while `DRV_ERROR` stays active.
+When the input asserts, SliderMC **stops immediately** (no decelerate), disables the driver, and blocks further moves while `DRV_ERROR` stays active.
 
 ```
-  Closed-loop driver          MC
-  STEP  <-------------------  GP18  DRV_STEP
-  DIR   <-------------------  GP19  DRV_DIR
-  EN    <-------------------  GP20  DRV_EN  (match EN polarity)
+  Closed-loop driver          MC Pico
+  STEP  <-------------------  GP0   DRV_STEP_1
+  DIR   <-------------------  GP1   DRV_DIR_1
+  EN    <-------------------  GP15  DRV_ENABLE
   GND   --------------------  GND
 
-  ALARM / ERR / OC  --------> MC GP21 DRV_ERROR
+  ALARM / ERR / OC  --------> MC GP12 DRV_ERROR_1
        (open-collector OK)
 
   Optional panel E-stop ------+
                               |  diode-OR / wired-OR if both fitted
                               v
-                            GP22
+                            GP12
 ```
 
 Config:
 
-- Match **`DRV_ERROR_ACTIVE_HIGH`** / **`DRV_ERROR_PULL`** to the alarm polarity (many modules are **open-collector, active-low** → `DRV_ERROR_ACTIVE_HIGH = False`, `DRV_ERROR_PULL = 1`).
-- If you also have a panel e-stop on the same pin, use **diode-OR** (or the driver’s recommended parallel wiring) so either source can pull `DRV_ERROR` active.
+- Match **`DRV_ERROR_1_active`** to the alarm polarity (many modules are **open-collector, active-low** → `DRV_ERROR_1_active=0`, the default).
+- If you also have a panel e-stop on the same pin, use **diode-OR** (or the driver’s recommended parallel wiring) so either source can pull `DRV_ERROR_1` active.
 - Soft limits and stored positions still assume commanded steps were followed **until** the alarm; the alarm stops further motion — it does not rewrite position from an encoder.
 
 No firmware change is required for this setup: any STEP/DIR closed-loop driver + alarm→`DRV_ERROR` is supported.

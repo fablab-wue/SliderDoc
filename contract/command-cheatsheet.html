@@ -138,7 +138,7 @@ code {
 <tr><td class="sh">SA</td><td class="ln">Set Accel</td><td class="ds">Peak accel [, decel] mm/s² (≤ max_accel_1). One value sets both ramps; two split start/stop. No skip _. Bare reloads init_accel into both; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS.</td></tr>
 <tr><td class="sh">SE</td><td class="ln">Set Enable</td><td class="ds">Driver enable 0|1; bare toggles; required before motion; off = hard stop. SE 0 also stops servo PWM (limp).</td></tr>
 <tr><td class="sh">ST</td><td class="ln">Set Terminal</td><td class="ds">Terminal Mode 0|1; bare toggles; local echo + UART sniff to USB (expert).</td></tr>
-<tr><td class="sh">SV</td><td class="ln">Set Verbose</td><td class="ds">Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).</td></tr>
+<tr><td class="sh">SV</td><td class="ln">Set Verbose</td><td class="ds">Verbose #… push 0|1; bare toggles; default 10 Hz while moving (verbose_rate_hz). Idle is change-triggered plus a 1 s heartbeat.</td></tr>
 <tr><td class="sh">SD</td><td class="ln">Set Debug</td><td class="ds">USB-only debug level 0..5; bare restores default; never on UIC UART.</td></tr>
 <tr><td class="sh">SL</td><td class="ln">Set Left</td><td class="ds">Session soft min (working window); bare→MOTOR_N_min/SERVO envelope; none clears (→envelope if set); skip _; !E:limit past envelope.</td></tr>
 <tr><td class="sh">SR</td><td class="ln">Set Right</td><td class="ds">Session soft max; bare→MOTOR_N_max/SERVO envelope; none clears; skip _; !E:limit if left&gt;right.</td></tr>
@@ -216,7 +216,7 @@ code {
 <table>
 <colgroup><col class="sh"><col class="ln"><col class="ds"></colgroup>
 <tbody>
-<tr><td class="sh">EO</td><td class="ln">Ext Out</td><td class="ds">Ext out n logical 0|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected.</td></tr>
+<tr><td class="sh">EO</td><td class="ln">Ext Out</td><td class="ds">Ext out n logical 0|1; bare EO1 toggles; glued EO11≡EO1 1; OK during EMO. EO5+ rejected.</td></tr>
 </tbody></table></section>
 <section class="group">
 <h2>Special</h2>

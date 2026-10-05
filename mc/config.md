@@ -57,8 +57,8 @@ Default is **3**.
 | `servo_1_unit` … `servo_3_unit` | string | `deg` | Stored UIC label for that servo (same character rules) |
 | `MOTOR_1_min` | float units or `none` | 0 | Motor-1 envelope min (`none` / `-` disables); boot → session `SL`; homing; packed `axis_min_1` / `soft_min_1` |
 | `MOTOR_1_max` | float units or `none` | 600 | Motor-1 envelope max; boot → session `SR`; packed `axis_max_1` / `soft_max_1` |
-| `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (~3 Hz); session via `SV`/`GV` |
-| `verbose_rate_hz` | int | 3 | Verbose push rate when session verbose is on |
+| `init_verbose` | 0/1 | 0 | Init for verbose `#…` push (default 10 Hz while moving); session via `SV`/`GV` |
+| `verbose_rate_hz` | int | 10 | Verbose push rate while moving (1..200). Idle/disabled with terminal off is change-triggered plus a 1 s heartbeat |
 | `init_terminal` | 0/1 | 0 | Init for Terminal Mode (expert USB sniffer + local echo); session via `ST`/`GT` — see [PROTOCOL.md](../contract/protocol.md#terminal-mode) |
 | `init_debug_level` | 0..5 | 3 | USB-only debug verbosity (see above) |
 | `WDT_use` | 0/1 | 1 | `1` = arm WDT (2 s) from heartbeat init (before unlock `\n`); change takes effect after reboot |
@@ -76,7 +76,7 @@ Default is **3**.
 | `SW_LIMIT_L_1_use` / `SW_LIMIT_R_1_use` | 0/1 | 0 | `1` = enable that axis-1 hard limit |
 | `SW_LIMIT_L_N_active` / `SW_LIMIT_R_N_use` | 0/1 | 0 | Same for axes 2 and 3 (`SW_LIMIT_R_3_use`, …). Digit is **before** `_active` / `_use`. |
 | `BUZZER_use` | 0/1 | 0 | `1` = enable `PIN_BUZZER` (GP28) for `BE`; skipped if that GPIO is `PIN_LED` (Pico W) |
-| `EXT_0_active` … `EXT_3_active` | 0/1 | 1 | Active level for `PIN_EXT_n` (high-active default); four extenders (`EO0`…`EO3`) |
+| `EXT_1_active` … `EXT_4_active` | 0/1 | 1 | Active level for `PIN_EXT_1`…`4` (high-active default). Outputs are `EO1`…`EO4`; direction/read use `ED0`…`ED3` / `EI0`…`EI3` |
 | `home_mode_1` | 0..4 | 0 | Axis-1 homing reference mode (see below) |
 | `home_move_out_1` | float mm | 3 | Extra travel after leaving reference switch |
 | `home_speed_1` | float mm/s | 25 | Cruise speed during homing |
@@ -104,7 +104,7 @@ RC servo pulse defaults are **500–2500 µs** (modern digital, ~1.25′ over ±
 ### Pin active levels
 
 For every motor/switch/extender pin except UART: `0` = low-active (asserted when GPIO is 0), `1` = high-active (asserted when GPIO is 1).  
-Helper: `config_pin_asserted(gpio_level, active)`. Extender outputs boot **inactive** (opposite of `EXT_n_active`); logical level is not persisted — only polarity is in `mc.ini`.
+Helper: `config_pin_asserted(gpio_level, active)`. Extender outputs boot **inactive** (opposite of `EXT_1_active`…`EXT_4_active`); logical level is not persisted — only polarity is in `mc.ini`.
 
 Removed legacy keys: `step_active_high`, `dir_invert`, `en_active_low`.
 
@@ -123,7 +123,7 @@ On a stable assert: **immediate** stop (PIO FIFO cleared, no decelerate), driver
 
 `board_heartbeat_init()` runs **before** the unlock `\n` wait: it sets up `PIN_LED` and, if `WDT_use=1` (default), arms the RP2040 watchdog (**2 s** timeout). Every protocol/`unlock` poll (~5 ms) calls `board_heartbeat_tick()`, which always feeds the WDT and advances the LED state machine every **3rd** poll (~**67 Hz**, close to 64). A freeze of that path longer than 2 s (including a hung wait-for-`\n`) triggers a reboot.
 
-`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W / Pico 2 W external GP28 (`picow` / `pico2w` — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero / RP2350 Mini external GP29 plus onboard WS2812 on `PIN_NEOPIXEL` GP16.
+`PIN_LED` is board-specific (see [PINS.md](PINS.md)): classic Pico onboard (`LED_BUILTIN` / GP25), Pico W / Pico 2 W external GP28 (`picow` / `pico2w` — CYW43 LED is unsafe under FreeRTOS), RP2040-Zero / RP2350-Zero external GP29 plus onboard WS2812 on `PIN_NEOPIXEL` GP16.
 
 Until the first `\n` (UIC UART or USB CDC) and banner, the GPIO LED uses the **WAIT** pattern. After `board_heartbeat_ready()`, GPIO patterns follow `McState` (same source as verbose/`?`), priority: ERROR → HARD_LIMIT → HOMING → MOVING → DISABLED → IDLE → HOLD/other.
 

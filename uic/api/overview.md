@@ -92,14 +92,14 @@ await mc.wait()
 
 | Method | Notes |
 |--------|-------|
-| `await start(banner_timeout_s=3.0)` | Sends `VH\\n` every 100 ms until welcome `# MC V1 -` or timeout; on timeout prints to USB/REPL and soft-continues without MC; seeds `SS`/`SA` from CG. Banner may include a device `name` and `{motors}+{servos} axis`. |
+| `await start(banner_timeout_s=5.0)` | Sends `VH\\n` every 100 ms until `# MC V1 -`, then requires `VP:1`, then `SV 1` and `CG`. On timeout prints `UNLINKED` and returns `False` (no `SV` / `CG`). JKSlider and B4Slider still start the panel. Banner is `# MC V1 - [name or Slider Motion Controller] - {motors}+{servos} axis`. |
 | `await send(command, arg=None, arg2=None, wait_answer=False, timeout_s=1.0)` | Raw MC line. 2-axis: `arg is None` with `arg2` set sends skip `_` for axis 1. 1-axis ignores `arg2` and never emits `_`. With `wait_answer` returns the raw `TAG:` payload string (spaces kept). Pass `wait_answer` as a **keyword** — a 3rd positional is `arg2`, not `wait_answer`. |
 | `await query(command, arg=None, arg2=None, timeout_s=1.0)` | `send(..., wait_answer=True)`. `IP` may return `"100 20"` — use `_split_nums(answer)` or `getPosition()` / `getPosition2()` (cache). Do not `float(query("IP"))` in 2-axis mode. |
-| `set_axis_status_callback` | 6-arg: `cb(axis, state, pos, speed, accel, dest)` — `axis` is 1 or 2. Dual lines fire **axis 2 then axis 1**. `UIC_Base.on_axis_status` uses axis 1. `None` unregisters. |
+| `set_axis_status_callback` | 6-arg: `cb(axis, state, pos, speed, accel, dest)`. One call per packed channel, **highest axis first**, then down to axis 1. `UIC_Base.on_axis_status` uses axis 1. `None` unregisters. |
 | `set_error_callback` / `set_answer_callback` | Assignable hooks from the RX task (composition) |
 | `moveTo` / `moveBy` / `move` / `home` / `stop` / `halt` / `wait` | Map to MC motion commands; getters prefer cached `#` status |
 
-Verbose **parse** splits on ` | ` (each side is the 1-axis schema). A line with ` | ` is dual even before `fetchConfig`. `set_axis_status_callback` fires once per group (axis 2 first, then axis 1).
+Verbose **parse** splits on ` | ` (each side is the 1-axis schema). A line with ` | ` is multi-axis even before `fetchConfig`. `set_axis_status_callback` fires once per group, highest axis first.
 
 `setPosition(mm, mm2=None)` sends `SP` (redefine reported pose; idle only). Omitted / `0` is “here is zero.”
 
@@ -139,7 +139,7 @@ Local OLED, RGB/NeoPixel, camera shutter, and WDT on the UIC. **Not** a subclass
 - Register `mc.set_axis_status_callback(ui.on_axis_status)` so verbose MC `#…` lines refresh OLED/LED (axis 1).
 - `await ui.start()` starts the UI loop (LED / camera / WDT).
 - App may call `ui.set_soft_limits(...)` and `ui.set_commanded(speed=..., accel=...)` so idle OLED Spd/Acc and soft-limit LED warn stay in sync.
-- `PIN_CTRL_CAMERA` defaults to GP22 (skipped only if it equals UART TX/RX).
+- `PIN_CTRL_CAMERA` defaults to **None**. Shutter pulses are SliderMC `CT` (`cameraTrigger`). Do not wire a shutter on the panel board.
 - See [architecture/overview.md](../../architecture/overview.md) for UIC ↔ SliderMC split.
 
 ```python
@@ -277,19 +277,13 @@ await mc.wait()
 - `cameraTrigger()` / `beep()` are also non-blocking and do not stop motion.
 ### DRV_ERROR input pin
 
-| Config | Meaning |
-|--------|---------|
-| `PIN_DRV_ERROR` | GPIO for driver alarm / stall / E-stop interlock |
-| `DRV_ERROR_ACTIVE_HIGH` | `True` = active high, `False` = active low |
-| `DRV_ERROR_PULL` | `1` pull-up, `0` pull-down |
+This input is on **SliderMC**, not the UIC. Pico `PIN_DRV_ERROR_1` is GP12; Zero is GP9. Polarity is `DRV_ERROR_1_active` (`0` = low-active, the default).
 
-When `DRV_ERROR` becomes active:
+When the pin asserts:
 
-1. Same immediate halt path as `halt()` / `ME`.
-2. After standstill, the driver is **disabled** (`enable(False)`).
-3. While `DRV_ERROR` remains active, `moveTo` / `moveBy` / `move` / `home` / `enable(True)` are ignored.
-
-Release `DRV_ERROR` to allow motion again (re-enable explicitly or via a move that calls `enable(True)`).
+1. Immediate halt (same urgency as `ME`), driver enable off.
+2. While it stays asserted, motion commands are rejected with `!E:emo active`. Queries, `VH`, `CS`/`CG`, `EO`, `EI`, `BE`, and `CT` still work.
+3. When the pin releases, the error clears and enable stays off until `SE 1` / `enable(True)`.
 
 ### Watchdog + onboard LED heartbeat
 
@@ -645,17 +639,17 @@ Copy [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/mai
 
 | Signal | Board | Purpose |
 |--------|-------|---------|
-| UART TX/RX GP16/17 | UIC + MC | 115200 baud link |
-| `CTRL_CAMERA` | UIC | Shutter / intervalometer (`PIN_CTRL_CAMERA`, default GP22) |
-| `LED_R` / `LED_G` / `LED_B` | UIC | RGB status |
-| `NEOPIXEL` | UIC | Optional WS2812 |
-| `DSP_I2C_SDA` / `DSP_I2C_SCL` | UIC | Optional OLED |
+| UART TX/RX | UIC + MC | 115200 baud. Pico GP16/17. Zero GP12/13. Cross TX to RX. |
+| `CTRL_CAMERA` | MC | Shutter via `CT`. UIC `PIN_CTRL_CAMERA` is None. Pico GP22 / Zero GP25. |
+| `LED_R` / `LED_G` / `LED_B` | UIC | RGB status (Pico GP2/3/4) |
+| `NEOPIXEL` | UIC | Optional WS2812 (`PIN_NEOPIXEL`, default off) |
+| `DSP_I2C_SDA` / `DSP_I2C_SCL` | UIC | Optional OLED (Pico GP0/1) |
 | `POT_SPEED` / `POT_ACCEL` / `POT_JOYSTICK` | UIC | Panel pots |
 | Onboard LED | UIC | 1 Hz watchdog heartbeat |
-| `DRV_STEP` / `DRV_DIR` / `DRV_EN` | MC | STEP/DIR/EN (GP18/19/20) |
-| `SW_LIMIT_L` / `SW_LIMIT_R` | MC | Hard limits / home reference (Pico GP26/27) |
-| `DRV_ERROR` | MC | Driver alarm / E-stop / stall-home (GP21) |
-| `EXT_0`…`EXT_3` | MC | General-purpose outputs |
+| `DRV_STEP_1` / `DRV_DIR_1` / `DRV_ENABLE` | MC | Pico GP0 / GP1 / GP15. Zero GP1 / GP2 / GP0. |
+| `SW_LIMIT_L_1` / `SW_LIMIT_R_1` | MC | Hard limits / home reference. Pico GP2/GP3. Zero GP3/GP4. Off until `SW_LIMIT_*_use=1`. |
+| `DRV_ERROR_1` | MC | Driver alarm / E-stop / stall-home. Pico GP12. Zero GP9. |
+| `EXT_1`…`EXT_4` | MC | General-purpose outputs (`EO1`…`EO4`) |
 
 Full MC map: [PINS.md](../../mc/pins.md).
 
@@ -666,6 +660,6 @@ Full MC map: [PINS.md](../../mc/pins.md).
 | Condition | Behaviour |
 |-----------|-----------|
 | `setPosition` while moving / homing / path | MC `!E:busy` |
-| Target outside soft limits | Clamped silently |
-| `move` / `moveTo` into active hard limit | Ignored (out of switch allowed) |
+| Target outside the working window | MC `!E:soft` (not clipped) |
+| `move` / `moveTo` into an active hard limit | MC `!E:hard` (motion away from the switch is allowed) |
 | Homing switch never hit | Stops after a travel-based step budget |

@@ -31,7 +31,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Set Accel | **`SA`**`[<a> [d]]` | `—` | Peak accel [, decel] mm/s² (≤ max_accel_1). One value sets both ramps; two split start/stop. No skip _. Bare reloads init_accel into both; live on next fill (incl. MJ). Dual MT: same ratio scaling as SS. |
 | Set Enable | **`SE`**`[0\|1]` | `—` | Driver enable 0\|1; bare toggles; required before motion; off = hard stop. SE 0 also stops servo PWM (limp). |
 | Set Terminal | **`ST`**`[0\|1]` | `—` | Terminal Mode 0\|1; bare toggles; local echo + UART sniff to USB (expert). |
-| Set Verbose | **`SV`**`[0\|1]` | `—` | Verbose #… push 0\|1; bare toggles; ~3 Hz (rate via verbose_rate_hz). |
+| Set Verbose | **`SV`**`[0\|1]` | `—` | Verbose #… push 0\|1; bare toggles; default 10 Hz while moving (verbose_rate_hz). Idle is change-triggered plus a 1 s heartbeat. |
 | Set Debug | **`SD`**`[0..5]` | `—` | USB-only debug level 0..5; bare restores default; never on UIC UART. |
 | Set Left | **`SL`**`[<axv>]` | `—` | Session soft min (working window); bare→MOTOR_N_min/SERVO envelope; none clears (→envelope if set); skip _; !E:limit past envelope. |
 | Set Right | **`SR`**`[<axv>]` | `—` | Session soft max; bare→MOTOR_N_max/SERVO envelope; none clears; skip _; !E:limit if left>right. |
@@ -72,8 +72,6 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
 | Move To | **`MT`**`<axv> (absolute)` | `—` | Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip). |
-| Move Duration | **`MD`**`<ms> <axv>` | `—` | Same targets as MT. Arrive in ms (1..60000). Cruise is distance/time. Does not change SS. Too fast = !E:speed. |
-| Move For | **`MF`**`<ms> <ramp_ms> <axv>` | `—` | Same targets as MD. Each ramp lasts ramp_ms. 2*ramp_ms is less than ms. Too fast = !E:speed. |
 | Move By | **`MB`**`<axv> (delta) …` | `—` | Relative move; same skip/named XYZABC rules as MT. |
 | Move Joy | **`MJ`**`<pct> …` | `—` | Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release. |
 | Move Home | **`MH`**`[1\|2\|3]` | `—` | Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/ME. |
@@ -105,7 +103,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
-| Ext Out | **`EO`**`0..3 [0\|1]` | `—` | Ext out n logical 0\|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected. |
+| Ext Out | **`EO`**`1..4 [0\|1]` | `—` | Ext out n logical 0\|1; bare EO1 toggles; glued EO11≡EO1 1; OK during EMO. EO5+ rejected. |
 
 ## Special
 
@@ -149,5 +147,5 @@ Executed immediately without \n
 - Path mode (`PG`): most move/session cmds → `!E:busy`; allowed: `MS`/`ME`/`RB`/`PD`/`PN`/`I*`/`G*`/`V*`/`IG`/`HL`/`?`/`CG`/`BE`/`CT`.
 - `MJ` / Move Joy: signed % of `SS`; skip unchanged values; `SS`/`SA` live in joy-mode. Hold-to-jog: `SS` then `MJ ±100`, `MS` on release. See [motion-joy.md](../mc/motion-joy.md).
 - Skip token `_` only (`MT`/`MB`/`PD`/`SL`/`SR`). Named `X`/`Y`/`Z`/`A`/`B`/`C` is an alternative (not mixed with positional). `SL`/`SR` `none` clears a side (effective = envelope when set). See [working-window.md](../mc/working-window.md).
-- Envelopes / units: `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`, `steps_per_unit_N`, stored `motor_N_unit` / `servo_N_unit`, synthesized read-only `axis_N_unit`. Servo pulse `SERVO_N_min_pulse`/`max_pulse` (default 500–2500 µs; analog 1000–2000); `SERVO_N_swap` reverses sense. `CS axis`, `CS axis_N_unit`, and `CS slider_*` are rejected.
+- Envelopes / units: `MOTOR_N_min`/`MOTOR_N_max`, `SERVO_N_min`/`SERVO_N_max`, synthesized `axis_min_N`, `steps_per_unit_N`, `unit_name`. Servo pulse `SERVO_N_min_pulse`/`max_pulse` (default 500–2500 µs; analog 1000–2000); `SERVO_N_swap` reverses sense. `CS axis` and `CS slider_*` are rejected.
 - Breaking wire (`ME`, `?` help, `#` status only, `/` comments, `CT`) does **not** bump `VP` — still `VP:1`.

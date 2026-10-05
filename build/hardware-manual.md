@@ -69,13 +69,13 @@ JKSlider / Slider talk **STEP + DIR** (and typically **EN**). The motor behind t
 **Driver interface (what Pico sees)**
 
 ```
-  Pico GP18  ---- STEP ---->  driver PUL / STEP
-  Pico GP19  ---- DIR  ---->  driver DIR
-  Pico GP20  ---- EN   ---->  driver ENA (often active-low)
-  Pico GND   --------------  driver GND  (common ground required)
+  SliderMC Pico GP0   ---- STEP ---->  driver PUL / STEP
+  SliderMC Pico GP1   ---- DIR  ---->  driver DIR
+  SliderMC Pico GP15  ---- EN   ---->  driver ENA (often active-low)
+  SliderMC GND        --------------  driver GND  (common ground required)
 ```
 
-Match `EN_ACTIVE_LOW`, `DIR_POSITIVE_HIGH`, and logic level (3.3 V Pico vs 5 V tolerant inputs). Motor power is **never** taken from the Pico’s 3V3 — only signal ground is shared.
+Zero motor 1 uses GP1 / GP2 / GP0 for STEP / DIR / EN. Match `DRV_EN_1_active` (usually `0`) and `DRV_DIR_1_active`, and logic level (3.3 V vs 5 V tolerant inputs). Motor power is **never** taken from the controller’s 3V3 — only signal ground is shared. Full map: [pins.md](../mc/pins.md).
 
 **Comparison (rule of thumb)**
 

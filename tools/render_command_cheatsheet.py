@@ -73,7 +73,7 @@ GROUPS = [
                 "Set Verbose",
                 "SV [0|1]",
                 SILENT,
-                "Verbose #… push 0|1; bare toggles; ~3 Hz (rate via verbose_rate_hz).",
+                "Verbose #… push 0|1; bare toggles; default 10 Hz while moving (verbose_rate_hz). Idle is change-triggered plus a 1 s heartbeat.",
             ),
             (
                 "SD",
@@ -323,9 +323,9 @@ GROUPS = [
             (
                 "EO",
                 "Ext Out",
-                "EO0..3 [0|1]",
+                "EO1..4 [0|1]",
                 SILENT,
-                "Ext out n logical 0|1; bare EO0 toggles; glued EO01≡EO0 1; OK during EMO. EO4+ rejected.",
+                "Ext out n logical 0|1; bare EO1 toggles; glued EO11≡EO1 1; OK during EMO. EO5+ rejected.",
             ),
         ],
     ),

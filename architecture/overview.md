@@ -61,7 +61,7 @@ What may attach to each board (same ownership as the overview diagram):
 - Hard limit switch(es) (`SW_LIMIT_*`) — also the homing reference (`home_mode_N` 1/2). There is **no** separate home-switch pin
 - Camera shutter (`PIN_CAMERA_CTRL` / `CT`)
 - Optional stall-home via `DRV_ERROR` (`home_mode_N` 3/4)
-- Ext outputs (`EXT_0`…`EXT_3`); optional piezo (`PIN_BUZZER` / `BE`)
+- Ext outputs (`EXT_1`…`EXT_4`, commands `EO1`…`EO4`); optional piezo (`PIN_BUZZER` / `BE`)
 - `DRV_ERROR` / E-stop interlock
 - USB debug (host PC)
 - UART to UIC
@@ -112,7 +112,7 @@ UIC API: [overview.md](../uic/api/overview.md). MC protocol / build: [protocol.m
 Recommended order:
 
 1. Flash and test **SliderMC** (USB serial / status)
-2. Wire **UART** (GP16/17 both sides, shared GND)
+2. Wire **UART** crossed (each board's TX to the other board's RX) and share GND. Pico TX/RX are GP16/GP17. Zero TX/RX are GP12/GP13. A Pico can talk to a Zero when those pins are crossed.
 3. Flash the **UIC** (MicroPython + project files)
 4. Run the panel (`JKSlider` / examples)
 
@@ -125,20 +125,22 @@ Optional USB debug to both Picos (see overview diagram). UIC uses the MicroPytho
 
 ## UIC platform path
 
-- **Shipping / preferred:** Pico (or Pico W) + MicroPython `JKSlider` / `MC_Client` / `UIC_Base`. Compact **RP2040-Zero** (same GPIOs) for smaller designs — matching MicroPython UF2; project pinouts remain the Pico reference.
+- **Shipping / preferred:** Pico (or Pico W) + MicroPython `JKSlider` / `MC_Client` / `UIC_Base`. A compact **RP2040-Zero** needs the Zero overlay in `SliderPins.example.py` (`RP2040_ZERO_*`): UART is GP12/13, not the Pico GP16/17 map. Pico pinouts stay the default reference.
 - **Forks welcome:** other MCU / SBC + any language or framework that implements a SliderMC UART client. Those are not first-class ports in this repo unless contributed later.
 
 ## Interconnect and housing
 
 ### Crossed UART
 
-Both Picos use **GP16 = UART TX** and **GP17 = UART RX**. Board-to-board wiring is **crossed**:
+On a **Pico** (UIC or MC), **GP16 = UART TX** and **GP17 = UART RX**. On a **Waveshare Zero** (UIC overlay or MC env `rp2040zero` / `rp2350zero`), TX/RX are **GP12 / GP13**. Cross each board's TX to the other board's RX. A Pico UIC can drive a Zero MC (and the reverse) when those pins are crossed:
 
-| From | To |
-|------|-----|
-| `UIC_TX` (GP16) | `MC_RX` (GP17) |
-| `UIC_RX` (GP17) | `MC_TX` (GP16) |
-| UIC GND | MC GND |
+| From | To (Pico MC) | To (Zero MC) |
+|------|----------------|--------------|
+| UIC TX | MC GP17 | MC GP13 |
+| UIC RX | MC GP16 | MC GP12 |
+| UIC GND | MC GND | MC GND |
+
+Pico UIC TX/RX are GP16/GP17. Zero UIC TX/RX are GP12/GP13 (`RP2040_ZERO_MC_config` in `SliderPins.example.py`).
 
 Default baud: **115 200**. Changeable in SliderMC source (`UART_BAUD` in `include/pins.h`); the UIC client (`MC_Client` / `MC_config.UART_BAUD`) must use the same rate.
 
@@ -147,7 +149,7 @@ Default baud: **115 200**. Changeable in SliderMC source (`UART_BAUD` in `incl
 
 UART is **3.3 V** logic. Do **not** connect it directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
 
-**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# …` banner (bytes before that LF are discarded on both). The UIC retries **`VH\n`** on UART every 100 ms for up to 3 s; on timeout it prints an error and soft-continues. For USB-only bench, press Enter in the MC serial monitor. Details: [Technical Manual — Link](../contract/link-and-handshake.md#communication-mc--uic) and [PROTOCOL.md](../contract/protocol.md#startup-banner).
+**Session start:** the MC waits for a `\n` on the **UIC UART or USB CDC** before sending the welcome `# MC V1 - …` banner (bytes before that LF are discarded on both). A later empty line does not reprint it; `VH` does. `MC_Client.start()` retries **`VH\n`** every 100 ms for **5 s** by default. On timeout it prints `UNLINKED` and returns `False` (no `SV`). The panel UI still starts. For USB-only bench, press Enter once in the MC serial monitor. Details: [link-and-handshake.md](../contract/link-and-handshake.md#communication-mc--uic) and [protocol.md](../contract/protocol.md#startup-banner).
 
 ### Power / VSYS
 
@@ -171,7 +173,7 @@ Hardware `DRV_ERROR` and hard limits are handled on the **MC**. The UIC is infor
 
 ## Failure modes
 
-- **UIC reboot or hang:** the MC keeps running its own firmware. In-flight motion continues until the MC finishes the move, hits a limit / `DRV_ERROR`, or receives a new command after the UIC recovers. The UIC must re-establish the UART session via `start()` (sends `VH\n`, waits for the welcome banner). After the MC protocol loop is running, `VH` reprints the banner so a UIC-only reboot can re-sync. If no banner arrives within 3 s, `start()` prints an error and soft-continues without motion.
+- **UIC reboot or hang:** the MC keeps running its own firmware. In-flight motion continues until the MC finishes the move, hits a limit / `DRV_ERROR`, or receives a new command after the UIC recovers. The UIC must re-establish the UART session via `start()` (sends `VH\n`, waits for the welcome banner). After the MC protocol loop is running, `VH` reprints the banner so a UIC-only reboot can re-sync. If no banner arrives within 5 s, `start()` prints `UNLINKED`, returns `False`, and does not send `SV`. The panel UI still starts; motion commands do not work until the handshake succeeds.
 - **UART disconnect:** the UIC can no longer send commands or reliably read status; `DRV_ERROR` and hard limits still act **locally on the MC**.
 - **`DRV_ERROR` / hard limits:** handled on the MC regardless of UIC health. While the link is up and verbose status is enabled (`SV 1`), the UIC learns EMO / hard-limit state from `#…` status lines (not a local EMO pin).
 - **No MC / banner timeout:** panel firmware can still start (OLED/LED); motion commands will not work until the link and handshake succeed.
@@ -224,7 +226,7 @@ Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../mc/pins.md`.
 - ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
 - **Startup:** `VH\n` on UIC UART (or Enter/LF on USB) unlocks the MC; MC replies with welcome `# MC V1 - …` banner; UIC then sends `SV 1`. `VH` reprints the banner after either side reboots.
 - Commands: `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
-- Verbose status (~3 Hz when `SV 1`): `#<state> <pos> [<speed> <accel> [<target>]]` — extra packed channels append ` | ` groups (`#I p1 | p2`; empty `||` = idle 0)
+- Verbose status when `SV 1`: `#<state> <pos> [<speed> <accel> [<target>]]` — extra packed channels append ` | ` groups (`#I p1 | p2`; empty `||` = idle 0). Default **10 Hz** while moving (`verbose_rate_hz`). Idle/disabled is change-triggered plus a 1 s heartbeat.
 - Errors: `!E:<code> <text>`
 
 Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/api/overview.md).
@@ -233,6 +235,6 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 
 ## Camera pin
 
-Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. EMO / `PIN_DRV_ERROR` stays on **GP21 of the MC**.
+Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. `PIN_DRV_ERROR_1` is Pico **GP12** / Zero **GP9**. Pico GP21 is `EXT_1`; Zero GP21 is `SERVO_1`.
 
 With **DF_DMC_2_MC**, Dragonframe camera shutter can also pulse **DMC GP9** (OC + optional 2N7000 to 5 V) and still send MC `CT`. Wiring: [DF_DMC_2_MC pins](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).

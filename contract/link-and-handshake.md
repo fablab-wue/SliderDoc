@@ -21,13 +21,13 @@ Wire and bring up the UART link before expecting motion from the panel. Full arc
 
 ### Wiring
 
-**Crossed UART** — each Pico uses GP16 = TX and GP17 = RX; the cables **cross**:
+**Crossed UART** — Pico TX/RX are GP16/GP17. Waveshare Zero TX/RX are GP12/GP13 (MC env `rp2040zero` / `rp2350zero`, or the UIC `RP2040_ZERO_*` overlay). Cross each board's TX to the other board's RX:
 
-| From | To |
-|------|-----|
-| UIC GP16 (`UART_TX`) | MC GP17 (`UART_RX`) |
-| UIC GP17 (`UART_RX`) | MC GP16 (`UART_TX`) |
-| UIC GND | MC GND |
+| From | Pico MC | Zero MC |
+|------|---------|---------|
+| UIC TX (Pico GP16, or Zero GP12) | GP17 | GP13 |
+| UIC RX (Pico GP17, or Zero GP13) | GP16 | GP12 |
+| UIC GND | GND | GND |
 
 Default baud **115 200**. To change it, edit SliderMC `UART_BAUD` in `include/pins.h` (see [PINS.md](../mc/pins.md)) and match the UIC (`MC_Client` UART). UART is **3.3 V** — do not connect directly to a **5 V** MCU (e.g. classic Arduino) without level shifting.
 
@@ -45,8 +45,8 @@ The split lets the **UIC** be a **handheld wired remote** while the **MC** sits 
 |-----------|------|
 | **5 V** | Logic supply to the far board (usually UIC powered from the MC end) |
 | **GND** | Common ground (required) |
-| **TX** | UIC GP16 → MC GP17 (crossed) |
-| **RX** | UIC GP17 → MC GP16 (crossed) |
+| **TX** | UIC TX → MC RX (Pico GP16→GP17, or Zero GP12→GP13) |
+| **RX** | UIC RX → MC TX (Pico GP17→GP16, or Zero GP13→GP12) |
 
 **Typical power layout**
 
@@ -65,12 +65,12 @@ Architecture overview: [../architecture/overview.md](../architecture/overview.md
 The MC does **not** send its welcome banner until it sees a `\n` (LF) on the **UIC UART or USB CDC** (whichever arrives first). Bytes before that LF are discarded on both ports. Production panels unlock over UART: the UIC (`MC_Client.start()`) sends **`VH\n`** (the LF also unlocks a waiting MC) and waits for a line starting with `# MC V1 -`, for example:
 
 ```text
-# Slider Motion Controller V1.0 ['$' for help]
+# MC V1 - Slider Motion Controller - 1+0 axis ['?' for help]
 ```
 
-When config `axis` is 2 or 3, the banner includes the literal suffix `- N Axis`. When config `name` is set, the device name is prefixed (`# <name> - Slider Motion Controller V…`). Hosts should accept any `# ` ready line; see [protocol.md — Startup banner](protocol.md#startup-banner).
+The axis suffix is always present (`{motors}+{servos} axis`). When config `name` is set, that name replaces `Slider Motion Controller`. Hosts should match the `# MC V1 -` prefix; see [protocol.md — Startup banner](protocol.md#startup-banner).
 
-If no banner arrives within **100 ms**, the UIC sends another `VH\n`. After **3 s** without a banner it prints an error to the USB/REPL shell and **continues** (panel UI can start without motion). On success (or soft-continue) it sends `SV 1` for verbose status. After the protocol loop is running, `VH` reprints the same banner so a UIC-only reboot can re-sync without another MC power cycle.
+If no banner arrives within **100 ms**, the UIC sends another `VH\n`. The default wait is **5 s**. On timeout `start()` prints `UNLINKED` and returns `False`. It does **not** send `SV`. JKSlider and B4Slider still start the panel UI. On success it requires `VP:1`, then sends `SV 1` and reads config. After the protocol loop is running, `VH` reprints the banner. An empty line does not. A UIC-only reboot can re-sync with `VH` and does not need an MC power cycle.
 
 **USB-only bench (no UIC):** open the MC USB serial monitor and press Enter (LF). That unlocks the session and prints the banner so you can type ASCII commands without UART wiring. See [protocol.md — Startup banner](protocol.md#startup-banner).
 
@@ -84,18 +84,20 @@ sequenceDiagram
   Note over UIC: wait max 100ms for banner
   alt no banner yet
     UIC->>MC: VH_LF
-    Note over UIC: retry until 3s total
+    Note over UIC: retry until 5s total
   end
   alt banner received
     MC->>UIC: "# MC V1 - …\\n"
-  else timeout 3s
-    Note over UIC: print error on USB/REPL
-    Note over UIC: soft-continue without MC
+    UIC->>MC: "VP\\n"
+    MC->>UIC: "VP:1\\n"
+    UIC->>MC: "SV 1\\n"
+  else timeout 5s
+    Note over UIC: print UNLINKED, return False
+    Note over UIC: panel UI still starts; no SV
   end
-  UIC->>MC: "SV 1\\n"
 ```
 
-After a UIC-only reboot, the MC does **not** re-send the banner unless the MC also resets — power-cycle both boards or reset the MC when re-establishing the link.
+After a UIC-only reboot, send `VH` again. The MC reprints the banner without a power cycle. An empty line does not.
 
 ## DF_DMC_2_MC (Dragonframe) as a UART client
 

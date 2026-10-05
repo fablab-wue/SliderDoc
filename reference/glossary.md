@@ -21,11 +21,11 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **servos** | RC PWM count | Config `servos` = `0..3`. Packed after motors (`A`/`B`/`C`). PWM ~1.25′ over ±135° at 500–2500 µs. |
 | **axis** | Packed channel count | Read-only sum `motors+servos` (`IA` / `CG axis`). **`CS axis` is rejected.** UIC: `MC_Client.axis_count`. See [dual-movement.md](../mc/dual-movement.md) and [protocol.md](../contract/protocol.md#live-axis-count-axis). |
 | **motor_N_unit** | User-unit label | Stored SliderMC config (`CS motor_N_unit`, default `mm`). Servos use `servo_N_unit` (default `deg`). Packed `axis_N_unit` is generated from those keys; **`CS axis_N_unit` is rejected.** UIC readout is `MC_Client.axis_unit`. |
-| **DIR** | Direction | Digital STEP/DIR line that selects motor travel sense (forward vs reverse). SliderMC `PIN_DRV_DIR` (GP19); polarity via `DRV_DIR_1_active` / `CS`. |
-| **DIP** | Dual in-line package | Small switch banks on many stepper driver boards. Often used to set microstepping; those straps must match `MICROSTEPS` on SliderMC. |
-| **DRV_ERROR** | Driver error / E-stop interlock | Hardware stop input (`PIN_DRV_ERROR`, SliderMC GP21). When active, motion halts immediately, the driver is disabled, and further moves are blocked until the input clears. Use for a closed-loop driver’s alarm/OC output and/or a panel emergency-stop button. Not the same as the panel **STOP** key. |
+| **DIR** | Direction | Digital STEP/DIR line that selects motor travel sense (forward vs reverse). SliderMC `PIN_DRV_DIR_1` (Pico GP1, Zero GP2); polarity via `DRV_DIR_1_active` / `CS`. |
+| **DIP** | Dual in-line package | Small switch banks on many stepper driver boards. Often used to set microstepping; those straps must match SliderMC `steps_per_unit_1`. |
+| **DRV_ERROR** | Driver error / E-stop interlock | Hardware stop input (`PIN_DRV_ERROR_1`: Pico GP12, Zero GP9). When active, motion halts immediately, the driver is disabled, and further moves are blocked until the input clears. Use for a closed-loop driver’s alarm/OC output and/or a panel emergency-stop button. Not the same as the panel **STOP** key. |
 | **DSP** | Display | Optional 128×64 OLED over I2C (`PIN_DSP_I2C_SDA` / `PIN_DSP_I2C_SCL`). Enable with `DSP_ENABLED`; chip via `DSP_DRIVER`. |
-| **EN** | Enable | Driver enable pin on SliderMC (`PIN_DRV_EN`, GP20). Most boards are active-low (`DRV_EN_1_active=0`): the motor is powered when the pin is low. |
+| **EN** | Enable | Shared driver enable on SliderMC (`PIN_DRV_ENABLE`: Pico GP15, Zero GP0). Most boards are active-low (`DRV_EN_1_active=0`): the motor is powered when the pin is low. |
 | **ETA** | Estimated time of arrival | Predicted travel time from current SPEED and ACCEL (sine-ramp model). Shown on the OLED at a mark (times to the other Pos) or during goto (elapsed + remaining). Operators dial SPEED until the ETA matches a planned shot length. |
 | **FPS** | Frames per second | Playback frame rate for MSM timelapse math (`period ≈ TL ÷ FPS`). Set by `JKS_CAMERA_FPS` or cycled with OPTION+STOP in **MSM** when TL ≠ 1. |
 | **GPIO** | General-purpose input/output | Pico pins used as digital I/O or ADC (buttons, DRV_STEP/DIR, DRV_ERROR, LED, etc.). Numbered as GPn in the Technical Manual pinouts. |
@@ -49,7 +49,7 @@ Terms used in JKSlider manuals, config, and the MC_Client API.
 | **RGB** | Red–green–blue | Three-colour status LED (or the equivalent NeoPixel colours) used for idle, motion, delay, TL, limits, and DRV_ERROR. |
 | **SPI** | Serial Peripheral Interface | Multi-wire bus used to configure some TMC drivers (current, microsteps). JKSlider motion still uses STEP/DIR after the driver is set up. |
 | **SliderPins** | HW profile overlay | One gitignored file per slider build (`SliderPins.py` from the example). Overrides any key in `MC_config` / `UIC_config` / `JKSliderConfig`. Edit **that file only**. |
-| **STEP** / **DRV_STEP** | Step pulse | One pulse advances the motor by one microstep. SliderMC `PIN_DRV_STEP` (GP18); rate and ramps come from the SliderMC planner. |
+| **STEP** / **DRV_STEP** | Step pulse | One pulse advances the motor by one microstep. SliderMC `PIN_DRV_STEP_1` (Pico GP0, Zero GP1); rate and ramps come from the SliderMC planner. |
 | **SP** | SetPosition | SliderMC command: redefine reported pose (no motion). Bare/`SP 0` = here is zero. |
 | **TL** | Timelapse | Panel **TIMELAPSE** divider and yellow **TL** badge. ×1 is video (hold-high while moving / soft-paused); ≠1 selects MSM or Cont (`tl_mode`), toggled with `T`+`D`+`*`. |
 | **TMC** | Trinamic Motor Control | Family of silent / feature-rich stepper drivers (e.g. TMC2208/09, TMC5160) commonly wired as STEP/DIR (+ EN) to the Pico. |

@@ -3,7 +3,7 @@
      width="190mm" height="130mm" viewBox="0 0 380 260"
      role="img" aria-labelledby="title description">
   <title id="title">TMC STEP DIR EN wiring</title>
-  <desc id="description">TMC2208 or TMC2209 style driver with Pico 3V3 to VIO, GP18 STEP, GP19 DIR, GP20 ENN active-low, shared GND, external motor VM, and MS1 MS2 strapped to GND for 8 microsteps.</desc>
+  <desc id="description">TMC2208 or TMC2209 style driver with SliderMC Pico 3V3 to VIO, GP0 STEP, GP1 DIR, GP15 ENN active-low, shared GND, external motor VM, and MS1 MS2 strapped to GND for 8 microsteps.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fbfcfd"/>
@@ -57,13 +57,13 @@
   <text x="12" y="114" font-family="Consolas, Menlo, monospace" font-size="9" fill="#b45309">3V3</text>
   <path d="M 50 110 H 150" fill="none" stroke="#b45309" stroke-width="1.4"/>
 
-  <text x="12" y="134" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP20 ENN</text>
+  <text x="12" y="134" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP15 ENN</text>
   <path d="M 95 130 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
 
-  <text x="12" y="154" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP18 STEP</text>
+  <text x="12" y="154" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP0 STEP</text>
   <path d="M 100 150 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
 
-  <text x="12" y="174" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP19 DIR</text>
+  <text x="12" y="174" font-family="Consolas, Menlo, monospace" font-size="9" fill="#1d4ed8">GP1 DIR</text>
   <path d="M 100 170 H 150" fill="none" stroke="#1d4ed8" stroke-width="1.3"/>
 
   <!-- Right-side nets aligned to MS1/MS2/coil pads -->

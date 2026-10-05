@@ -18,11 +18,13 @@ SliderMC pinout: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/
 
 **Status:** Working (common STEP/DIR pattern; match `steps_per_unit_1` / microsteps to MS straps).
 
-| SliderMC | Driver |
-|----------|--------|
-| GP18 | STEP |
-| GP19 | DIR |
-| GP20 | EN (usually active-low → `DRV_EN_1_active=0`) |
+Pico motor 1. Zero is STEP GP1, DIR GP2, EN GP0 — [pins.md](../mc/pins.md).
+
+| SliderMC Pico | Driver |
+|---------------|--------|
+| GP0 | STEP |
+| GP1 | DIR |
+| GP15 | EN (usually active-low → `DRV_EN_1_active=0`) |
 | GND | GND (share with motor PSU −) |
 | — | VM from motor PSU only |
 
@@ -32,7 +34,7 @@ SliderMC pinout: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/
 
 **Status:** Working (wiring documented).
 
-Typical: SliderMC 3V3 → VIO; GP18/19/20 → STEP/DIR/EN; shared GND; VM from motor PSU. Set StealthChop/SpreadCycle per board straps. MS1/MS2 → GND for **8** microsteps.
+Typical: SliderMC 3V3 → VIO; Pico GP0/GP1/GP15 → STEP/DIR/EN; shared GND; VM from motor PSU. Set StealthChop/SpreadCycle per board straps. MS1/MS2 → GND for **8** microsteps.
 
 ![TMC STEP/DIR wiring](../assets/img/tmc_stepdir_wiring.svg)
 
