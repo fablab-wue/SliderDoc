@@ -235,6 +235,6 @@ Details: [protocol.md](../contract/protocol.md). UIC API: [overview.md](../uic/a
 
 ## Camera pin
 
-Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. `PIN_DRV_ERROR_1` is Pico **GP12** / Zero **GP9**. Pico GP21 is `EXT_1`; Zero GP21 is `SERVO_1`.
+Shutter on the split stack is SliderMC `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP29**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider MSM sends `mc.cameraTrigger` / `CT`. `PIN_DRV_ERROR_1` is Pico **GP12** / Zero **GP9**. Pico GP21 is `EXT_1`; Zero GP21 is `SERVO_3`.
 
 With **DF_DMC_2_MC**, Dragonframe camera shutter can also pulse **DMC GP9** (OC + optional 2N7000 to 5 V) and still send MC `CT`. Wiring: [DF_DMC_2_MC pins](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/pins.md#camera-gp9--2n7000-level-shifter-5-v-and-gpio-protection).

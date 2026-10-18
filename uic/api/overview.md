@@ -640,7 +640,7 @@ Copy [`SliderPins.example.py`](https://github.com/fablab-wue/SliderCtrl/blob/mai
 | Signal | Board | Purpose |
 |--------|-------|---------|
 | UART TX/RX | UIC + MC | 115200 baud. Pico GP16/17. Zero GP12/13. Cross TX to RX. |
-| `CTRL_CAMERA` | MC | Shutter via `CT`. UIC `PIN_CTRL_CAMERA` is None. Pico GP22 / Zero GP25. |
+| `CTRL_CAMERA` | MC | Shutter via `CT`. UIC `PIN_CTRL_CAMERA` is None. Pico GP22 / Zero GP29. |
 | `LED_R` / `LED_G` / `LED_B` | UIC | RGB status (Pico GP2/3/4) |
 | `NEOPIXEL` | UIC | Optional WS2812 (`PIN_NEOPIXEL`, default off) |
 | `DSP_I2C_SDA` / `DSP_I2C_SCL` | UIC | Optional OLED (Pico GP0/1) |

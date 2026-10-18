@@ -16,7 +16,7 @@ Live dumps on the device:
 - `VG` / `VersionGPIO` — machine-readable `PIN_*=GPIO` lines
 - `IG` / `IsGPIO` — ASCII table of GP number, name, and brief description (≤80 columns)
 
-Extra-axis rows (`DRV_*2` / `SW_*2`, `DRV_*3` / `SW_*3`) appear in `IG` / `VG` **only when** that motor is live (`CS motors 2` or `3`). Servo rows appear when `servos>=1`. `PIN_CAMERA_CTRL` is always listed (`CT` pulse / OC listen).
+Extra-axis rows (`DRV_*2` / `SW_*2`, `DRV_*3` / `SW_*3`, `DRV_*4`) appear in `IG` / `VG` **only when** that motor is live (`CS motors 2`, `3`, or `4`). Servo rows appear when `servos>=1`. `PIN_CAMERA_CTRL` is always listed (`CT` pulse / OC listen).
 
 ---
 
@@ -93,7 +93,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`MC_RP2040z
 | `PIN_DRV_DIR_2` | 6 | Motor 2 DIR |
 | `PIN_SW_LIMIT_L_2` | 7 | Motor 2 hard limit left |
 | `PIN_SW_LIMIT_R_2` | 8 | Motor 2 hard limit right |
-| `PIN_DRV_ERROR_1` | 9 | Motor 1 fault / E-stop |
+| `PIN_DRV_ERROR_1` | 9 | Motor 1 fault / E-stop (always polled) |
 | `PIN_DRV_ERROR_2` | 10 | Motor 2 fault / E-stop |
 | `PIN_DRV_ERROR_3` | 11 | Motor 3 fault / E-stop |
 | `PIN_UART_TX` | 12 | UART TX to UIC |
@@ -103,18 +103,18 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`MC_RP2040z
 | `PIN_NEOPIXEL` | 16 | Onboard WS2812 status (JKSlider-style colours; pio1) |
 | `PIN_EXT_1` | 17 | Extender `EO1` |
 | `PIN_EXT_2` | 18 | Extender `EO2` |
-| `PIN_EXT_3` | 19 | Extender `EO3` |
-| `PIN_EXT_4` | 20 | Extender `EO4` |
-| `PIN_SERVO_1` | 21 | RC servo 1 PWM (100 Hz, wrap 65535; ~1.25′ / 0.021° per count over ±135° at 500–2500 µs) |
+| `PIN_DRV_DIR_4` / `PIN_EXT_3` | 19 | Motor 4 DIR when `motors>=4` (steals EXT_3) |
+| `PIN_DRV_STEP_4` / `PIN_EXT_4` | 20 | Motor 4 STEP when `motors>=4` (steals EXT_4) |
+| `PIN_SERVO_3` | 21 | RC servo 3 PWM |
 | `PIN_SERVO_2` | 22 | RC servo 2 PWM |
-| `PIN_SERVO_3` | 23 | RC servo 3 PWM |
-| `PIN_CAMERA_CTRL` | 25 | Camera OC sink (`CT`) / listen, low-active |
+| `PIN_SERVO_1` | 23 | RC servo 1 PWM (100 Hz, wrap 65535; ~1.25′ / 0.021° per count over ±135° at 500–2500 µs) |
+| `PIN_LED` | 25 | External status / heartbeat LED |
 | `PIN_DRV_DIR_3` | 26 | Motor 3 DIR |
 | `PIN_DRV_STEP_3` | 27 | Motor 3 STEP (polarity follows motor 2) |
 | `PIN_BUZZER` | 28 | Optional piezo (`BE`; `BUZZER_use`) |
-| `PIN_LED` | 29 | External status / heartbeat LED |
+| `PIN_CAMERA_CTRL` | 29 | Camera OC sink (`CT`) / listen, low-active |
 
-`motors` 1\|2\|3 and `servos` 0..3 are supported on Zero / Mini.
+`motors` 1\|2\|3\|4 and `servos` 0..3 are supported on Zero / RP2350-Zero.
 
 ---
 
@@ -130,7 +130,7 @@ Optional **buzzer** is gated by `BUZZER_use` (default off); `BE [<ms>]` pulses `
 
 ### `PIN_CAMERA_CTRL` (low-active open-collector)
 
-The UIC camera pad is unused (Pico GP22 / Zero GP29 stay **free** on JKS and B4S pinouts). Camera is **MC-only**: Pico **GP22** / Zero **GP25**. Rest = `INPUT_PULLUP` (released). `CT` / `CT [ms]` sinks **LOW** (pad **12 mA**), then releases. Bare `CT` is 100 ms (clamp 1..60000).
+The UIC camera pad is unused (Pico GP22 / Zero GP29 stay **free** on JKS and B4S pinouts). Camera is **MC-only**: Pico **GP22** / Zero **GP29**. Rest = `INPUT_PULLUP` (released). `CT` / `CT [ms]` sinks **LOW** (pad **12 mA**), then releases. Bare `CT` is 100 ms (clamp 1..60000).
 
 **Optocoupler (camera remote):** 4-pin e.g. PC817. Drive the IR LED at **≈ 5 mA**. The LED is high-side (inverted vs a sourcing UIC GPIO):
 
@@ -158,7 +158,7 @@ The phototransistor stays **floating vs the Pico** unless that remote is designe
                     S -------- D ------+---- camera logic in
                     |
             PIN_CAMERA_CTRL
-            (Pico GP22 / Zero GP25)
+            (Pico GP22 / Zero GP29)
 
   Pico GND -------------------------------- camera GND
 ```
@@ -180,7 +180,7 @@ Some no-name 2N7000 clones swap S/D — if it does not shift, check the marking 
 
 **External key (momentary only):** non-latching switch from this pin to **GND** (never to 3.3 V, never a toggle that stays down). Falling edge: MC listen → one-shot status **`T`**. A UIC can map that to **stop-motion (MSM)** or **start an A/B move**. If the opto is fitted on the same node, the key also fires the shutter (usual remote). `CT` pulls the same pin: a UIC that treats every `T` as “key” will also see command triggers (duration `T` while `CT` is down when verbose is on). Verbose off → no `#T` push; `#` while low still `#T`.
 
-`PIN_EXT_1`…`4` default to **input + pull-up** (`ED n I`). `ED n O` is push-pull; `ED n T` is open-collector + pull-up. Logical `EO1`…`EO4` set output level when mode is O or T. `EI0`…`EI3` read the pin in any mode. Polarity via `EXT_1_active`…`EXT_4_active`. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). **`EO5`… is rejected.**
+`PIN_EXT_1`…`4` default to **input + pull-up** (`ED n I`). `ED n O` is push-pull; `ED n T` is open-collector + pull-up. Logical `EO1`…`EO4` set output level when mode is O or T. `EI0`…`EI3` read the pin in any mode. Polarity via `EXT_1_active`…`EXT_4_active`. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). On Zero, **GP19/GP20 are motor 4 DIR/STEP when `motors>=4`** (EXT_3/EXT_4 stolen). **`EO5`… is rejected.**
 
 STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motor 3 STEP follows motor 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
 

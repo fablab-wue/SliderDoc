@@ -10,7 +10,7 @@
 
 [← Components index](index.md)
 
-Shutter / intervalometer for timelapse. On the **split stack**, camera is **SliderMC** `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP25**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider Pico GP22 is free; B4Slider Pico GP22 is **AXIS_6**. Zero JKS GP29 is **JOYSTICK_2**. Overview: [ARCHITECTURE.md](../architecture/overview.md) · MC wiring: [pins.md — PIN_CAMERA_CTRL](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
+Shutter / intervalometer for timelapse. On the **split stack**, camera is **SliderMC** `PIN_CAMERA_CTRL` / `CT` (Pico **GP22** / Zero **GP29**). UIC `PIN_CTRL_CAMERA` is **None** — do not wire a shutter on the panel Pico. JKSlider Pico GP22 is free; B4Slider Pico GP22 is **AXIS_6**. Zero JKS GP29 is **JOYSTICK_2**. Overview: [ARCHITECTURE.md](../architecture/overview.md) · MC wiring: [pins.md — PIN_CAMERA_CTRL](../mc/pins.md#pin_camera_ctrl-low-active-open-collector).
 
 ## SliderMC (`PIN_CAMERA_CTRL`)
 
