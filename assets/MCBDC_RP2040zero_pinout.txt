@@ -1,0 +1,42 @@
+Waveshare RP2040-Zero — SliderMC_BDC pinout (USB at top)
+Defaults in SliderMC_BDC include/pins.h (BOARD_RP2040_ZERO)
+
+    function     pad                  pad    function
+                        +---- USB ----+
+  5V             5V     |o           o| GP0    ENC_A_1
+  GND            GND    |o           o| GP1    ENC_B_1
+  3V3            3V3    |o           o| GP2    DRV_A_1
+  CUR_ERR_1      GP29   |o           o| GP3    DRV_B_1
+  CUR_ERR_2      GP28   |o           o| GP4    DRV_C_1
+  SERVO_1        GP27   |o           o| GP5    DRV_D_1
+  SERVO_2        GP26   |o           o| GP6    LIMIT_L_1
+  SERVO_3        GP15   |o           o| GP7    LIMIT_R_1
+  SERVO_4        GP14   |o           o| GP8    free
+                        +-------------+
+                         13 12 11 10 9
+
+Bottom edge (left→right):
+  GP13   UART_RX
+  GP12   UART_TX
+  GP11   LED
+  GP10   BUZZER
+  GP9    CAMERA_CTRL
+
+Bottom-side SMD pads (top→bottom):
+  GND    GND
+  GP25   free
+  GP24   LIMIT_R_2
+  GP23   LIMIT_L_2
+  GP22   DRV_D_2
+  GP21   DRV_C_2
+  GP20   DRV_B_2
+  GP19   DRV_A_2
+  GP18   ENC_B_2
+  GP17   ENC_A_2
+
+Motor 1: ENC GP0/1, DRV_A..D GP2–5, LIMIT GP6/7. GP8 free.
+CUR_ERR_1 GP29, CUR_ERR_2 GP28. UART 115200 baud GP12/13.
+SERVO_1..4 share EXT_4..EXT_1 on GP27, GP26, GP15, GP14.
+Motor 2 underside: ENC GP17/18, DRV_A..D GP19–22, LIMIT GP23/24.
+GP11 LED, GP10 buzzer, GP9 camera. GP16 onboard WS2812. GP25 free.
+A stock header brings out GP0–15 and GP26–29 only. RP2350-Zero reuses this map.

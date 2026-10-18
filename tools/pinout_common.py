@@ -241,8 +241,12 @@ def color_for(label: str, gpio: str, pin_num: int | None = None):
         return C_DRV
     if lab.startswith("UART_"):
         return C_UART
-    if lab.startswith("SW_"):
+    if lab.startswith("SW_") or lab.startswith("LIMIT_"):
         return C_SW
+    if lab.startswith("CUR_ERR"):
+        return C_DRV_ERR
+    if lab.startswith("ENC_A") or lab.startswith("ENC_B"):
+        return C_POT
     if lab.startswith("DBG_"):
         return C_DBG
     if lab.startswith("BTN_"):

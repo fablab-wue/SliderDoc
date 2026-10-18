@@ -1,0 +1,34 @@
+Raspberry Pi Pico — SliderMC_BDC pinout (top view, USB at top)
+Defaults in SliderMC_BDC include/pins.h
+
+        function         pin              pin        function
+                         +--- USB ---+
+  ENC_A_1          GP0      1 |o         o| 40 VBUS     VBUS
+  ENC_B_1          GP1      2 |o         o| 39 VSYS     VSYS
+  GND              GND      3 |o         o| 38 GND      GND
+  DRV_A_1          GP2      4 |o         o| 37 3V3_EN   3V3_EN
+  DRV_B_1          GP3      5 |o         o| 36 3V3      3V3 OUT
+  DRV_C_1          GP4      6 |o         o| 35 ADC_VREF ADC_VREF
+  DRV_D_1          GP5      7 |o         o| 34 GP28     BUZZER
+  GND              GND      8 |o         o| 33 AGND     ADC GND
+  LIMIT_L_1        GP6      9 |o         o| 32 GP27     CUR_ERR_1
+  LIMIT_R_1        GP7     10 |o         o| 31 GP26     CUR_ERR_2
+  ENC_A_2          GP8     11 |o         o| 30 RUN      RUN
+  ENC_B_2          GP9     12 |o         o| 29 GP22     CAMERA_CTRL
+  GND              GND     13 |o         o| 28 GND      GND
+  DRV_A_2          GP10    14 |o         o| 27 GP21     SERVO_1
+  DRV_B_2          GP11    15 |o         o| 26 GP20     SERVO_2
+  DRV_C_2          GP12    16 |o         o| 25 GP19     SERVO_3
+  DRV_D_2          GP13    17 |o         o| 24 GP18     SERVO_4
+  GND              GND     18 |o         o| 23 GND      GND
+  LIMIT_L_2        GP14    19 |o         o| 22 GP17     UART_RX
+  LIMIT_R_2        GP15    20 |o         o| 21 GP16     UART_TX
+                         +-----------+
+
+Legend: motor1 ENC GP0/1, DRV_A..D GP2–5, LIMIT GP6/7.
+Motor2 ENC GP8/9, DRV_A..D GP10–13, LIMIT GP14/15.
+CUR_ERR_1 GP27, CUR_ERR_2 GP26. UART 115200 baud GP16/17.
+SERVO_1..4 share EXT_4..EXT_1 on GP21..GP18. Servo 1 takes EXT_4 first.
+GP22 CAMERA_CTRL. GP28 buzzer. GP25 onboard LED (not on the header).
+Pico motor-1 PWM shares a slice with a servo: DRV_A_1/SERVO_4, DRV_B_1/SERVO_3,
+DRV_C_1/SERVO_2, DRV_D_1/SERVO_1. Pico 2 reuses this header map.

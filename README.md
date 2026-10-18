@@ -2,7 +2,7 @@
 
 ![JKSlider](assets/img/jkslider-hero.png)
 
-Documentation and manuals for an **open DIY motorized camera slider** ecosystem: **UIC** ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) + **MC** ([SliderMC](https://github.com/fablab-wue/SliderMC)) + optional **DMC** ([DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)) + shared UART contract.
+Documentation and manuals for an **open DIY motorized camera slider** ecosystem: **UIC** ([SliderCtrl](https://github.com/fablab-wue/SliderCtrl)) + **MC** ([SliderMC](https://github.com/fablab-wue/SliderMC)) + **BDC** ([SliderMC_BDC](https://github.com/fablab-wue/SliderMC_BDC)) + optional **DMC** ([DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC)) + shared UART contract.
 
 Whether you operate on set, install a panel, build the rail, or extend the firmware — this repo is the single source for architecture, protocol, user manuals, and build guides. **Mechanics and enclosure are yours**; the docs cover control feel, motion firmware, and wiring so your build can behave like a commercial motorized slider on the things that matter for shooting — or as a **construction kit** for custom motorized rigs.
 
@@ -12,6 +12,7 @@ Whether you operate on set, install a panel, build the rail, or extend the firmw
 |------|------|
 | [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) | UI controller — MicroPython panel firmware (JKSlider, B4Slider, libraries) |
 | [SliderMC](https://github.com/fablab-wue/SliderMC) | Motion controller — C++ / FreeRTOS STEP/DIR (optional 2nd axis: typical **linear + pan**, time-synced) |
+| [SliderMC_BDC](https://github.com/fablab-wue/SliderMC_BDC) | Motion controller — C++ / FreeRTOS brushed DC motors with AB encoders (up to 2 motors, 4 RC servos) |
 | [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) | Dragonframe DMC v2 USB bridge (RP2040-Zero) to SliderMC UART |
 
 ---
@@ -42,6 +43,7 @@ How this compares to commercial motorized sliders: [architecture/compare.md](arc
 | Builder (mechanics) | [build/hardware-manual.md](build/hardware-manual.md) |
 | UIC developer | [uic/api/overview.md](uic/api/overview.md) |
 | MC developer | [mc/README.md](mc/README.md) |
+| BDC motor firmware | [mc-bdc/README.md](mc-bdc/README.md) |
 | DMC / Dragonframe | [dmc/README.md](dmc/README.md) |
 | Protocol author | [contract/protocol.md](contract/protocol.md) |
 
@@ -52,7 +54,8 @@ How this compares to commercial motorized sliders: [architecture/compare.md](arc
 | [architecture/](architecture/README.md) | System split, command chains, compare, marketing |
 | [contract/](contract/README.md) | UART protocol, link/handshake, MC command cheat sheet |
 | [uic/](uic/README.md) | API, libraries, JKSlider / B4Slider / template projects |
-| [mc/](mc/README.md) | Build, config, pins, motion firmware |
+| [mc/](mc/README.md) | Build, config, pins, motion firmware (STEP/DIR) |
+| [mc-bdc/](mc-bdc/README.md) | Brushed-DC firmware: pins, drivers, tuning |
 | [dmc/](dmc/README.md) | Dragonframe DMC bridge (DF_DMC_2_MC) |
 | [components/](components/README.md) | Tested hardware module catalog |
 | [build/](build/README.md) | Hardware manual + installer checklists |

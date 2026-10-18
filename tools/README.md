@@ -8,7 +8,9 @@ Render and simulation scripts (maintainer-facing). Run from repository root unle
 | [render_command_cheatsheet.py](render_command_cheatsheet.py) | `contract/command-cheatsheet.html` (+ `.md`, optional PDF) |
 | [render_pico_pinout_JKSlider.py](render_pico_pinout_JKSlider.py) | JKSlider `panel-layouts/JKS_Pico_pinout_{button,keypad}.png`, `assets/JKS_Pico_pinout_{button,keypad}.txt`; `b4` → `uic/projects/b4slider/panel-layouts/B4S_Pico_pinout.png`, `assets/B4S_Pico_pinout.txt` |
 | [render_pico_pinout_SliderMC.py](render_pico_pinout_SliderMC.py) | `assets/img/MC_Pico_pinout.png`, `assets/MC_Pico_pinout.txt` |
+| [render_pico_pinout_SliderMC_BDC.py](render_pico_pinout_SliderMC_BDC.py) | `assets/img/MCBDC_Pico_pinout.png`, `assets/MCBDC_Pico_pinout.txt` |
 | [render_rp2040zero_pinout_SliderMC.py](render_rp2040zero_pinout_SliderMC.py) | `assets/img/MC_RP2040zero_pinout.png`, `assets/MC_RP2040zero_pinout.txt`; `button` → `JKS_RP2040zero_pinout_button.*`; `b4` → `B4S_RP2040zero_pinout.*` |
+| [render_rp2040zero_pinout_SliderMC_BDC.py](render_rp2040zero_pinout_SliderMC_BDC.py) | `assets/img/MCBDC_RP2040zero_pinout.png`, `assets/MCBDC_RP2040zero_pinout.txt` |
 | DF_DMC_2_MC pinout | Generated in the [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) repo (`python tools/render_pinout.py`) |
 | [render_dir_change_pause.py](render_dir_change_pause.py) | `assets/img/dir_change_pause.png` |
 | [render_sine_ramp_fifo.py](render_sine_ramp_fifo.py) | `assets/img/sine_ramp_300mm_s.svg` |

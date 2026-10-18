@@ -34,6 +34,13 @@ nav:
     - Config: mc/config.md
     - Pins: mc/pins.md
     - Motion: mc/motion.md
+  - SliderMC_BDC:
+    - mc-bdc/README.md
+    - Pins: mc-bdc/pins.md
+    - Drivers: mc-bdc/drivers.md
+    - Tune: mc-bdc/tune.md
+    - Motion: mc-bdc/motion.md
+    - Config: mc-bdc/config.md
   - Components: components/index.md
   - Build:
     - build/README.md
