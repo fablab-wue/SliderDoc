@@ -144,7 +144,7 @@ GROUPS = [
                 "IP:<pos> [| …]",
                 "One pipe field per packed live channel (motors then servos; CG axis = sum).",
             ),
-            ("IA", "Is Axis", "IA", "IA:<n>", "Packed live channels motors+servos (1..6). Same as CG axis. CS axis rejected."),
+            ("IA", "Is Axis", "IA", "IA:<n>", "Packed live channels motors+servos (1..7). Same as CG axis. CS axis rejected."),
             (
                 "IT",
                 "Is Target",
@@ -164,8 +164,8 @@ GROUPS = [
                 "ID",
                 "Is Diag",
                 "ID",
-                "ID:underrun=N peak_hz=… overshoot=… fifo_min=…",
-                "Motion diag counters (FIFO underrun, peak STEP Hz, …).",
+                "ID:underrun=u0,u1,u2,u3 peak_hz=… overshoot=… fifo_min=f0,f1,f2,f3",
+                "Motion diag: four per-motor FIFO underrun counts, peak STEP Hz, four fifo_min levels.",
             ),
             (
                 "IC",
@@ -191,7 +191,7 @@ GROUPS = [
                 "Move To",
                 "MT <axv> (absolute)",
                 SILENT,
-                "Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip).",
+                "Absolute user units; up to 7 packed channels (XYZ motors 1–3, ABC servos; motor 4 positional); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip).",
             ),
             (
                 "MB",
@@ -210,9 +210,9 @@ GROUPS = [
             (
                 "MH",
                 "Move Home",
-                "MH [1|2|3]",
+                "MH [1|2|3|4]",
                 SILENT,
-                "Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/ME.",
+                "Homing; motor 1 (default) through live motors; no-op if home_mode_N=0; cancel MS/ME.",
             ),
             (
                 "MS",
@@ -245,7 +245,7 @@ GROUPS = [
                 "Path Data",
                 "PD <axv_um>",
                 SILENT,
-                "Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream).",
+                "Append signed µm sample(s); up to 7 packed channels; skip _ →0; OK while PG (live stream).",
             ),
             (
                 "PG",
@@ -659,9 +659,9 @@ def build_markdown() -> str:
         ": Acceleration / deceleration in mm/s² or deg/s²",
         "",
         "`<axv>`",
-        ": Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to six). A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`).",
+        ": Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to seven). A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`). Motor 4 is positional only (no letter).",
         ": **Positional:** one number per channel in order, spaces between them. `_` skips a slot and leaves that channel unchanged (`MT _ _ 100` moves only channel 3). Omitted trailing slots are unchanged (`MT 50` is channel 1 only).",
-        ": **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.",
+        ": **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Motor 4 has no letter (positional only). Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.",
         ": `PD` uses the same forms in **µm** (`<axv_um>`); skip `_` or omit named → `0`.",
         ": `MJ` uses signed **percent** (not mm); omitted named extra = `0`; `_` is invalid.",
         "",

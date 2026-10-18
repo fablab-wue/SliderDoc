@@ -107,7 +107,7 @@ Tasks are started from `motion_tasks_start()` in `src/motion/motion_task.cpp`:
 - `plan` — planner tick
 - `proto` — USB + UART protocol, GPIO status LED heartbeat via `PIN_LED` (~67 Hz state patterns), optional WS2812 on `PIN_NEOPIXEL` (pio1), optional WDT feed
 
-`loop()` stays idle so it cannot starve motion. The protocol task arms the LED/WDT in `board_heartbeat_init()` **before** waiting for unlock `\n` (UIC UART or USB CDC); after the banner, LED patterns follow McState via `PIN_LED` (and WS2812 colours when `PIN_NEOPIXEL` differs). See [CONFIG.md](CONFIG.md#watchdog-wdt_use-and-onboard-led) and [PINS.md](PINS.md) for board-specific LED pins (Pico onboard / Pico W GP28 external / Zero GP29 GPIO + GP16 WS2812).
+`loop()` stays idle so it cannot starve motion. The protocol task arms the LED/WDT in `board_heartbeat_init()` **before** waiting for unlock `\n` (UIC UART or USB CDC); after the banner, LED patterns follow McState via `PIN_LED` (and WS2812 colours when `PIN_NEOPIXEL` differs). See [CONFIG.md](CONFIG.md#watchdog-wdt_use-and-onboard-led) and [PINS.md](PINS.md) for board-specific LED pins (Pico onboard / Pico W GP28 external / Zero GP25 GPIO + GP16 WS2812).
 
 ## Host protocol tests
 

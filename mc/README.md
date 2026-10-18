@@ -1,6 +1,6 @@
 # SliderMC firmware docs
 
-C++ / FreeRTOS motor controller for RP2040 and RP2350 (STEP/DIR motors plus optional RC servos; `CS motors` / `CS servos`, protocol `VP:1`).
+C++ / FreeRTOS motor controller for RP2040 and RP2350 (1–4 STEP/DIR motors plus optional RC servos; `CS motors` / `CS servos`, protocol `VP:1`).
 
 **Start here:** [build.md](build.md)
 
@@ -8,7 +8,7 @@ C++ / FreeRTOS motor controller for RP2040 and RP2350 (STEP/DIR motors plus opti
 |----------|-------|
 | [build.md](build.md) | Release UF2 flash (no IDE), VS Code, PlatformIO, host tests |
 | [config.md](config.md) | Config keys, `CS`/`CG`, persistence |
-| [dual-movement.md](dual-movement.md) | Optional 2nd axis: timing, units, soft limits |
+| [dual-movement.md](dual-movement.md) | Extra STEP/DIR motors (2–4): timing, units, soft limits |
 | [pins.md](pins.md) | Fixed GPIO map |
 | [motion.md](motion.md) | Planner, PIO STEP, tasks |
 | [motion-path.md](motion-path.md) | Host-authored path playback (`PD`/`PG`) |

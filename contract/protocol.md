@@ -31,11 +31,11 @@ SliderMC is a **named ASCII CLI** (expert-friendly, UIC-friendly), not a G-code 
 | `ok` / `error:N` per line | Motion/settings **silent** on success; errors `!E:code message`; queries `XX:value` |
 | `$N=` EEPROM settings | `CS` / `CG` + `mc.ini` on LittleFS |
 
-**Protocol version:** `VP:1` (does not bump when the wire changes). Short verbs are **exactly two letters** (no `X`/`Y`/`Z` in the verb). Long names (`MoveTo`, `Help`, …) are not accepted. Axis args may be positional or named words (`X`/`Y`/`Z` motors, `A`/`B`/`C` servos — see [Axis args](#axis-args-positional-or-xyz)).
+**Protocol version:** `VP:1` (does not bump when the wire changes). Short verbs are **exactly two letters** (no `X`/`Y`/`Z` in the verb). Long names (`MoveTo`, `Help`, …) are not accepted. Axis args may be positional or named words (`X`/`Y`/`Z` motors 1–3, `A`/`B`/`C` servos; motor 4 is positional only — see [Axis args](#axis-args-positional-or-xyz)).
 
 **Not adopted:** full G-code interpreter, spindle/coolant realtime, jog `$J=`, character-count streaming.
 
-**Live channels:** `CS motors 1|2|3` (default 1) and `CS servos 0..3` (default 0). Banner `{motors}+{servos} axis`. `IA` / `CG axis` = packed sum (1..6). **`CS axis` is rejected.** `CS motors` / `CS servos` re-inits GPIO / PIO / PWM **without `RB`**. Letters: motors **X Y Z**, servos **A B C**. See [Live axis count](#live-axis-count-axis), [About dual movement](../mc/dual-movement.md), and [config.md](../mc/config.md) / [pins.md](../mc/pins.md).
+**Live channels:** `CS motors 1|2|3|4` (default 1) and `CS servos 0..3` (default 0). Banner `{motors}+{servos} axis`. `IA` / `CG axis` = packed sum (1..7; Zero 4+3, Pico 4+2). **`CS axis` is rejected.** `CS motors` / `CS servos` re-inits GPIO / PIO / PWM **without `RB`**. Letters: motors **X Y Z** (1–3), servos **A B C**; motor 4 has no letter. See [Live axis count](#live-axis-count-axis), [About dual movement](../mc/dual-movement.md), and [config.md](../mc/config.md) / [pins.md](../mc/pins.md).
 
 ## Wire rules
 
@@ -168,10 +168,10 @@ Descriptions below match the printable cheat sheet (`tools/render_command_cheats
 
 ### Axis args (positional or XYZ)
 
-Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to six). Used by `MT`, `MB`, `MJ`, `SP`, `SL`, `SR`, `PD`. A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`).
+Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to seven). Used by `MT`, `MB`, `MJ`, `SP`, `SL`, `SR`, `PD`. A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`).
 
-- **Positional:** one number per channel in order, spaces between them. `_` skips a slot and leaves that channel unchanged (`MT _ _ 100` moves only channel 3). Omitted trailing slots are unchanged (`MT 50` is channel 1 only).
-- **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.
+- **Positional:** one number per channel in order, spaces between them. `_` skips a slot and leaves that channel unchanged (`MT _ _ 100` moves only channel 3). Omitted trailing slots are unchanged (`MT 50` is channel 1 only). Motor 4 is the 4th positional field (`MT 100 50 25 12.5`).
+- **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Motor 4 has **no letter**. Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.
 - `PD` uses the same forms in **µm** (`<axv_um>`); skip `_` or omit named → `0`.
 - `MJ` uses signed **percent** (not mm); omitted named extra = `0`; `_` is invalid.
 - `SL`/`SR`: `none` clears that side (`SL Z none`, glued `SLnone` / `SLZnone`).
@@ -219,7 +219,7 @@ Axis values for the packed live channels (STEP/DIR motors first, then RC servos;
 | `IT` | Is Target | — | Reply `IT:<mm>\|-` — axis-1 seek target, or `-` if none. |
 | `IR` | Is Ready | — | Reply `IR:1` only if idle, not homing, enabled, and not waiting. |
 | `IW` | Is Waiting | — | Reply `IW:1` if any `WT` / `WM` / `WH` / `WP` / `WC` / `WN` wait is active. |
-| `ID` | Is Diag | — | Reply underrun count, peak STEP Hz, overshoot steps, min FIFO level. |
+| `ID` | Is Diag | — | Reply four per-motor underrun counts, peak STEP Hz, overshoot steps, four per-motor min FIFO levels (`underrun=u0,u1,u2,u3 … fifo_min=f0,f1,f2,f3`). |
 | `IC` | Is Cause | — | Reply last chip reset cause (`power\|wdt\|run\|soft\|debug\|brownout\|…`) as `IC:…`. |
 | `IG` | Is GPIO | — | ASCII table of GP / name / desc. Extra-axis rows only when that axis is live; `PIN_CAMERA_CTRL` always listed (`CT` / listen); `PIN_BUZZER` when `BUZZER_use=1`. |
 
@@ -234,7 +234,7 @@ Enable state: use `GE` (`GetEnable`). There is no `IsEnabled` command.
 | `MF` | Move For | `ms` `ramp_ms` then axis args | Same targets as `MD`. Each ramp lasts `ramp_ms`, and `2 * ramp_ms` is less than `ms`. Cruise is distance over the remaining time. Does not change session `SS`. Too fast is `!E:speed`. |
 | `MB` | Move By | axis args | Relative units; same skip / named rules as `MT`. |
 | `MJ` | Move Joy | axis args | Joystick velocity hold: signed % of session `SS`; omit named extra → `0`; `0` = soft-stop; `SS`/`SA` stay live; clamp to `max_speed_N`. |
-| `MH` | Move Home | `[1\|2\|3]` | Homing cycle for a **motor** only; optional axis `1` (default), `2`, or `3`; no-op if that motor `home_mode_N` is `0` (use `SP` for origin); needs `SE 1`; cancel with `MS`/`ME`. Servo letters (`A`/`B`/`C`) → `!E:parse`. There is **no servo homing**. |
+| `MH` | Move Home | `[1\|2\|3\|4]` | Homing cycle for a **motor** only; optional axis `1` (default) through live `motors`; no-op if that motor `home_mode_N` is `0` (use `SP` for origin); needs `SE 1`; cancel with `MS`/`ME`. Motor 4 has no fault pin and no limits, so stall/limit home is not useful (`home_mode_4` typically `0`). Servo letters (`A`/`B`/`C`) → `!E:parse`. There is **no servo homing**. |
 | `MS` | Move Stop | — | Soft decelerate to stop; keeps enable; ends joy-mode; does not cancel waits. |
 | `ME` | Move E-Stop, Halt | — | Immediate STEP abort; enable off; cancel waits and remaining `;` chain. |
 
@@ -353,12 +353,12 @@ Allowed while error active: `IE`, `IA`, `ID`, `IC`, `IG`, `VA`/`VF`/`VP`/`VG`/`V
 
 | Board | Support |
 |-------|---------|
-| Pico / Pico W / Pico 2 / Pico 2 W | `CS motors 1..3`, `CS servos 0..3`. Servo PWM on GP26/27/18 (GP18 steals EXT_4 when `servos>=3`). |
-| RP2040-Zero / RP2350-Zero | Same counts. Servo PWM on GP21–23. UART is GP12/13, not the Pico GP16/17 pair. |
+| Pico / Pico W / Pico 2 / Pico 2 W | `CS motors 1..4`, `CS servos 0..3`. Servo PWM on GP26/27/18. GP18 steals EXT_4 when `servos>=3`; motor 4 DIR also claims GP18, so `motors>=4` caps servos at 2. Motor 4 STEP is GP19 (EXT_3). |
+| RP2040-Zero / RP2350-Zero | Same motor/servo counts. Servo PWM on GP23/22/21. Motor 4 DIR/STEP is GP19/20 (EXT_3/EXT_4); servos stay. UART is GP12/13, not the Pico GP16/17 pair. Camera is GP29; LED is GP25. |
 
-Packed live channels = `motors + servos` (1..6). `IA` replies that sum; bare `CG` dump includes synthesized `axis=<sum>`. Extra-arg `MT`/`MB`/`PD`/`MJ`/`SL`/`SR`/`SP` apply (motors then servos). `WP` uses the **time-sync master**. `IG` / `VG` list extra motor / servo pins only while fitted; `PIN_CAMERA_CTRL` is always listed (`CT` / listen). See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives packed channels independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
+Packed live channels = `motors + servos` (1..7; Zero 4+3, Pico 4+2). `IA` replies that sum; bare `CG` dump includes synthesized `axis=<sum>`. Extra-arg `MT`/`MB`/`PD`/`MJ`/`SL`/`SR`/`SP` apply (motors then servos). Motor 4 is STEP/DIR only (no fault, no limits). `WP` uses the **time-sync master**. `IG` / `VG` list extra motor / servo pins only while fitted; `PIN_CAMERA_CTRL` is always listed (`CT` / listen). See [pins.md](../mc/pins.md). Joy-mode (`MJ`) drives packed channels independently (not dual-MT time-sync) — [motion-joy.md](../mc/motion-joy.md).
 
-**Servo PWM:** 100 Hz, wrap 65535. Envelope ±135° maps onto `SERVO_N_min_pulse`…`max_pulse` (default **500–2500 µs**; analog 1000–2000). Default-span resolution is **~1.25 arc minutes (′)** per PWM count (~0.021°). `SERVO_N_swap` reverses mechanical sense; `SERVO_N_active` inverts polarity. `SE 0` stops PWM (limp); `SE 1` restores the last pulse. Boot pose 0° is clamped to the envelope. Path buffer is split across packed channels (`PATH_AXES` 6).
+**Servo PWM:** 100 Hz, wrap 65535. Envelope ±135° maps onto `SERVO_N_min_pulse`…`max_pulse` (default **500–2500 µs**; analog 1000–2000). Default-span resolution is **~1.25 arc minutes (′)** per PWM count (~0.021°). `SERVO_N_swap` reverses mechanical sense; `SERVO_N_active` inverts polarity. `SE 0` stops PWM (limp); `SE 1` restores the last pulse. Boot pose 0° is clamped to the envelope. Path buffer is split across packed channels (`PATH_AXES` 7).
 
 ---
 

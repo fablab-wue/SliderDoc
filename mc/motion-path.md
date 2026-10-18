@@ -58,7 +58,7 @@ usual `!E:<code> <text>` form:
 
 - **Sample:** one signed 16-bit integer, unit **µm** (micrometres), range
   `-32768..32767` (≈ ±32.767 mm of delta-distance per slice). With packed
-  count ≥ 2, each `PD` can supply extra samples (up to **6** tokens, `PATH_AXES`); skip token
+  count ≥ 2, each `PD` can supply extra samples (up to **7** tokens, `PATH_AXES`); skip token
   `_` becomes `0` µm on that channel.
 - **`0` means stand still** for that slice — no STEP pulses are issued; the
   PIO naturally holds its output level for the slice duration.

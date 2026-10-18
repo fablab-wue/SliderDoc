@@ -9,8 +9,8 @@
 # Joystick control — technical manual
 
 **Move Joy** (`MJ`) is a single command for driving SliderMC from an analogue
-joystick (or any host that streams a signed speed). It covers 1-axis and
-2-axis sliders: one packet is a full velocity snapshot, the planner holds
+joystick (or any host that streams a signed speed). It covers packed
+channels (1–4 STEP/DIR motors plus servos): one packet is a full velocity snapshot, the planner holds
 that speed until the next `MJ`, a rail, or another move command.
 
 This sits beside the normal sine-ramp planner (`MT`/`MB`/`MH`) and

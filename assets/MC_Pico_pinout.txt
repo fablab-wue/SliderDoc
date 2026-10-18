@@ -18,8 +18,8 @@ Defaults in include/pins.h + data/mc.ini
   GND              GND     13 |o         o| 28 GND      GND
   SW_LIMIT_L_3*    GP10    14 |o         o| 27 GP21     EXT_1
   SW_LIMIT_R_3*    GP11    15 |o         o| 26 GP20     EXT_2
-  DRV_ERROR_1      GP12    16 |o         o| 25 GP19     EXT_3
-  DRV_ERROR_2      GP13    17 |o         o| 24 GP18     SERVO_3/EXT_4
+  DRV_ERROR_1      GP12    16 |o         o| 25 GP19     DRV_STEP_4/EXT_3
+  DRV_ERROR_2      GP13    17 |o         o| 24 GP18     DRV_DIR_4/SERVO_3/EXT_4
   GND              GND     18 |o         o| 23 GND      GND
   DRV_ERROR_3      GP14    19 |o         o| 22 GP17     UART_RX
   DRV_ENABLE       GP15    20 |o         o| 21 GP16     UART_TX
@@ -27,7 +27,8 @@ Defaults in include/pins.h + data/mc.ini
 
 Legend: motor1 GP0–3 STEP/DIR/LIMIT; motor2 GP4–7; motor3 GP8–11.
 DRV_ERROR_1..3 GP12–14; shared DRV_ENABLE GP15. UART 115200 baud GP16/17.
-EXT_1…3 on GP21/20/19. GP18 SERVO_3 when servos>=3 (steals EXT_4 / EO4).
-SERVO_1/2 GP26/27 (100 Hz PWM, ~2.5' / 0.04 deg per count). SW_LIMIT_*_N off until CS …_use=1.
+EXT_1/2 on GP21/20. Motor4 STEP/DIR GP19/18 takes EXT_3/EXT_4; servos then cap at 2.
+GP18 SERVO_3 when servos>=3 (steals EXT_4 / EO4) unless motors>=4.
+SERVO_1/2 GP26/27 (100 Hz PWM). SW_LIMIT_*_N off until CS …_use=1. Motor4 has no fault/limits.
 GP22 CAMERA_CTRL trigger (OC / pullup, low-active → status T). Pico 2 / 2 W reuse this map.
 Pin names match IG / VG.

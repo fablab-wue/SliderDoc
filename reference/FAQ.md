@@ -4,7 +4,7 @@ This page brings together the most common slider questions, from basic motion co
 
 ## What happened to `CS axis`?
 
-Protocol 3 dropped `CS axis`. Use `CS motors 1|2|3` and `CS servos 0..3`. Packed `IA` / `CG axis` is the sum (`motors+servos`). Count changes re-init GPIO / PIO / PWM immediately — no `RB` required (unlike the old `CS axis` path).
+Protocol 3 dropped `CS axis`. Use `CS motors 1|2|3|4` and `CS servos 0..3`. Packed `IA` / `CG axis` is the sum (`motors+servos`, max 7). Count changes re-init GPIO / PIO / PWM immediately — no `RB` required (unlike the old `CS axis` path).
 
 ## How fine is RC servo PWM?
 
@@ -12,7 +12,7 @@ A 270° (±135°) servo over the default **0.5–2.5 ms** pulse (~13107 PWM coun
 
 ## What happens to Pico EXT_4 when `servos>=3`?
 
-Pico `PIN_SERVO_3` shares **GP18** with `PIN_EXT_4`. When `servos>=3`, servo PWM steals that pin from extender `EO4`. Zero servos are GP21–23 and do not steal EXT.
+Pico `PIN_SERVO_3` shares **GP18** with `PIN_EXT_4` and motor 4 DIR. When `servos>=3`, servo PWM steals that pin from extender `EO4`. When `motors>=4`, motor 4 DIR takes GP18 and servos cap at 2. Zero servos are GP23/22/21 and stay when motor 4 takes EXT_3/EXT_4 (GP19/20).
 
 ---
 

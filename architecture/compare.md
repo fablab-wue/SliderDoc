@@ -25,7 +25,7 @@ Competitive scan of commercial and DIY motorized sliders vs **JKSlider V1** (UIC
 | Strong | MicroPython UIC (maker / DIY panel) |
 | Gap | Remote; panel still primarily 1-axis |
 
-**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive extra STEP/DIR motors (`CS motors 2` on Pico or Zero; `motors=3` also exists); shipping JKSlider remains primarily **1-motor** UX. B4Slider selects packed axes 1–5. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
+**Positioning in one line:** JKSlider is a set-first, laptop-free controller for upcycled rails — closer in spirit to Accsoon’s onboard panel and eMotimo’s “program on the box” than to Edelkrone’s app ecosystem. It wins on analogue feel, STOP/EMO, open STEP/DIR hardware, and default stop–shoot–move TL. SliderMC can optionally drive extra STEP/DIR motors (`CS motors 2` … `4` on Pico or Zero); shipping JKSlider remains primarily **1-motor** UX. B4Slider selects packed axes 1–5. It loses where products sell full pan/tilt packages, phone remotes, and turnkey batteries/short ready-made travel.
 
 ---
 

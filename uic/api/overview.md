@@ -70,7 +70,7 @@ await mc.wait()
 
 Standalone MicroPython client. Talks to **SliderMC** over UART0 @ 115 200 baud (TX GP16 / RX GP17). Millimetre motion/config surface without OLED/RGB.
 
-**Optional 2-motor** is a first-class capability: typical **motor 1 = linear travel**, **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `CS motors 2` (no `RB`). Packed `mc.axis_count` / `getAxisCount()` is motors+servos from CG `axis`; **`getMotorCount()`** is STEP/DIR. Do **not** send `CS axis`. Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema (`#I p1 | p2`; empty `||` = idle 0). Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Live axis count](../../contract/protocol.md#live-axis-count-axis).
+**Optional extra motors** are a first-class capability: typical **motor 1 = linear travel**, **motor 2 = pan** (tilt or turn also work). Dual `MT` / `MB` is [time-synced](../../mc/dual-movement.md) (both finish together), not a CNC diagonal feedrate. Enable with SliderMC `CS motors 2` (up to `CS motors 4`; no `RB`). Packed `mc.axis_count` / `getAxisCount()` is motors+servos from CG `axis`; **`getMotorCount()`** is STEP/DIR. Do **not** send `CS axis`. Verbose `#…` is one line: axis-1 fields, then ` | ` plus the same 1-axis schema (`#I p1 | p2`; empty `||` = idle 0). Register `set_axis_status_callback`; `UIC_Base.on_axis_status` uses axis 1 for OLED/LED. Wire: [protocol.md — Live axis count](../../contract/protocol.md#live-axis-count-axis).
 
 Wire format: [PROTOCOL.md](../../contract/protocol.md) (commands `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, …; status `#…`; errors `!E:`; replies `TAG:value`). Joystick hold: [motion-joy.md](../../mc/motion-joy.md).
 
@@ -159,7 +159,7 @@ All motion calls return immediately. Use `isMoving()`, `await mc.wait()`, or pol
 | `moveTo(position, position2=None)` | Absolute move (mm). 2-axis: `moveTo(pos, pos2)` → `MT pos pos2` (time-synced); `moveTo(None, pos2)` → `MT _ pos2`. 1-axis ignores `position2`. Live-retargetable. |
 | `moveBy(dist, dist2=None)` | Relative move (mm). Same skip/`pos2` rules as `moveTo` (`MB`). Live-retargetable. |
 | `move(speed)` | Continuous velocity: `SS` then `MJ ±100` (`MS` at 0). See below. Analogue stick on SliderMC should stream protocol `MJ` instead — [motion-joy.md](../../mc/motion-joy.md). |
-| `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` / `home(3)` → `MH n`. Extra motors are a no-op if `getMotorCount()` is below that n. Returns the asyncio task. |
+| `home(axis=None)` | `MH` (MC defaults to axis 1); `home(1)` / `home(2)` / `home(3)` / `home(4)` → `MH n`. Extra motors are a no-op if `getMotorCount()` is below that n. Motor 4 is STEP/DIR only (no fault, no limits). Returns the asyncio task. |
 | `stop()` | Decelerate to standstill using `setAcceleration()`. Non-blocking. |
 | `halt()` | Emergency halt (`ME`) — hard abort, enable off. Non-blocking. |
 | `cameraTrigger(ms=100)` | Pulse MC `PIN_CAMERA_CTRL` (`CT` / `CT {ms}`); clamp 1..60000. Non-blocking; motion continues. |

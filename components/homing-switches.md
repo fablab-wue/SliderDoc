@@ -22,7 +22,7 @@ SliderMC pinout: [PINS.md](../mc/pins.md) · [MC_Pico_pinout.png](../assets/img/
 | `3` | stall / `DRV_ERROR` seek left | `MOTOR_N_min` | stall line on `DRV_ERROR` |
 | `4` | stall / `DRV_ERROR` seek right | `MOTOR_N_max` | stall line on `DRV_ERROR` |
 
-Pico motor 1: `PIN_SW_LIMIT_L_1` GP2, `PIN_SW_LIMIT_R_1` GP3, `PIN_DRV_ERROR_1` GP12. Motor 2 (`CS motors 2`): LIMIT GP6/7, `DRV_ERROR_2` GP13. Motor 3 (`CS motors 3`): LIMIT GP10/11, `DRV_ERROR_3` GP14. Zero remap: see [pins.md](../mc/pins.md).
+Pico motor 1: `PIN_SW_LIMIT_L_1` GP2, `PIN_SW_LIMIT_R_1` GP3, `PIN_DRV_ERROR_1` GP12. Motor 2 (`CS motors 2`): LIMIT GP6/7, `DRV_ERROR_2` GP13. Motor 3 (`CS motors 3`): LIMIT GP10/11, `DRV_ERROR_3` GP14. Motor 4 (`CS motors 4`) is STEP/DIR only — no limit switches and no fault pin. Zero remap: see [pins.md](../mc/pins.md).
 
 ### Mechanical NC/NO to GND (limit-home)
 

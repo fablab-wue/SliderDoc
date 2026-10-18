@@ -17,7 +17,7 @@ Panel wiring and firmware config: [../uic/projects/jkslider/technical/README.md]
 On-set operation: [../uic/projects/jkslider/user-manual.md](../uic/projects/jkslider/user-manual.md).  
 Electronics architecture (UIC + SliderMC): [../architecture/overview.md](../architecture/overview.md).
 
-JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. `CS motors 2` optionally enables a **second** STEP/DIR motor (e.g. pan; `motors=3` also exists) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
+JKSlider expects a **STEP / DIR** (+ usually **EN**) axis on the **motion board** (SliderMC). Almost any linear stage that accepts that interface can become a shooting tool. `CS motors 2` optionally enables a **second** STEP/DIR motor (e.g. pan; `motors` up to 4) — see [pins.md](../mc/pins.md). Plan for **two boards**, shared signal ground, and either a stacked pair or a **4-wire remote cable** (**5 V**, **GND**, **TX**, **RX** — GP16/17 crossed) so the UIC can sit in hand while the MC stays with the driver and PSU. Link details: [Technical Manual — Link](../contract/link-and-handshake.md#handheld-uic-remote-4-wire-cable).
 
 ---
 

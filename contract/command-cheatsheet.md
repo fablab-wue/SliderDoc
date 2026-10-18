@@ -17,9 +17,9 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 : Acceleration / deceleration in mm/s² or deg/s²
 
 `<axv>`
-: Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to six). A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`).
+: Axis values for the packed live channels (STEP/DIR motors first, then RC servos; up to seven). A line is **either** positional **or** named — never mixed (`MT 20 C100` → `!E:parse`). Motor 4 is positional only (no letter).
 : **Positional:** one number per channel in order, spaces between them. `_` skips a slot and leaves that channel unchanged (`MT _ _ 100` moves only channel 3). Omitted trailing slots are unchanged (`MT 50` is channel 1 only).
-: **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.
+: **Named:** letters `X` `Y` `Z` = motors 1–3, `A` `B` `C` = servos 1–3, then the value (spaces optional: `C100`, `C 100`, `MT C100 B50`). Motor 4 has no letter (positional only). Duplicate letter, unknown letter, or a channel that is not fitted → `!E:parse`.
 : `PD` uses the same forms in **µm** (`<axv_um>`); skip `_` or omit named → `0`.
 : `MJ` uses signed **percent** (not mm); omitted named extra = `0`; `_` is invalid.
 
@@ -59,11 +59,11 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Is Limit | **`IL`** | `IL:0\|1` | At soft-limit position (axis1). |
 | Is Error | **`IE`** | `IE:0\|1` | PIN_DRV_ERROR / EMO latched. |
 | Is Position | **`IP`** | `IP:<pos> [\| …]` | One pipe field per packed live channel (motors then servos; CG axis = sum). |
-| Is Axis | **`IA`** | `IA:<n>` | Packed live channels motors+servos (1..6). Same as CG axis. CS axis rejected. |
+| Is Axis | **`IA`** | `IA:<n>` | Packed live channels motors+servos (1..7). Same as CG axis. CS axis rejected. |
 | Is Target | **`IT`** | `IT:<pos>\|-` | Axis-1 seek target, or - if none / soft-stop. |
 | Is Ready | **`IR`** | `IR:0\|1` | 1 only if idle, not homing, enabled, and not waiting. |
 | Is Waiting | **`IW`** | `IW:0\|1` | 1 if any WT / WM / WH / WP / WC / WN wait is active. |
-| Is Diag | **`ID`** | `ID:underrun=N peak_hz=… overshoot=… fifo_min=…` | Motion diag counters (FIFO underrun, peak STEP Hz, …). |
+| Is Diag | **`ID`** | `ID:underrun=u0,u1,u2,u3 peak_hz=… overshoot=… fifo_min=f0,f1,f2,f3` | Motion diag: four per-motor FIFO underrun counts, peak STEP Hz, four fifo_min levels. |
 | Is Cause | **`IC`** | `IC:<reason>` | Last chip reset: power\|wdt\|run\|soft\|debug\|brownout\|… |
 | Is GPIO | **`IG`** | `(multi-line table)` | ASCII GP / name / desc (≤80 cols). Extra-axis rows only if that axis is live. |
 
@@ -71,10 +71,10 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
-| Move To | **`MT`**`<axv> (absolute)` | `—` | Absolute user units; up to 6 packed channels (XYZ motors, ABC servos); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip). |
+| Move To | **`MT`**`<axv> (absolute)` | `—` | Absolute user units; up to 7 packed channels (XYZ motors 1–3, ABC servos; motor 4 positional); skip _; needs SE; live-retarget. Dual MT: time-sync. Out-of-window = !E:soft (no clip). |
 | Move By | **`MB`**`<axv> (delta) …` | `—` | Relative move; same skip/named XYZABC rules as MT. |
 | Move Joy | **`MJ`**`<pct> …` | `—` | Joy speed % of SS, signed (− left / + right); omit named extra=0; 0=soft-stop; SS/SA live; clamp max_speed_N. Hold-to-jog: MJ ±100, MS on release. |
-| Move Home | **`MH`**`[1\|2\|3]` | `—` | Homing; axis 1 (default), 2, or 3; no-op if home_mode_N=0; cancel MS/ME. |
+| Move Home | **`MH`**`[1\|2\|3\|4]` | `—` | Homing; motor 1 (default) through live motors; no-op if home_mode_N=0; cancel MS/ME. |
 | Move Soft Stop | **`MS`** | `—` | Soft decelerate both axes; keeps enable; ends joy-mode; does not cancel waits. Dual: scaled accel kept. |
 | Move E-Stop, Halt | **`ME`** | `—` | Immediate STEP abort; enable off; cancel waits and remaining ; chain. |
 
@@ -83,7 +83,7 @@ Regenerate: `python tools/render_command_cheatsheet.py`
 | Command | Call | Reply | Description |
 |--------|------|-------|-------------|
 | Path Clear | **`PC`** | `—` | Clear path buffer (count→0); !E:busy while PG active. |
-| Path Data | **`PD`**`<axv_um>` | `—` | Append signed µm sample(s); up to 6 packed channels; skip _ →0; OK while PG (live stream). |
+| Path Data | **`PD`**`<axv_um>` | `—` | Append signed µm sample(s); up to 7 packed channels; skip _ →0; OK while PG (live stream). |
 | Path Go | **`PG`** | `—` | Play buffer from sample 0; needs SE; !E:empty\|busy\|disabled. MS/ME ends path. |
 | Path Number | **`PN`** | `PN:<count>` | Samples in buffer; allowed during PG. |
 | Path Slice | **`PS`**`[<us>]` | `—` | Slice length µs (≥1000); bare→init_path_slice_us; !E:busy while PG. |

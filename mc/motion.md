@@ -24,8 +24,9 @@ Highest priority: smooth, jerk-limited STEP generation. Protocol and UI traffic 
 - Packed FIFO words: `delay[25:0]` + `repeat[31:26]` (1…64 pulses/word).
 - **High phase:** 188 cycles (~1.5 µs @ 125 MHz).
 - **Period formula:** `period ≈ PIO_STEP_PERIOD_FIXED(192) + delay` (includes SET/MOV/JMP overhead).
-- **Polarity:** `DRV_STEP_1_active` selects active-high vs active-low PIO program (`pio_step_reconfigure()` only when idle). Axis 2 uses `DRV_STEP_2_active`. **No `DRV_STEP_3_active`** — axis 3 STEP follows axis 2.
-- **DIR:** `DRV_DIR_1_active` — `1` means DIR high = +mm (`DRV_DIR_2_active` / `DRV_DIR_3_active` for extra axes).
+- **Polarity:** `DRV_STEP_1_active` selects active-high vs active-low PIO program (`pio_step_reconfigure()` only when idle). Axis 2 uses `DRV_STEP_2_active`. **No `DRV_STEP_3_active` / `DRV_STEP_4_active`** — axes 3 and 4 STEP follow axis 2.
+- **DIR:** `DRV_DIR_1_active` — `1` means DIR high = +mm (`DRV_DIR_2_active` / `_3` / `_4` for extra axes).
+- **SMs:** PIO0 runs one STEP state machine per live motor (up to four). Motor 4 is STEP/DIR only — no fault input and no limit switches.
 - Soft stop drains TX; hard abort disables SM and clears FIFOs (and disarms TX IRQ).
 
 Files: `src/motion/pio_step.cpp`, `include/pio_step.h`.
@@ -63,11 +64,11 @@ v_{\max}(d) = \sqrt{4 a d / \pi}
 4. **Live retarget** — `MT` / `MJ` / `SS` / `SA` update target/cruise/accel/decel; next fill uses new remaining distance.
 5. **Reverse** — decelerate to 0 → `dir_change_pause_s` → accelerate the other way.
 6. **Soft limits** clamp remaining steps to the **session working window** (`SL`/`SR`); illegal `MT` outside the window is rejected.
-7. **Homing** — FSM via `MH` (`home_mode_N`, `home_speed_N`, `home_accel_N`, `home_move_out_N`); mode `0` = silent no-op (`SP` declares origin). `MH 1|2|3` selects the axis.
+7. **Homing** — FSM via `MH` (`home_mode_N`, `home_speed_N`, `home_accel_N`, `home_move_out_N`); mode `0` = silent no-op (`SP` declares origin). `MH 1|2|3|4` selects the motor.
 
 API units are user units (typically mm / mm/s / mm/s², or ° / °/s / °/s²); internals use steps via `steps_per_unit_N`. See [dual-movement.md](dual-movement.md) for dual-axis timing and units.
 
-With `motors` = 2 or 3 (`CS motors 2` / `CS motors 3`), the planner maintains **one to three** independent STEP/DIR axes, each with its own PIO state machine, position, soft limits, and homing FSM. Optional RC servos pack after motors (PWM, no homing). Session `SS`/`SA` apply on the **time-sync master**; extra-arg `MT`/`MB`/`MJ`/`SL`/`SR`/`SP`/`PD` (skip `_` or named `X`/`Y`/`Z`/`A`/`B`/`C`) select which packed channels move. `MH 1|2|3` homes one **motor**. `MJ` / Move Joy holds a signed per-channel velocity as a percent of `SS` (independent, not dual-`MT` time-sync) — [motion-joy.md](motion-joy.md). See [dual-movement.md](dual-movement.md) and [protocol.md — Live axis count](../contract/protocol.md#live-axis-count-axis).
+With `motors` = 2..4 (`CS motors 2` / `3` / `4`), the planner maintains **one to four** independent STEP/DIR axes, each with its own PIO state machine, position, soft limits, and homing FSM. Optional RC servos pack after motors (PWM, no homing). Session `SS`/`SA` apply on the **time-sync master**; extra-arg `MT`/`MB`/`MJ`/`SL`/`SR`/`SP`/`PD` (skip `_` or named `X`/`Y`/`Z`/`A`/`B`/`C`; motor 4 is positional only) select which packed channels move. `MH 1|2|3|4` homes one **motor**. `MJ` / Move Joy holds a signed per-channel velocity as a percent of `SS` (independent, not dual-`MT` time-sync) — [motion-joy.md](motion-joy.md). See [dual-movement.md](dual-movement.md) and [protocol.md — Live axis count](../contract/protocol.md#live-axis-count-axis).
 
 Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.cpp`.
 
@@ -75,7 +76,7 @@ Shared math (host-testable): `include/planner_math.h`, `src/motion/planner_math.
 
 `PC`/`PD`/`PG`/`PN`/`PS` (see [PROTOCOL.md](../contract/protocol.md#p--path-host-authored-motion-path)) implement a host-authored motion
 path via a second, deliberately simpler planner in `src/motion/motion_path.cpp`,
-kept separate from the sine-ramp planner above. This is a **second planner**, not an extra physical axis — though when packed count ≥ 2, path mode plays **n** sample streams (extra `PD` args; pool split by live packed count, `PATH_AXES` 6).
+kept separate from the sine-ramp planner above. This is a **second planner**, not an extra physical axis — though when packed count ≥ 2, path mode plays **n** sample streams (extra `PD` args; pool split by live packed count, `PATH_AXES` 7).
 
 - **Buffer:** a flat `int16_t` array (path pool **65536** samples split by live `n` = `axis`; `path_buffer_size` is the logical cap **per axis**, default 32000), holding one signed µm delta-distance per fixed time
   slice (`PS`, µs). Extra live axes get parallel buffers. `PD` appends; `PG` always plays from sample 0.
@@ -105,7 +106,7 @@ Files: `include/motion_path.h`, `src/motion/motion_path.cpp`.
 
 ## Joystick hold (`MJ`)
 
-`MJ` / Move Joy is a **velocity hold** for analogue sticks (typical 5–20 Hz, also acyclic): signed percent of session `SS`, clamped per axis to `max_speed_1` / `max_speed_2` / `max_speed_3`. Hold-to-jog is `SS` then `MJ ±100` (not a huge `MT`). First `MJ` enters joy-mode; `SS`/`SA` stay legal and rescale/re-ramp from the stored percentages. Other moves (`MT`, `MB`, `MS`, `PG`, …) end joy-mode.
+`MJ` / Move Joy is a **velocity hold** for analogue sticks (typical 5–20 Hz, also acyclic): signed percent of session `SS`, clamped per axis to `max_speed_N` (motors 1–4). Hold-to-jog is `SS` then `MJ ±100` (not a huge `MT`). First `MJ` enters joy-mode; `SS`/`SA` stay legal and rescale/re-ramp from the stored percentages. Other moves (`MT`, `MB`, `MS`, `PG`, …) end joy-mode.
 
 Integrator guide (command flow, snapshot rules, UIC skip-if-unchanged): [motion-joy.md](motion-joy.md). Hardware: [joysticks.md](../components/joysticks.md).
 
@@ -113,10 +114,10 @@ Integrator guide (command flow, snapshot rules, UIC skip-if-unchanged): [motion-
 
 | Counter | Meaning |
 |---------|---------|
-| `underrun_count` | SM TXSTALL while moving *and* the planner still had steps to issue. Intentional idle gaps (direction-change pause, final settle) do not count |
+| `underrun_count` | Per-motor SM TXSTALL while moving *and* the planner still had steps to issue (`ID` lists four: `u0,u1,u2,u3`). Intentional idle gaps (direction-change pause, final settle) do not count |
 | `peak_step_hz` | Highest issued step rate |
 | `overshoot_steps` | Steps by which an issued word *crossed* the target (should stay 0). Being past the target while a reverse move bleeds off speed is not counted |
-| `fifo_min_level` | Lowest observed TX level while filling |
+| `fifo_min_level` | Per-motor lowest observed TX level while filling (`ID` lists four: `f0,f1,f2,f3`) |
 
 Read over the protocol with **`ID` / Is Diag** (also allowed during EMO). Counters always describe the running session: they are mirrored into a `.noinit` RAM snapshot, but that snapshot is only restored when the chip came up from a **watchdog** reset, so a post-mortem `ID` is never confused with fresh data. After such a reboot USB prints `D:diag_restored …` / `D:reset=wdt` when `init_debug_level≥2`.
 

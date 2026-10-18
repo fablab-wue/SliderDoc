@@ -46,8 +46,8 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`MC_Pico_pinout.t
 | `PIN_DRV_ENABLE` | 15 | Shared driver enable |
 | `PIN_UART_TX` | 16 | UART TX to UI controller |
 | `PIN_UART_RX` | 17 | UART RX from UI controller |
-| `PIN_EXT_4` / `PIN_SERVO_3` | 18 | Extender `EO4`; **SERVO_3 when `servos>=3`** (steals EXT_4) |
-| `PIN_EXT_3` | 19 | Extender `EO3` |
+| `PIN_EXT_4` / `PIN_SERVO_3` / `PIN_DRV_DIR_4` | 18 | Extender `EO4`; **SERVO_3 when `servos>=3`**; **motor 4 DIR when `motors>=4`** (servos then cap at 2) |
+| `PIN_EXT_3` / `PIN_DRV_STEP_4` | 19 | Extender `EO3`; **motor 4 STEP when `motors>=4`** |
 | `PIN_EXT_2` | 20 | Extender `EO2` |
 | `PIN_EXT_1` | 21 | Extender `EO1` |
 | `PIN_CAMERA_CTRL` | 22 | Camera OC sink (`CT`) / listen, low-active |
@@ -58,6 +58,8 @@ Regenerate: `python tools/render_pico_pinout_SliderMC.py` → [`MC_Pico_pinout.t
 | `PIN_BUZZER` | 28 | Optional piezo (`BE` / Beep); gated by `BUZZER_use` (default off) |
 
 UART baud rate: **115 200**. GP16/GP17 are **UART0** (`Serial1` via `PIN_UART_SERIAL`).
+
+`motors` 1\|2\|3\|4 and `servos` 0..3. Motor 4 is STEP/DIR only (no fault, no limits). `motors>=4` takes GP19/GP18 and caps servos at 2. Four PIO0 STEP state machines run when `motors=4`.
 
 ---
 
@@ -114,7 +116,7 @@ Regenerate: `python tools/render_rp2040zero_pinout_SliderMC.py` → [`MC_RP2040z
 | `PIN_BUZZER` | 28 | Optional piezo (`BE`; `BUZZER_use`) |
 | `PIN_CAMERA_CTRL` | 29 | Camera OC sink (`CT`) / listen, low-active |
 
-`motors` 1\|2\|3\|4 and `servos` 0..3 are supported on Zero / RP2350-Zero.
+`motors` 1\|2\|3\|4 and `servos` 0..3 are supported on Zero / RP2350-Zero. Motor 4 is STEP/DIR only (no fault pin, no limit switches). Four PIO0 STEP state machines run when `motors=4`.
 
 ---
 
@@ -180,9 +182,9 @@ Some no-name 2N7000 clones swap S/D — if it does not shift, check the marking 
 
 **External key (momentary only):** non-latching switch from this pin to **GND** (never to 3.3 V, never a toggle that stays down). Falling edge: MC listen → one-shot status **`T`**. A UIC can map that to **stop-motion (MSM)** or **start an A/B move**. If the opto is fitted on the same node, the key also fires the shutter (usual remote). `CT` pulls the same pin: a UIC that treats every `T` as “key” will also see command triggers (duration `T` while `CT` is down when verbose is on). Verbose off → no `#T` push; `#` while low still `#T`.
 
-`PIN_EXT_1`…`4` default to **input + pull-up** (`ED n I`). `ED n O` is push-pull; `ED n T` is open-collector + pull-up. Logical `EO1`…`EO4` set output level when mode is O or T. `EI0`…`EI3` read the pin in any mode. Polarity via `EXT_1_active`…`EXT_4_active`. On Pico, **GP18 is SERVO_3 when `servos>=3`** (EXT_4 stolen). On Zero, **GP19/GP20 are motor 4 DIR/STEP when `motors>=4`** (EXT_3/EXT_4 stolen). **`EO5`… is rejected.**
+`PIN_EXT_1`…`4` default to **input + pull-up** (`ED n I`). `ED n O` is push-pull; `ED n T` is open-collector + pull-up. Logical `EO1`…`EO4` set output level when mode is O or T. `EI0`…`EI3` read the pin in any mode. Polarity via `EXT_1_active`…`EXT_4_active`. On Pico, **GP18 is SERVO_3 when `servos>=3`** and **motor 4 DIR when `motors>=4`** (EXT_4 stolen; those two uses are mutually exclusive). On Zero, **GP19/GP20 are motor 4 DIR/STEP when `motors>=4`** (EXT_3/EXT_4 stolen; servos stay on GP23/22/21). **`EO5`… is rejected.**
 
-STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motor 3 STEP follows motor 2 (no `DRV_STEP_3_active`). See [MOTION.md](MOTION.md).
+STEP polarity (`DRV_STEP_1_active` / `DRV_STEP_2_active`) selects one of two PIO programs. Motors 3 and 4 STEP follow motor 2 (no `DRV_STEP_3_active` / `DRV_STEP_4_active`). See [MOTION.md](MOTION.md).
 
 RC servos use hardware PWM at **100 Hz**, wrap **65535**. Envelope ±135° maps linearly onto `SERVO_N_min_pulse`…`max_pulse` (default **500–2500 µs**; analog often 1000–2000). Default span resolution ≈ **1.25 arc minutes (′)** / 0.021° per count. `SERVO_N_swap` reverses sense; `SERVO_N_active` inverts the pulse. `SE 0` stops PWM (limp).
 

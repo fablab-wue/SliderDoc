@@ -74,8 +74,8 @@ RIGHT = [
     ("GND", "GND"),
     ("GP21", "EXT_1"),
     ("GP20", "EXT_2"),
-    ("GP19", "EXT_3"),
-    ("GP18", "SERVO_3/EXT_4"),
+    ("GP19", "DRV_STEP_4/EXT_3"),
+    ("GP18", "DRV_DIR_4/SERVO_3/EXT_4"),
     ("GND", "GND"),
     ("GP17", "UART_RX"),
     ("GP16", "UART_TX"),
@@ -117,8 +117,9 @@ def render_ascii() -> str:
             "",
             "Legend: motor1 GP0–3 STEP/DIR/LIMIT; motor2 GP4–7; motor3 GP8–11.",
             "DRV_ERROR_1..3 GP12–14; shared DRV_ENABLE GP15. UART 115200 baud GP16/17.",
-            "EXT_1…3 on GP21/20/19. GP18 SERVO_3 when servos>=3 (steals EXT_4 / EO4).",
-            "SERVO_1/2 GP26/27 (100 Hz PWM, ~2.5' / 0.04 deg per count). SW_LIMIT_*_N off until CS …_use=1.",
+            "EXT_1/2 on GP21/20. Motor4 STEP/DIR GP19/18 takes EXT_3/EXT_4; servos then cap at 2.",
+            "GP18 SERVO_3 when servos>=3 (steals EXT_4 / EO4) unless motors>=4.",
+            "SERVO_1/2 GP26/27 (100 Hz PWM). SW_LIMIT_*_N off until CS …_use=1. Motor4 has no fault/limits.",
             "GP22 CAMERA_CTRL trigger (OC / pullup, low-active → status T). Pico 2 / 2 W reuse this map.",
             "Pin names match IG / VG.",
         ]
@@ -141,7 +142,7 @@ def render_png(path: Path):
     margin = 24
     title_h = 56
     gap = 4
-    fun_w = 128
+    fun_w = 160
     gp_w = 52
     pin_w = 28
     box_h = min(22, _PIN_PITCH - 6)

@@ -7,7 +7,7 @@ Shared images, SVG wiring diagrams, pinout text files, and generated OLED mockup
 | [img/](img/) | Architecture diagram, wiring SVGs, motion plots |
 | [img/oled/](img/oled/) | OLED screen mockups (`tools/oled/render_examples.py`) |
 | `JKS_Pico_pinout_*.txt` | ASCII pin maps |
-| MC pinout PNGs | `img/MC_Pico_pinout.png` — `tools/render_pico_pinout_SliderMC.py` |
+| MC pinout PNGs | `img/MC_Pico_pinout.png` — `tools/render_pico_pinout_SliderMC.py`; `img/MC_RP2040zero_pinout.png` — `tools/render_rp2040zero_pinout_SliderMC.py` |
 | DMC pinout | Lives in the [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) repo (`docs/img/pinout.png`) |
 
 JKSlider UIC pinout PNGs live in [uic/projects/jkslider/panel-layouts/](../uic/projects/jkslider/panel-layouts/).

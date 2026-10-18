@@ -20,7 +20,7 @@ Your panel may not include every control below (joystick, DELAY, TIMELAPSE, OLED
 
 The panel Pico talks to a separate **motion board** (SliderMC) over UART. If that link is unplugged or the motion board is off, the UI may still start, but moves / homing will not work — see [Technical Manual — Link](../../../contract/link-and-handshake.md#communication-mc--uic).
 
-The stack **supports** extra STEP/DIR motors (`CS motors` 2 or 3) plus packed servos — [time-synced](../../../mc/dual-movement.md). **This panel** selects packed axes **1–6** for MOVE/FAST/joysticks. A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Idle OLED numbers follow the lowest selected axis.
+The stack **supports** extra STEP/DIR motors (`CS motors` 2, 3, or 4) plus packed servos — [time-synced](../../../mc/dual-movement.md). **This panel** selects packed axes **1–6** for MOVE/FAST/joysticks. A/B/C marks, loops, DELAY, and MSM stay **axis 1**. Idle OLED numbers follow the lowest selected axis.
 
 ## Getting started
 

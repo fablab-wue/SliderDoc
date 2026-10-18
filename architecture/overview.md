@@ -56,7 +56,7 @@ What may attach to each board (same ownership as the overview diagram):
 
 ### MC — may connect
 
-- Motor / STEP·DIR driver (integrated or external); optional extra STEP·DIR when `CS motors 2` (`motors=3` also exists) — typical **linear travel (motor 1) + pan (motor 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
+- Motor / STEP·DIR driver (integrated or external); optional extra STEP·DIR when `CS motors 2` (`motors` up to 4) — typical **linear travel (motor 1) + pan (motor 2)**, time-synced dual moves (not CNC). See [dual-movement.md](../mc/dual-movement.md)
 - RC **servos** (packed PWM axes)
 - Hard limit switch(es) (`SW_LIMIT_*`) — also the homing reference (`home_mode_N` 1/2). There is **no** separate home-switch pin
 - Camera shutter (`PIN_CAMERA_CTRL` / `CT`)
@@ -216,14 +216,15 @@ flowchart LR
 |-------|---------|
 | **UIC** (button) | [img/JKS_Pico_pinout_button.png](../assets/img/JKS_Pico_pinout_button.png) |
 | **UIC** (keypad) | [img/JKS_Pico_pinout_keypad.png](../assets/img/JKS_Pico_pinout_keypad.png) |
-| **MC** | [SliderMC `../assets/img/MC_Pico_pinout.png`](../assets/img/MC_Pico_pinout.png) (see [PINS.md](../mc/pins.md)) |
+| **MC** (Pico) | [SliderMC `../assets/img/MC_Pico_pinout.png`](../assets/img/MC_Pico_pinout.png) (see [PINS.md](../mc/pins.md)) |
+| **MC** (RP2040-Zero) | [SliderMC `../assets/img/MC_RP2040zero_pinout.png`](../assets/img/MC_RP2040zero_pinout.png) |
 | **DMC** (RP2040-Zero) | [DF_DMC_2_MC pinout](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/img/pinout.png) (see [pins](https://github.com/fablab-wue/DF_DMC_2_MC/blob/main/docs/pins.md)) |
 
-Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../mc/pins.md`.
+Sibling clone paths: `../assets/img/MC_Pico_pinout.png`, `../assets/img/MC_RP2040zero_pinout.png`, `../mc/pins.md`.
 
 ## Wire protocol (summary)
 
-- ASCII lines @ **115 200** baud; default pins **GP16 (TX) / GP17 (RX)** on each board — **cross** TX↔RX between UIC and MC (see [Interconnect and housing](#interconnect-and-housing)).
+- ASCII lines @ **115 200** baud; Pico default **GP16 (TX) / GP17 (RX)** — **cross** TX↔RX between UIC and MC. Zero MC (and compact Zero UIC) uses **GP12/13**. See [Interconnect and housing](#interconnect-and-housing) and [pins.md](../mc/pins.md).
 - **Startup:** `VH\n` on UIC UART (or Enter/LF on USB) unlocks the MC; MC replies with welcome `# MC V1 - …` banner; UIC then sends `SV 1`. `VH` reprints the banner after either side reboots.
 - Commands: `MT`, `MB`, `MJ`, `MS`, `ME`, `MH`, `SE`, `SS`, `SA`, `CT`, … (joystick: [motion-joy.md](../mc/motion-joy.md))
 - Verbose status when `SV 1`: `#<state> <pos> [<speed> <accel> [<target>]]` — extra packed channels append ` | ` groups (`#I p1 | p2`; empty `||` = idle 0). Default **10 Hz** while moving (`verbose_rate_hz`). Idle/disabled is change-triggered plus a 1 s heartbeat.

@@ -11,7 +11,7 @@ Whether you operate on set, install a panel, build the rail, or extend the firmw
 | Repo | Role |
 |------|------|
 | [SliderCtrl](https://github.com/fablab-wue/SliderCtrl) | UI controller — MicroPython panel firmware (JKSlider, B4Slider, libraries) |
-| [SliderMC](https://github.com/fablab-wue/SliderMC) | Motion controller — C++ / FreeRTOS STEP/DIR (optional 2nd axis: typical **linear + pan**, time-synced) |
+| [SliderMC](https://github.com/fablab-wue/SliderMC) | Motion controller — C++ / FreeRTOS STEP/DIR (1–4 motors; typical **linear + pan**, time-synced) |
 | [SliderMC_BDC](https://github.com/fablab-wue/SliderMC_BDC) | Motion controller — C++ / FreeRTOS brushed DC motors with AB encoders (up to 2 motors, 4 RC servos) |
 | [DF_DMC_2_MC](https://github.com/fablab-wue/DF_DMC_2_MC) | Dragonframe DMC v2 USB bridge (RP2040-Zero) to SliderMC UART |
 
@@ -24,7 +24,7 @@ One consolidated view of the whole stack — details live in each repo README an
 - **Motorized camera slider control** — laptop-free set operation; analogue speed and accel; STOP / EMO / limits  
 - **JKSlider** full panel + **B4Slider** AXIS-select remote — and room for more UIC faces on the same protocol  
 - **Construction kit** — JKSlider / B4Slider panel apps, **`MC_Client`** / **`UIC_Base`**, SliderMC motion; build sliders, mini-dollies, rotating heads, turntables, **slider + pan**, or other STEP/DIR rigs  
-- **Optional extra motors** — typical **linear travel + pan** (or tilt/turn), **time-synced** dual moves (not CNC); SliderMC `CS motors 2` (`motors=3` also exists); `MC_Client` packed `moveTo` / `home`. Shipping JKSlider stays 1-motor; B4Slider selects packed axes **1–5**. [dual-movement.md](mc/dual-movement.md) · [UIC API](uic/api/overview.md)  
+- **Optional extra motors** — typical **linear travel + pan** (or tilt/turn), **time-synced** dual moves (not CNC); SliderMC `CS motors 1..4` (default 1); `MC_Client` packed `moveTo` / `home`. Shipping JKSlider stays 1-motor; B4Slider selects packed axes **1–5**. [dual-movement.md](mc/dual-movement.md) · [UIC API](uic/api/overview.md)  
 - **Production moves** — marks A/B/C, pair loops, DELAY, timelapse dividers, pause/resume, live retarget, camera trigger  
 - **Dedicated motion MCU** — PIO step timing isolated from MicroPython UIC; crossed UART contract at 115200 baud  
 - **Open firmware, open docs** — MIT licensed; Thonny / REPL and USB CLI; edit pins, fork panels, script moves  

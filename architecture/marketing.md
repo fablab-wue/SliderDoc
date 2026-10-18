@@ -67,7 +67,7 @@ API and composition: [uic/api/overview.md](../uic/api/overview.md) · new panel 
 
 ## Optional 2-axis — slider + pan
 
-SliderMC can run a **second** STEP/DIR motor (`CS motors 2`). The usual pairing is **motor 1 = linear travel** and **motor 2 = pan** (tilt or turn also work). Dual `MT` / `M` finishes both axes together — **time-synced**, not a CNC diagonal feedrate. Config `motors=3` also exists. Timing: [dual-movement.md](../mc/dual-movement.md).
+SliderMC can run extra STEP/DIR motors (`CS motors 2` … `4`). The usual pairing is **motor 1 = linear travel** and **motor 2 = pan** (tilt or turn also work). Dual `MT` / `M` finishes both axes together — **time-synced**, not a CNC diagonal feedrate. Timing: [dual-movement.md](../mc/dual-movement.md).
 
 **JKSlider** stays a **1-axis operator face** (it drives and displays axis 1). **B4Slider** selects packed axes **1–5** (`getAxisCount()`). A custom UIC uses [`MC_Client`](https://github.com/fablab-wue/SliderCtrl/blob/main/MC_client.py): `axis_count`, optional `moveTo(pos, pos2)` / `home(2)`, and `set_axis_status_callback` — see [uic/api/overview.md](../uic/api/overview.md).
 
